@@ -1,0 +1,918 @@
+  [1m[35m (4.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY) /*application='Dentivara'*/[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.7ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (1.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-05-02 16:02:27.789788', '2026-05-02 16:02:27.789791') RETURNING "key" /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Dentivara'*/[0m
+Migrating to CreateUsers (20260502155732)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE TABLE "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar, "email" varchar, "role" integer, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260502155732') RETURNING "version" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+Migrating to CreatePatients (20260502155735)
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "patients" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "first_name" varchar, "last_name" varchar, "birth_date" date, "phone" varchar, "email" varchar, "emergency_contact_name" varchar, "emergency_contact_phone" varchar, "medical_history" text, "consented_at" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260502155735') RETURNING "version" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+Migrating to CreateAppointments (20260502155738)
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[35m (2.8ms)[0m  [1m[35mCREATE TABLE "appointments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "patient_id" integer NOT NULL, "user_id" integer NOT NULL, "source" varchar, "booking_type" varchar, "starts_at" datetime(6), "ends_at" datetime(6), "status" varchar, "notes" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_c63da04ab4"
+FOREIGN KEY ("patient_id")
+  REFERENCES "patients" ("id")
+, CONSTRAINT "fk_rails_9e31213785"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+) /*application='Dentivara'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE INDEX "index_appointments_on_patient_id" ON "appointments" ("patient_id") /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_appointments_on_user_id" ON "appointments" ("user_id") /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260502155738') RETURNING "version" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+Migrating to CreateNotifications (20260502155750)
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[35m (2.3ms)[0m  [1m[35mCREATE TABLE "notifications" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "patient_id" integer NOT NULL, "channel" varchar, "category" varchar, "scheduled_for" datetime(6), "sent_at" datetime(6), "status" varchar, "message" text, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_e966d86b08"
+FOREIGN KEY ("patient_id")
+  REFERENCES "patients" ("id")
+) /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_notifications_on_patient_id" ON "notifications" ("patient_id") /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260502155750') RETURNING "version" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+Migrating to CreateTreatmentRecords (20260502155800)
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[35m (1.7ms)[0m  [1m[35mCREATE TABLE "treatment_records" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "patient_id" integer NOT NULL, "user_id" integer NOT NULL, "appointment_id" integer NOT NULL, "service_type" varchar, "clinical_notes" text, "cost" decimal, "performed_on" date, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_a39c487bd3"
+FOREIGN KEY ("patient_id")
+  REFERENCES "patients" ("id")
+, CONSTRAINT "fk_rails_1464632943"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_3d9ca67f66"
+FOREIGN KEY ("appointment_id")
+  REFERENCES "appointments" ("id")
+) /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_treatment_records_on_patient_id" ON "treatment_records" ("patient_id") /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_treatment_records_on_user_id" ON "treatment_records" ("user_id") /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_treatment_records_on_appointment_id" ON "treatment_records" ("appointment_id") /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260502155800') RETURNING "version" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (1.8ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+Migrating to CreateInvoices (20260502155803)
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[35m (2.5ms)[0m  [1m[35mCREATE TABLE "invoices" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "patient_id" integer NOT NULL, "treatment_record_id" integer NOT NULL, "status" varchar, "total_amount" decimal, "balance_amount" decimal, "issued_on" date, "approved_by_dentist_at" datetime(6), "approved_by_admin_at" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_cc9f5c45d4"
+FOREIGN KEY ("patient_id")
+  REFERENCES "patients" ("id")
+, CONSTRAINT "fk_rails_cd9ea89463"
+FOREIGN KEY ("treatment_record_id")
+  REFERENCES "treatment_records" ("id")
+) /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_invoices_on_patient_id" ON "invoices" ("patient_id") /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_invoices_on_treatment_record_id" ON "invoices" ("treatment_record_id") /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260502155803') RETURNING "version" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (1.7ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+Migrating to CreatePayments (20260502155806)
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE TABLE "payments" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "invoice_id" integer NOT NULL, "amount" decimal, "paid_on" date, "method" varchar, "reference_code" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_62d18ea517"
+FOREIGN KEY ("invoice_id")
+  REFERENCES "invoices" ("id")
+) /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_payments_on_invoice_id" ON "payments" ("invoice_id") /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260502155806') RETURNING "version" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (1.5ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+Migrating to AddIndexesAndDefaults (20260502160206)
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Dentivara'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Dentivara'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Dentivara'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "ausers" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar, "email" varchar, "role" integer, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Dentivara'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "ausers" ("id","name","email","role","created_at","updated_at")
+                     SELECT "id","name","email","role","created_at","updated_at" FROM "users" /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "users" /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar, "email" varchar, "role" integer DEFAULT 2, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Dentivara'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "users" ("id","name","email","role","created_at","updated_at")
+                     SELECT "id","name","email","role","created_at","updated_at" FROM "ausers" /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "ausers" /*application='Dentivara'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Dentivara'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Dentivara'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email") /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260502160206') RETURNING "version" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Dentivara'*/[0m
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'owner@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Exists? (1.7ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'owner@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mUser Create (0.2ms)[0m  [1m[32mINSERT INTO "users" ("name", "email", "role", "created_at", "updated_at") VALUES ('Clinic Owner', 'owner@dentivara.local', 0, '2026-05-02 16:55:42.936933', '2026-05-02 16:55:42.936933') RETURNING "id" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (4.9ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Load (1.0ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'dentist@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Exists? (1.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'dentist@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mUser Create (0.1ms)[0m  [1m[32mINSERT INTO "users" ("name", "email", "role", "created_at", "updated_at") VALUES ('Dr. Maria Reyes', 'dentist@dentivara.local', 1, '2026-05-02 16:55:42.948387', '2026-05-02 16:55:42.948387') RETURNING "id" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (2.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Load (0.7ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'reception@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Exists? (1.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'reception@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mUser Create (0.1ms)[0m  [1m[32mINSERT INTO "users" ("name", "email", "role", "created_at", "updated_at") VALUES ('Ana Cruz', 'reception@dentivara.local', 2, '2026-05-02 16:55:42.955983', '2026-05-02 16:55:42.955983') RETURNING "id" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Load (0.6ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'billing@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Exists? (1.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'billing@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mUser Create (0.1ms)[0m  [1m[32mINSERT INTO "users" ("name", "email", "role", "created_at", "updated_at") VALUES ('Paolo Santos', 'billing@dentivara.local', 3, '2026-05-02 16:55:42.961779', '2026-05-02 16:55:42.961779') RETURNING "id" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Load (0.7ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'patient@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Exists? (1.1ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'patient@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mUser Create (0.1ms)[0m  [1m[32mINSERT INTO "users" ("name", "email", "role", "created_at", "updated_at") VALUES ('Patient User', 'patient@dentivara.local', 4, '2026-05-02 16:55:42.967657', '2026-05-02 16:55:42.967657') RETURNING "id" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Load (0.9ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'sysadmin@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Exists? (1.2ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = 'sysadmin@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mUser Create (0.1ms)[0m  [1m[32mINSERT INTO "users" ("name", "email", "role", "created_at", "updated_at") VALUES ('System Admin', 'sysadmin@dentivara.local', 5, '2026-05-02 16:55:42.973867', '2026-05-02 16:55:42.973867') RETURNING "id" /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Pluck (0.5ms)[0m  [1m[34mSELECT "users"."name", "users"."email", "users"."role" FROM "users" ORDER BY "users"."email" ASC /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (7.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Dentivara'*/[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'owner@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Dentivara'*/[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'dentist@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'reception@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'billing@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'patient@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = 'sysadmin@dentivara.local' LIMIT 1 /*application='Dentivara'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Dentivara'*/[0m
+Started GET "/" for ::1 at 2026-05-03 00:57:44 +0800
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Dentivara'*/[0m
+Processing by HomeController#index as HTML
+  [1m[36mPatient Count (9.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "patients" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:4:in 'HomeController#index'
+  [1m[36mAppointment Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "appointments" WHERE "appointments"."starts_at" BETWEEN '2026-05-02 00:00:00' AND '2026-05-02 23:59:59.999999' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:5:in 'HomeController#index'
+  [1m[36mTreatmentRecord Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "treatment_records" WHERE "treatment_records"."performed_on" BETWEEN '2026-05-01' AND '2026-05-31' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:6:in 'HomeController#index'
+  [1m[36mInvoice Sum (0.3ms)[0m  [1m[34mSELECT SUM("invoices"."balance_amount") FROM "invoices" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:7:in 'HomeController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.6ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" WHERE "appointments"."starts_at" >= '2026-05-02 16:57:45.385138' ORDER BY "appointments"."starts_at" ASC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:39
+  [1m[36mInvoice Load (0.4ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" ORDER BY "invoices"."updated_at" DESC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:65
+  Rendered home/index.html.erb within layouts/application (Duration: 75.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 135.0ms | GC: 8.6ms)
+Completed 200 OK in 628ms (Views: 148.1ms | ActiveRecord: 20.3ms (6 queries, 0 cached) | GC: 8.6ms)
+
+
+Started GET "/appointments" for ::1 at 2026-05-03 00:57:53 +0800
+Processing by AppointmentsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering appointments/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.3ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" /*action='index',application='Dentivara',controller='appointments'*/[0m
+  ↳ app/views/appointments/index.html.erb:8
+  Rendered appointments/index.html.erb within layouts/application (Duration: 18.3ms | GC: 0.9ms)
+  Rendered layout layouts/application.html.erb (Duration: 19.7ms | GC: 0.9ms)
+Completed 200 OK in 315ms (Views: 21.2ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.9ms)
+
+
+Started GET "/treatment_records" for ::1 at 2026-05-03 00:58:11 +0800
+Processing by TreatmentRecordsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering treatment_records/index.html.erb within layouts/application
+  [1m[36mTreatmentRecord Load (0.4ms)[0m  [1m[34mSELECT "treatment_records".* FROM "treatment_records" /*action='index',application='Dentivara',controller='treatment_records'*/[0m
+  ↳ app/views/treatment_records/index.html.erb:8
+  Rendered treatment_records/index.html.erb within layouts/application (Duration: 5.7ms | GC: 0.1ms)
+  Rendered layout layouts/application.html.erb (Duration: 7.0ms | GC: 0.1ms)
+Completed 200 OK in 308ms (Views: 9.2ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.1ms)
+
+
+Started GET "/appointments" for ::1 at 2026-05-03 00:58:12 +0800
+Processing by AppointmentsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering appointments/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.4ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" /*action='index',application='Dentivara',controller='appointments'*/[0m
+  ↳ app/views/appointments/index.html.erb:8
+  Rendered appointments/index.html.erb within layouts/application (Duration: 2.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.6ms | GC: 0.0ms)
+Completed 200 OK in 295ms (Views: 3.7ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/patients" for ::1 at 2026-05-03 00:58:13 +0800
+Processing by PatientsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering patients/index.html.erb within layouts/application
+  [1m[36mPatient Load (0.5ms)[0m  [1m[34mSELECT "patients".* FROM "patients" /*action='index',application='Dentivara',controller='patients'*/[0m
+  ↳ app/views/patients/index.html.erb:8
+  Rendered patients/index.html.erb within layouts/application (Duration: 4.3ms | GC: 0.1ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.5ms | GC: 0.1ms)
+Completed 200 OK in 322ms (Views: 7.0ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.1ms)
+
+
+Started GET "/" for ::1 at 2026-05-03 00:58:14 +0800
+Processing by HomeController#index as HTML
+  [1m[36mPatient Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "patients" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:4:in 'HomeController#index'
+  [1m[36mAppointment Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "appointments" WHERE "appointments"."starts_at" BETWEEN '2026-05-02 00:00:00' AND '2026-05-02 23:59:59.999999' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:5:in 'HomeController#index'
+  [1m[36mTreatmentRecord Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "treatment_records" WHERE "treatment_records"."performed_on" BETWEEN '2026-05-01' AND '2026-05-31' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:6:in 'HomeController#index'
+  [1m[36mInvoice Sum (0.5ms)[0m  [1m[34mSELECT SUM("invoices"."balance_amount") FROM "invoices" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:7:in 'HomeController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.4ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" WHERE "appointments"."starts_at" >= '2026-05-02 16:58:15.367735' ORDER BY "appointments"."starts_at" ASC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:39
+  [1m[36mInvoice Load (0.2ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" ORDER BY "invoices"."updated_at" DESC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:65
+  Rendered home/index.html.erb within layouts/application (Duration: 4.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.9ms | GC: 0.0ms)
+Completed 200 OK in 352ms (Views: 5.8ms | ActiveRecord: 2.2ms (6 queries, 0 cached) | GC: 0.1ms)
+
+
+Started GET "/patients" for ::1 at 2026-05-03 00:58:16 +0800
+Processing by PatientsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering patients/index.html.erb within layouts/application
+  [1m[36mPatient Load (0.6ms)[0m  [1m[34mSELECT "patients".* FROM "patients" /*action='index',application='Dentivara',controller='patients'*/[0m
+  ↳ app/views/patients/index.html.erb:8
+  Rendered patients/index.html.erb within layouts/application (Duration: 4.3ms | GC: 0.9ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.7ms | GC: 0.9ms)
+Completed 200 OK in 361ms (Views: 5.6ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.9ms)
+
+
+Started GET "/patients/new" for ::1 at 2026-05-03 00:58:17 +0800
+Processing by PatientsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering patients/new.html.erb within layouts/application
+  Rendered patients/_form.html.erb (Duration: 20.2ms | GC: 0.0ms)
+  Rendered patients/new.html.erb within layouts/application (Duration: 33.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 34.6ms | GC: 0.0ms)
+Completed 200 OK in 338ms (Views: 35.1ms | ActiveRecord: 1.7ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/patients/new" for ::1 at 2026-05-03 00:58:18 +0800
+Processing by PatientsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering patients/new.html.erb within layouts/application
+  Rendered patients/_form.html.erb (Duration: 1.3ms | GC: 0.0ms)
+  Rendered patients/new.html.erb within layouts/application (Duration: 2.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.5ms | GC: 0.0ms)
+Completed 200 OK in 293ms (Views: 4.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/appointments" for ::1 at 2026-05-03 00:58:21 +0800
+Processing by AppointmentsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering appointments/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.9ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" /*action='index',application='Dentivara',controller='appointments'*/[0m
+  ↳ app/views/appointments/index.html.erb:8
+  Rendered appointments/index.html.erb within layouts/application (Duration: 3.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 13.1ms | GC: 8.9ms)
+Completed 200 OK in 320ms (Views: 13.0ms | ActiveRecord: 0.9ms (1 query, 0 cached) | GC: 8.9ms)
+
+
+Started GET "/treatment_records" for ::1 at 2026-05-03 00:58:21 +0800
+Processing by TreatmentRecordsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering treatment_records/index.html.erb within layouts/application
+  [1m[36mTreatmentRecord Load (0.5ms)[0m  [1m[34mSELECT "treatment_records".* FROM "treatment_records" /*action='index',application='Dentivara',controller='treatment_records'*/[0m
+  ↳ app/views/treatment_records/index.html.erb:8
+  Rendered treatment_records/index.html.erb within layouts/application (Duration: 3.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.7ms | GC: 0.0ms)
+Completed 200 OK in 334ms (Views: 4.8ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/treatment_records/new" for ::1 at 2026-05-03 00:58:22 +0800
+Processing by TreatmentRecordsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering treatment_records/new.html.erb within layouts/application
+  Rendered treatment_records/_form.html.erb (Duration: 2.8ms | GC: 0.0ms)
+  Rendered treatment_records/new.html.erb within layouts/application (Duration: 14.9ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 16.8ms | GC: 0.5ms)
+Completed 200 OK in 435ms (Views: 17.4ms | ActiveRecord: 1.0ms (0 queries, 0 cached) | GC: 0.8ms)
+
+
+Started GET "/" for ::1 at 2026-05-03 00:58:23 +0800
+Processing by HomeController#index as HTML
+  [1m[36mPatient Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "patients" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:4:in 'HomeController#index'
+  [1m[36mAppointment Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "appointments" WHERE "appointments"."starts_at" BETWEEN '2026-05-02 00:00:00' AND '2026-05-02 23:59:59.999999' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:5:in 'HomeController#index'
+  [1m[36mTreatmentRecord Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "treatment_records" WHERE "treatment_records"."performed_on" BETWEEN '2026-05-01' AND '2026-05-31' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:6:in 'HomeController#index'
+  [1m[36mInvoice Sum (0.3ms)[0m  [1m[34mSELECT SUM("invoices"."balance_amount") FROM "invoices" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:7:in 'HomeController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.4ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" WHERE "appointments"."starts_at" >= '2026-05-02 16:58:24.392097' ORDER BY "appointments"."starts_at" ASC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:39
+  [1m[36mInvoice Load (0.3ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" ORDER BY "invoices"."updated_at" DESC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:65
+  Rendered home/index.html.erb within layouts/application (Duration: 3.5ms | GC: 0.1ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.8ms | GC: 0.1ms)
+Completed 200 OK in 341ms (Views: 4.6ms | ActiveRecord: 2.1ms (6 queries, 0 cached) | GC: 0.1ms)
+
+
+Started GET "/" for ::1 at 2026-05-03 01:26:35 +0800
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Dentivara'*/[0m
+Processing by HomeController#index as HTML
+  [1m[36mPatient Count (17.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "patients" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:4:in 'HomeController#index'
+  [1m[36mAppointment Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "appointments" WHERE "appointments"."starts_at" BETWEEN '2026-05-02 00:00:00' AND '2026-05-02 23:59:59.999999' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:5:in 'HomeController#index'
+  [1m[36mTreatmentRecord Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "treatment_records" WHERE "treatment_records"."performed_on" BETWEEN '2026-05-01' AND '2026-05-31' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:6:in 'HomeController#index'
+  [1m[36mInvoice Sum (0.3ms)[0m  [1m[34mSELECT SUM("invoices"."balance_amount") FROM "invoices" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:7:in 'HomeController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.4ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" WHERE "appointments"."starts_at" >= '2026-05-02 17:26:36.380031' ORDER BY "appointments"."starts_at" ASC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:39
+  [1m[36mInvoice Load (0.3ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" ORDER BY "invoices"."updated_at" DESC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:65
+  Rendered home/index.html.erb within layouts/application (Duration: 14.4ms | GC: 0.2ms)
+  Rendered layout layouts/application.html.erb (Duration: 82.1ms | GC: 0.2ms)
+Completed 200 OK in 695ms (Views: 91.6ms | ActiveRecord: 34.5ms (6 queries, 0 cached) | GC: 1.2ms)
+
+
+Started GET "/patients" for ::1 at 2026-05-03 01:26:40 +0800
+Processing by PatientsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering patients/index.html.erb within layouts/application
+  [1m[36mPatient Load (0.6ms)[0m  [1m[34mSELECT "patients".* FROM "patients" /*action='index',application='Dentivara',controller='patients'*/[0m
+  ↳ app/views/patients/index.html.erb:8
+  Rendered patients/index.html.erb within layouts/application (Duration: 4.9ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 6.0ms | GC: 0.0ms)
+Completed 200 OK in 514ms (Views: 7.1ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for ::1 at 2026-05-03 01:26:44 +0800
+Processing by HomeController#index as HTML
+  [1m[36mPatient Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "patients" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:4:in 'HomeController#index'
+  [1m[36mAppointment Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "appointments" WHERE "appointments"."starts_at" BETWEEN '2026-05-02 00:00:00' AND '2026-05-02 23:59:59.999999' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:5:in 'HomeController#index'
+  [1m[36mTreatmentRecord Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "treatment_records" WHERE "treatment_records"."performed_on" BETWEEN '2026-05-01' AND '2026-05-31' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:6:in 'HomeController#index'
+  [1m[36mInvoice Sum (0.3ms)[0m  [1m[34mSELECT SUM("invoices"."balance_amount") FROM "invoices" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:7:in 'HomeController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.4ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" WHERE "appointments"."starts_at" >= '2026-05-02 17:26:44.808907' ORDER BY "appointments"."starts_at" ASC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:39
+  [1m[36mInvoice Load (0.3ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" ORDER BY "invoices"."updated_at" DESC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:65
+  Rendered home/index.html.erb within layouts/application (Duration: 3.9ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.2ms | GC: 0.0ms)
+Completed 200 OK in 551ms (Views: 5.0ms | ActiveRecord: 2.0ms (6 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/patients" for ::1 at 2026-05-03 01:26:47 +0800
+Processing by PatientsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering patients/index.html.erb within layouts/application
+  [1m[36mPatient Load (0.3ms)[0m  [1m[34mSELECT "patients".* FROM "patients" /*action='index',application='Dentivara',controller='patients'*/[0m
+  ↳ app/views/patients/index.html.erb:8
+  Rendered patients/index.html.erb within layouts/application (Duration: 2.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.5ms | GC: 0.0ms)
+Completed 200 OK in 352ms (Views: 4.7ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/appointments" for ::1 at 2026-05-03 01:26:47 +0800
+Processing by AppointmentsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering appointments/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.3ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" /*action='index',application='Dentivara',controller='appointments'*/[0m
+  ↳ app/views/appointments/index.html.erb:8
+  Rendered appointments/index.html.erb within layouts/application (Duration: 6.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 14.5ms | GC: 0.0ms)
+Completed 200 OK in 527ms (Views: 17.3ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/treatment_records" for ::1 at 2026-05-03 01:26:50 +0800
+Processing by TreatmentRecordsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering treatment_records/index.html.erb within layouts/application
+  [1m[36mTreatmentRecord Load (0.4ms)[0m  [1m[34mSELECT "treatment_records".* FROM "treatment_records" /*action='index',application='Dentivara',controller='treatment_records'*/[0m
+  ↳ app/views/treatment_records/index.html.erb:8
+  Rendered treatment_records/index.html.erb within layouts/application (Duration: 5.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 6.8ms | GC: 0.0ms)
+Completed 200 OK in 498ms (Views: 8.5ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/invoices" for ::1 at 2026-05-03 01:26:52 +0800
+Processing by InvoicesController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering invoices/index.html.erb within layouts/application
+  [1m[36mInvoice Load (0.4ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" /*action='index',application='Dentivara',controller='invoices'*/[0m
+  ↳ app/views/invoices/index.html.erb:8
+  Rendered invoices/index.html.erb within layouts/application (Duration: 5.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 6.4ms | GC: 0.0ms)
+Completed 200 OK in 579ms (Views: 8.0ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/payments" for ::1 at 2026-05-03 01:26:54 +0800
+Processing by PaymentsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering payments/index.html.erb within layouts/application
+  [1m[36mPayment Load (0.4ms)[0m  [1m[34mSELECT "payments".* FROM "payments" /*action='index',application='Dentivara',controller='payments'*/[0m
+  ↳ app/views/payments/index.html.erb:8
+  Rendered payments/index.html.erb within layouts/application (Duration: 5.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 6.5ms | GC: 0.0ms)
+Completed 200 OK in 590ms (Views: 8.1ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/payments/new" for ::1 at 2026-05-03 01:26:55 +0800
+Processing by PaymentsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering payments/new.html.erb within layouts/application
+  Rendered payments/_form.html.erb (Duration: 8.6ms | GC: 0.0ms)
+  Rendered payments/new.html.erb within layouts/application (Duration: 16.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 18.2ms | GC: 0.0ms)
+Completed 200 OK in 551ms (Views: 18.7ms | ActiveRecord: 1.6ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for ::1 at 2026-05-03 01:26:57 +0800
+Processing by HomeController#index as HTML
+  [1m[36mPatient Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "patients" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:4:in 'HomeController#index'
+  [1m[36mAppointment Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "appointments" WHERE "appointments"."starts_at" BETWEEN '2026-05-02 00:00:00' AND '2026-05-02 23:59:59.999999' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:5:in 'HomeController#index'
+  [1m[36mTreatmentRecord Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "treatment_records" WHERE "treatment_records"."performed_on" BETWEEN '2026-05-01' AND '2026-05-31' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:6:in 'HomeController#index'
+  [1m[36mInvoice Sum (0.3ms)[0m  [1m[34mSELECT SUM("invoices"."balance_amount") FROM "invoices" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:7:in 'HomeController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.5ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" WHERE "appointments"."starts_at" >= '2026-05-02 17:26:57.939916' ORDER BY "appointments"."starts_at" ASC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:39
+  [1m[36mInvoice Load (0.4ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" ORDER BY "invoices"."updated_at" DESC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:65
+  Rendered home/index.html.erb within layouts/application (Duration: 4.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 6.3ms | GC: 0.0ms)
+Completed 200 OK in 537ms (Views: 6.2ms | ActiveRecord: 2.3ms (6 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/patients" for ::1 at 2026-05-03 01:26:58 +0800
+Processing by PatientsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering patients/index.html.erb within layouts/application
+  [1m[36mPatient Load (0.5ms)[0m  [1m[34mSELECT "patients".* FROM "patients" /*action='index',application='Dentivara',controller='patients'*/[0m
+  ↳ app/views/patients/index.html.erb:8
+  Rendered patients/index.html.erb within layouts/application (Duration: 4.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.7ms | GC: 0.0ms)
+Completed 200 OK in 556ms (Views: 5.8ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for ::1 at 2026-05-03 01:36:18 +0800
+  [1m[36mActiveRecord::SchemaMigration Load (1.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Dentivara'*/[0m
+Processing by HomeController#index as HTML
+  [1m[36mPatient Count (12.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "patients" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:4:in 'HomeController#index'
+  [1m[36mAppointment Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "appointments" WHERE "appointments"."starts_at" BETWEEN '2026-05-02 00:00:00' AND '2026-05-02 23:59:59.999999' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:5:in 'HomeController#index'
+  [1m[36mTreatmentRecord Count (0.9ms)[0m  [1m[34mSELECT COUNT(*) FROM "treatment_records" WHERE "treatment_records"."performed_on" BETWEEN '2026-05-01' AND '2026-05-31' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:6:in 'HomeController#index'
+  [1m[36mInvoice Sum (0.3ms)[0m  [1m[34mSELECT SUM("invoices"."balance_amount") FROM "invoices" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:7:in 'HomeController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.3ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" WHERE "appointments"."starts_at" >= '2026-05-02 17:36:19.425774' ORDER BY "appointments"."starts_at" ASC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:39
+  [1m[36mInvoice Load (0.3ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" ORDER BY "invoices"."updated_at" DESC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:65
+  Rendered home/index.html.erb within layouts/application (Duration: 19.8ms | GC: 0.1ms)
+  Rendered layout layouts/application.html.erb (Duration: 85.6ms | GC: 0.1ms)
+Completed 200 OK in 687ms (Views: 98.7ms | ActiveRecord: 26.0ms (6 queries, 0 cached) | GC: 1.2ms)
+
+
+Started GET "/" for ::1 at 2026-05-03 01:36:23 +0800
+Processing by HomeController#index as HTML
+Started GET "/patients" for ::1 at 2026-05-03 01:36:24 +0800
+  [1m[36mPatient Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "patients" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:4:in 'HomeController#index'
+  [1m[36mAppointment Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "appointments" WHERE "appointments"."starts_at" BETWEEN '2026-05-02 00:00:00' AND '2026-05-02 23:59:59.999999' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:5:in 'HomeController#index'
+  [1m[36mTreatmentRecord Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "treatment_records" WHERE "treatment_records"."performed_on" BETWEEN '2026-05-01' AND '2026-05-31' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:6:in 'HomeController#index'
+  [1m[36mInvoice Sum (0.3ms)[0m  [1m[34mSELECT SUM("invoices"."balance_amount") FROM "invoices" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:7:in 'HomeController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.4ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" WHERE "appointments"."starts_at" >= '2026-05-02 17:36:24.303763' ORDER BY "appointments"."starts_at" ASC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:39
+  [1m[36mInvoice Load (0.3ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" ORDER BY "invoices"."updated_at" DESC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:65
+  Rendered home/index.html.erb within layouts/application (Duration: 3.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.2ms | GC: 0.0ms)
+Completed 200 OK in 368ms (Views: 5.0ms | ActiveRecord: 2.1ms (6 queries, 0 cached) | GC: 0.0ms)
+
+
+Processing by PatientsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering patients/index.html.erb within layouts/application
+  [1m[36mPatient Load (0.5ms)[0m  [1m[34mSELECT "patients".* FROM "patients" /*action='index',application='Dentivara',controller='patients'*/[0m
+  ↳ app/views/patients/index.html.erb:9
+  Rendered patients/index.html.erb within layouts/application (Duration: 4.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.8ms | GC: 0.0ms)
+Completed 200 OK in 544ms (Views: 7.2ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/appointments" for ::1 at 2026-05-03 01:36:26 +0800
+Processing by AppointmentsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering appointments/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.5ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" /*action='index',application='Dentivara',controller='appointments'*/[0m
+  ↳ app/views/appointments/index.html.erb:9
+  Rendered appointments/index.html.erb within layouts/application (Duration: 4.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.4ms | GC: 0.0ms)
+Completed 200 OK in 432ms (Views: 6.7ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/treatment_records" for ::1 at 2026-05-03 01:36:28 +0800
+Processing by TreatmentRecordsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering treatment_records/index.html.erb within layouts/application
+  [1m[36mTreatmentRecord Load (0.8ms)[0m  [1m[34mSELECT "treatment_records".* FROM "treatment_records" /*action='index',application='Dentivara',controller='treatment_records'*/[0m
+  ↳ app/views/treatment_records/index.html.erb:9
+  Rendered treatment_records/index.html.erb within layouts/application (Duration: 4.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.9ms | GC: 0.0ms)
+Completed 200 OK in 440ms (Views: 6.9ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/invoices" for ::1 at 2026-05-03 01:36:29 +0800
+Processing by InvoicesController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering invoices/index.html.erb within layouts/application
+  [1m[36mInvoice Load (0.5ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" /*action='index',application='Dentivara',controller='invoices'*/[0m
+  ↳ app/views/invoices/index.html.erb:9
+  Rendered invoices/index.html.erb within layouts/application (Duration: 3.9ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.2ms | GC: 0.0ms)
+Completed 200 OK in 417ms (Views: 6.9ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/payments" for ::1 at 2026-05-03 01:36:33 +0800
+Started GET "/notifications" for ::1 at 2026-05-03 01:36:33 +0800
+Processing by PaymentsController#index as HTML
+Processing by NotificationsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering payments/index.html.erb within layouts/application
+  [1m[36mPayment Load (0.5ms)[0m  [1m[34mSELECT "payments".* FROM "payments" /*action='index',application='Dentivara',controller='payments'*/[0m
+  ↳ app/views/payments/index.html.erb:9
+  Rendered payments/index.html.erb within layouts/application (Duration: 3.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.4ms | GC: 0.0ms)
+Completed 200 OK in 431ms (Views: 6.7ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+  Rendering layout layouts/application.html.erb
+  Rendering notifications/index.html.erb within layouts/application
+  [1m[36mNotification Load (0.9ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" /*action='index',application='Dentivara',controller='notifications'*/[0m
+  ↳ app/views/notifications/index.html.erb:9
+  Rendered notifications/index.html.erb within layouts/application (Duration: 3.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.2ms | GC: 0.0ms)
+Completed 200 OK in 436ms (Views: 6.5ms | ActiveRecord: 0.8ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/payments" for ::1 at 2026-05-03 01:36:35 +0800
+Processing by PaymentsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering payments/index.html.erb within layouts/application
+  [1m[36mPayment Load (0.4ms)[0m  [1m[34mSELECT "payments".* FROM "payments" /*action='index',application='Dentivara',controller='payments'*/[0m
+  ↳ app/views/payments/index.html.erb:9
+  Rendered payments/index.html.erb within layouts/application (Duration: 2.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.5ms | GC: 0.0ms)
+Completed 200 OK in 363ms (Views: 3.9ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/notifications" for ::1 at 2026-05-03 01:36:35 +0800
+Processing by NotificationsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering notifications/index.html.erb within layouts/application
+  [1m[36mNotification Load (0.5ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" /*action='index',application='Dentivara',controller='notifications'*/[0m
+  ↳ app/views/notifications/index.html.erb:9
+  Rendered notifications/index.html.erb within layouts/application (Duration: 2.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.4ms | GC: 0.0ms)
+Completed 200 OK in 453ms (Views: 3.5ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users" for ::1 at 2026-05-03 01:36:37 +0800
+Processing by UsersController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering users/index.html.erb within layouts/application
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" /*action='index',application='Dentivara',controller='users'*/[0m
+  ↳ app/views/users/index.html.erb:9
+  Rendered users/_user.html.erb (Duration: 1.4ms | GC: 0.0ms)
+  Rendered users/_user.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered users/_user.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered users/_user.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered users/_user.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered users/_user.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered users/index.html.erb within layouts/application (Duration: 16.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 17.9ms | GC: 0.0ms)
+Completed 200 OK in 440ms (Views: 17.9ms | ActiveRecord: 1.7ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for ::1 at 2026-05-03 01:36:41 +0800
+Processing by HomeController#index as HTML
+  [1m[36mPatient Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "patients" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:4:in 'HomeController#index'
+  [1m[36mAppointment Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "appointments" WHERE "appointments"."starts_at" BETWEEN '2026-05-02 00:00:00' AND '2026-05-02 23:59:59.999999' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:5:in 'HomeController#index'
+  [1m[36mTreatmentRecord Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "treatment_records" WHERE "treatment_records"."performed_on" BETWEEN '2026-05-01' AND '2026-05-31' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:6:in 'HomeController#index'
+  [1m[36mInvoice Sum (0.5ms)[0m  [1m[34mSELECT SUM("invoices"."balance_amount") FROM "invoices" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:7:in 'HomeController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.4ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" WHERE "appointments"."starts_at" >= '2026-05-02 17:36:42.393434' ORDER BY "appointments"."starts_at" ASC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:39
+  [1m[36mInvoice Load (0.3ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" ORDER BY "invoices"."updated_at" DESC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:65
+  Rendered home/index.html.erb within layouts/application (Duration: 2.9ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.6ms | GC: 0.0ms)
+Completed 200 OK in 451ms (Views: 4.6ms | ActiveRecord: 2.1ms (6 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users/1" for ::1 at 2026-05-03 01:36:43 +0800
+Processing by UsersController#show as HTML
+  Parameters: {"id" => "1"}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1 /*action='show',application='Dentivara',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:63:in 'UsersController#set_user'
+  Rendering layout layouts/application.html.erb
+  Rendering users/show.html.erb within layouts/application
+  Rendered users/_user.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered users/show.html.erb within layouts/application (Duration: 5.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 6.5ms | GC: 0.0ms)
+Completed 200 OK in 417ms (Views: 7.0ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users/new" for ::1 at 2026-05-03 01:36:46 +0800
+Processing by UsersController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering users/new.html.erb within layouts/application
+  Rendered users/_form.html.erb (Duration: 9.1ms | GC: 0.0ms)
+  Rendered users/new.html.erb within layouts/application (Duration: 16.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 17.9ms | GC: 0.0ms)
+Completed 200 OK in 435ms (Views: 18.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/users/5" for ::1 at 2026-05-03 01:36:53 +0800
+Processing by UsersController#show as HTML
+  Parameters: {"id" => "5"}
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 5 LIMIT 1 /*action='show',application='Dentivara',controller='users'*/[0m
+  ↳ app/controllers/users_controller.rb:63:in 'UsersController#set_user'
+  Rendering layout layouts/application.html.erb
+  Rendering users/show.html.erb within layouts/application
+  Rendered users/_user.html.erb (Duration: 0.1ms | GC: 0.0ms)
+  Rendered users/show.html.erb within layouts/application (Duration: 1.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.6ms | GC: 0.0ms)
+Completed 200 OK in 456ms (Views: 4.1ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Writing tailwind-0778e6aa.css
+Writing application-b9ac911a.css
+Writing application-bfcdf840.js
+Writing controllers/application-3affb389.js
+Writing controllers/hello_controller-708796bd.js
+Writing controllers/index-ee64e1f1.js
+Writing stimulus.min-2395e199.js.map
+Writing stimulus-importmap-autoloader-64cc03e1.js
+Writing stimulus.min-4b1e420e.js
+Writing stimulus-d59b3b7f.js
+Writing stimulus-loading-1fc53fe7.js
+Writing stimulus-autoloader-9d447422.js
+Writing turbo-736fb387.js
+Writing turbo.min-9fd88cd5.js
+Writing turbo.min-5eb167c2.js.map
+Writing trix-4b540cb5.js
+Writing actiontext-a4ee937e.js
+Writing actiontext.esm-f1c04d34.js
+Writing trix-65afdb1d.css
+Writing actioncable.esm-e0ec9819.js
+Writing actioncable-ac25813f.js
+Writing action_cable-5212cfee.js
+Writing activestorage.esm-f2909226.js
+Writing activestorage-32201f68.js
+Writing rails-ujs-20eaf715.js
+Writing rails-ujs.esm-e925103b.js
+Writing tailwind-0778e6aa.css
+Writing application-b9ac911a.css
+Writing application-bfcdf840.js
+Writing controllers/application-3affb389.js
+Writing controllers/hello_controller-708796bd.js
+Writing controllers/index-ee64e1f1.js
+Writing stimulus.min-2395e199.js.map
+Writing stimulus-importmap-autoloader-64cc03e1.js
+Writing stimulus.min-4b1e420e.js
+Writing stimulus-d59b3b7f.js
+Writing stimulus-loading-1fc53fe7.js
+Writing stimulus-autoloader-9d447422.js
+Writing turbo-736fb387.js
+Writing turbo.min-9fd88cd5.js
+Writing turbo.min-5eb167c2.js.map
+Writing trix-4b540cb5.js
+Writing actiontext-a4ee937e.js
+Writing actiontext.esm-f1c04d34.js
+Writing trix-65afdb1d.css
+Writing actioncable.esm-e0ec9819.js
+Writing actioncable-ac25813f.js
+Writing action_cable-5212cfee.js
+Writing activestorage.esm-f2909226.js
+Writing activestorage-32201f68.js
+Writing rails-ujs-20eaf715.js
+Writing rails-ujs.esm-e925103b.js
+Started GET "/" for ::1 at 2026-05-04 21:04:18 +0800
+  [1m[36mActiveRecord::SchemaMigration Load (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Dentivara'*/[0m
+Processing by HomeController#index as HTML
+  [1m[36mPatient Count (8.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "patients" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:4:in 'HomeController#index'
+  [1m[36mAppointment Count (1.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "appointments" WHERE "appointments"."starts_at" BETWEEN '2026-05-04 00:00:00' AND '2026-05-04 23:59:59.999999' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:5:in 'HomeController#index'
+  [1m[36mTreatmentRecord Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "treatment_records" WHERE "treatment_records"."performed_on" BETWEEN '2026-05-01' AND '2026-05-31' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:6:in 'HomeController#index'
+  [1m[36mInvoice Sum (0.8ms)[0m  [1m[34mSELECT SUM("invoices"."balance_amount") FROM "invoices" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:7:in 'HomeController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.4ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" WHERE "appointments"."starts_at" >= '2026-05-04 13:04:19.132523' ORDER BY "appointments"."starts_at" ASC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:39
+  [1m[36mInvoice Load (0.5ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" ORDER BY "invoices"."updated_at" DESC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:65
+  Rendered home/index.html.erb within layouts/application (Duration: 27.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 100.1ms | GC: 0.0ms)
+Completed 200 OK in 750ms (Views: 112.8ms | ActiveRecord: 20.2ms (6 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/patients" for ::1 at 2026-05-04 21:04:27 +0800
+Processing by PatientsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering patients/index.html.erb within layouts/application
+  [1m[36mPatient Load (0.6ms)[0m  [1m[34mSELECT "patients".* FROM "patients" /*action='index',application='Dentivara',controller='patients'*/[0m
+  ↳ app/views/patients/index.html.erb:9
+  Rendered patients/index.html.erb within layouts/application (Duration: 5.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 54.5ms | GC: 0.0ms)
+Completed 200 OK in 565ms (Views: 55.7ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/patients/new" for ::1 at 2026-05-04 21:04:31 +0800
+Processing by PatientsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering patients/new.html.erb within layouts/application
+  Rendered patients/_form.html.erb (Duration: 28.4ms | GC: 0.0ms)
+  Rendered patients/new.html.erb within layouts/application (Duration: 35.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 36.5ms | GC: 0.0ms)
+Completed 200 OK in 528ms (Views: 37.1ms | ActiveRecord: 2.7ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/patients" for ::1 at 2026-05-04 21:04:38 +0800
+Processing by PatientsController#index as HTML
+Started GET "/appointments" for ::1 at 2026-05-04 21:04:39 +0800
+  Rendering layout layouts/application.html.erb
+  Rendering patients/index.html.erb within layouts/application
+  [1m[36mPatient Load (0.4ms)[0m  [1m[34mSELECT "patients".* FROM "patients" /*action='index',application='Dentivara',controller='patients'*/[0m
+  ↳ app/views/patients/index.html.erb:9
+  Rendered patients/index.html.erb within layouts/application (Duration: 2.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.4ms | GC: 0.0ms)
+Completed 200 OK in 333ms (Views: 4.6ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by AppointmentsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering appointments/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.3ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" /*action='index',application='Dentivara',controller='appointments'*/[0m
+  ↳ app/views/appointments/index.html.erb:9
+  Rendered appointments/index.html.erb within layouts/application (Duration: 3.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.3ms | GC: 0.0ms)
+Completed 200 OK in 434ms (Views: 5.7ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/appointments" for ::1 at 2026-05-04 21:04:40 +0800
+Processing by AppointmentsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering appointments/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.4ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" /*action='index',application='Dentivara',controller='appointments'*/[0m
+  ↳ app/views/appointments/index.html.erb:9
+  Rendered appointments/index.html.erb within layouts/application (Duration: 1.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.0ms | GC: 0.0ms)
+Completed 200 OK in 443ms (Views: 3.3ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/appointments/new" for ::1 at 2026-05-04 21:04:42 +0800
+Processing by AppointmentsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering appointments/new.html.erb within layouts/application
+  Rendered appointments/_form.html.erb (Duration: 4.5ms | GC: 0.0ms)
+  Rendered appointments/new.html.erb within layouts/application (Duration: 18.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 20.5ms | GC: 0.0ms)
+Completed 200 OK in 569ms (Views: 21.2ms | ActiveRecord: 0.8ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/appointments" for ::1 at 2026-05-04 21:04:43 +0800
+Processing by AppointmentsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering appointments/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.5ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" /*action='index',application='Dentivara',controller='appointments'*/[0m
+  ↳ app/views/appointments/index.html.erb:9
+  Rendered appointments/index.html.erb within layouts/application (Duration: 1.9ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.1ms | GC: 0.0ms)
+Completed 200 OK in 477ms (Views: 3.1ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/notifications" for ::1 at 2026-05-04 21:04:45 +0800
+Processing by NotificationsController#index as HTML
+Started GET "/payments" for ::1 at 2026-05-04 21:04:46 +0800
+Started GET "/invoices" for ::1 at 2026-05-04 21:04:46 +0800
+Processing by PaymentsController#index as HTML
+Processing by InvoicesController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering notifications/index.html.erb within layouts/application
+  [1m[36mNotification Load (0.4ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" /*action='index',application='Dentivara',controller='notifications'*/[0m
+  ↳ app/views/notifications/index.html.erb:9
+  Rendered notifications/index.html.erb within layouts/application (Duration: 3.9ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.6ms | GC: 0.0ms)
+Completed 200 OK in 524ms (Views: 7.4ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+  Rendering layout layouts/application.html.erb
+  Rendering payments/index.html.erb within layouts/application
+  [1m[36mPayment Load (0.4ms)[0m  [1m[34mSELECT "payments".* FROM "payments" /*action='index',application='Dentivara',controller='payments'*/[0m
+  ↳ app/views/payments/index.html.erb:9
+  Rendered payments/index.html.erb within layouts/application (Duration: 3.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.0ms | GC: 0.0ms)
+Completed 200 OK in 514ms (Views: 6.5ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+  Rendering layout layouts/application.html.erb
+  Rendering invoices/index.html.erb within layouts/application
+  [1m[36mInvoice Load (1.0ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" /*action='index',application='Dentivara',controller='invoices'*/[0m
+  ↳ app/views/invoices/index.html.erb:9
+  Rendered invoices/index.html.erb within layouts/application (Duration: 29.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 32.2ms | GC: 0.0ms)
+Completed 200 OK in 591ms (Views: 34.4ms | ActiveRecord: 1.0ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/notifications" for ::1 at 2026-05-04 21:04:47 +0800
+Started GET "/payments" for ::1 at 2026-05-04 21:04:47 +0800
+Processing by NotificationsController#index as HTML
+Processing by PaymentsController#index as HTML
+Started GET "/users" for ::1 at 2026-05-04 21:04:47 +0800
+Processing by UsersController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering notifications/index.html.erb within layouts/application
+  [1m[36mNotification Load (0.4ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" /*action='index',application='Dentivara',controller='notifications'*/[0m
+  ↳ app/views/notifications/index.html.erb:9
+  Rendered notifications/index.html.erb within layouts/application (Duration: 15.8ms | GC: 13.1ms)
+  Rendered layout layouts/application.html.erb (Duration: 18.8ms | GC: 13.1ms)
+Completed 200 OK in 532ms (Views: 19.0ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 13.1ms)
+
+
+  Rendering layout layouts/application.html.erb
+  Rendering payments/index.html.erb within layouts/application
+  [1m[36mPayment Load (0.4ms)[0m  [1m[34mSELECT "payments".* FROM "payments" /*action='index',application='Dentivara',controller='payments'*/[0m
+  ↳ app/views/payments/index.html.erb:9
+  Rendered payments/index.html.erb within layouts/application (Duration: 2.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.6ms | GC: 0.0ms)
+Completed 200 OK in 523ms (Views: 3.7ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 13.1ms)
+
+
+  Rendering layout layouts/application.html.erb
+  Rendering users/index.html.erb within layouts/application
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" /*action='index',application='Dentivara',controller='users'*/[0m
+  ↳ app/views/users/index.html.erb:9
+  Rendered users/_user.html.erb (Duration: 1.7ms | GC: 0.0ms)
+  Rendered users/_user.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered users/_user.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered users/_user.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered users/_user.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered users/_user.html.erb (Duration: 0.0ms | GC: 0.0ms)
+  Rendered users/index.html.erb within layouts/application (Duration: 20.9ms | GC: 0.4ms)
+  Rendered layout layouts/application.html.erb (Duration: 22.2ms | GC: 0.4ms)
+Completed 200 OK in 577ms (Views: 22.5ms | ActiveRecord: 1.4ms (1 query, 0 cached) | GC: 14.0ms)
+
+
+Started GET "/treatment_records" for ::1 at 2026-05-04 21:04:48 +0800
+Processing by TreatmentRecordsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering treatment_records/index.html.erb within layouts/application
+  [1m[36mTreatmentRecord Load (0.4ms)[0m  [1m[34mSELECT "treatment_records".* FROM "treatment_records" /*action='index',application='Dentivara',controller='treatment_records'*/[0m
+  ↳ app/views/treatment_records/index.html.erb:9
+  Rendered treatment_records/index.html.erb within layouts/application (Duration: 3.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.7ms | GC: 0.3ms)
+Completed 200 OK in 437ms (Views: 6.1ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/" for ::1 at 2026-05-04 21:04:50 +0800
+Processing by HomeController#index as HTML
+  [1m[36mPatient Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "patients" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:4:in 'HomeController#index'
+  [1m[36mAppointment Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "appointments" WHERE "appointments"."starts_at" BETWEEN '2026-05-04 00:00:00' AND '2026-05-04 23:59:59.999999' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:5:in 'HomeController#index'
+  [1m[36mTreatmentRecord Count (0.6ms)[0m  [1m[34mSELECT COUNT(*) FROM "treatment_records" WHERE "treatment_records"."performed_on" BETWEEN '2026-05-01' AND '2026-05-31' /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:6:in 'HomeController#index'
+  [1m[36mInvoice Sum (0.4ms)[0m  [1m[34mSELECT SUM("invoices"."balance_amount") FROM "invoices" /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/controllers/home_controller.rb:7:in 'HomeController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mAppointment Load (0.4ms)[0m  [1m[34mSELECT "appointments".* FROM "appointments" WHERE "appointments"."starts_at" >= '2026-05-04 13:04:51.368310' ORDER BY "appointments"."starts_at" ASC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:39
+  [1m[36mInvoice Load (1.8ms)[0m  [1m[34mSELECT "invoices".* FROM "invoices" ORDER BY "invoices"."updated_at" DESC LIMIT 8 /*action='index',application='Dentivara',controller='home'*/[0m
+  ↳ app/views/home/index.html.erb:65
+  Rendered home/index.html.erb within layouts/application (Duration: 15.3ms | GC: 0.5ms)
+  Rendered layout layouts/application.html.erb (Duration: 21.8ms | GC: 0.5ms)
+Completed 200 OK in 505ms (Views: 23.4ms | ActiveRecord: 3.8ms (6 queries, 0 cached) | GC: 0.5ms)
+
+

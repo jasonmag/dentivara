@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Dentivara" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="app-shell">
+    <div class="flex min-h-screen">
+      <aside class="app-sidebar">
+        <h1 class="mb-6 text-lg font-extrabold text-[#003e6b]">Dentivara Clinic OS</h1>
+        <nav class="space-y-1 text-sm font-semibold text-slate-700">
+          <%= link_to "Dashboard", root_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
+          <%= link_to "Patients", patients_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
+          <%= link_to "Appointments", appointments_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
+          <%= link_to "Treatments", treatment_records_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
+          <%= link_to "Invoices", invoices_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
+          <%= link_to "Payments", payments_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
+          <%= link_to "Notifications", notifications_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
+          <%= link_to "Users", users_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
+        </nav>
+      </aside>
+
+      <main class="app-main">
+        <div class="mb-4 flex items-center justify-between lg:hidden">
+          <h1 class="text-lg font-extrabold text-[#003e6b]">Dentivara Clinic OS</h1>
+          <%= link_to "Dashboard", root_path, class: "btn btn-secondary" %>
+        </div>
+
+        <% if notice.present? %>
+          <p class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm text-blue-900"><%= notice %></p>
+        <% end %>
+        <% if alert.present? %>
+          <p class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-900"><%= alert %></p>
+        <% end %>
+        <%= yield %>
+      </main>
+    </div>
+  </body>
+</html>

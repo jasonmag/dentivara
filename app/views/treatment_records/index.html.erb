@@ -1,0 +1,17 @@
+<% content_for :title, "Treatment records" %>
+
+<div class="page-header">
+  <h1 class="page-title">Treatment records</h1>
+  <%= link_to "New treatment record", new_treatment_record_path, class: "btn btn-primary" %>
+</div>
+
+<div class="grid gap-4 xl:grid-cols-2">
+  <% @treatment_records.each do |treatment_record| %>
+    <article class="app-card">
+      <%= render treatment_record %>
+      <div class="mt-4">
+        <%= link_to "Show this treatment record", treatment_record, class: "btn btn-secondary" %>
+      </div>
+    </article>
+  <% end %>
+</div>

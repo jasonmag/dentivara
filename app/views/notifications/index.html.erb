@@ -1,0 +1,17 @@
+<% content_for :title, "Notifications" %>
+
+<div class="page-header">
+  <h1 class="page-title">Notifications</h1>
+  <%= link_to "New notification", new_notification_path, class: "btn btn-primary" %>
+</div>
+
+<div class="grid gap-4 xl:grid-cols-2">
+  <% @notifications.each do |notification| %>
+    <article class="app-card">
+      <%= render notification %>
+      <div class="mt-4">
+        <%= link_to "Show this notification", notification, class: "btn btn-secondary" %>
+      </div>
+    </article>
+  <% end %>
+</div>

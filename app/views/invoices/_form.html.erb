@@ -1,0 +1,57 @@
+<%= form_with(model: invoice) do |form| %>
+  <% if invoice.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(invoice.errors.count, "error") %> prohibited this invoice from being saved:</h2>
+
+      <ul>
+        <% invoice.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :patient_id, style: "display: block" %>
+    <%= form.text_field :patient_id %>
+  </div>
+
+  <div>
+    <%= form.label :treatment_record_id, style: "display: block" %>
+    <%= form.text_field :treatment_record_id %>
+  </div>
+
+  <div>
+    <%= form.label :status, style: "display: block" %>
+    <%= form.text_field :status %>
+  </div>
+
+  <div>
+    <%= form.label :total_amount, style: "display: block" %>
+    <%= form.text_field :total_amount %>
+  </div>
+
+  <div>
+    <%= form.label :balance_amount, style: "display: block" %>
+    <%= form.text_field :balance_amount %>
+  </div>
+
+  <div>
+    <%= form.label :issued_on, style: "display: block" %>
+    <%= form.date_field :issued_on %>
+  </div>
+
+  <div>
+    <%= form.label :approved_by_dentist_at, style: "display: block" %>
+    <%= form.datetime_field :approved_by_dentist_at %>
+  </div>
+
+  <div>
+    <%= form.label :approved_by_admin_at, style: "display: block" %>
+    <%= form.datetime_field :approved_by_admin_at %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

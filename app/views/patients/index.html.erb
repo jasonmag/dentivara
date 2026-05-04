@@ -1,0 +1,17 @@
+<% content_for :title, "Patients" %>
+
+<div class="page-header">
+  <h1 class="page-title">Patients</h1>
+  <%= link_to "New patient", new_patient_path, class: "btn btn-primary" %>
+</div>
+
+<div class="grid gap-4 xl:grid-cols-2">
+  <% @patients.each do |patient| %>
+    <article class="app-card">
+      <%= render patient %>
+      <div class="mt-4">
+        <%= link_to "Show this patient", patient, class: "btn btn-secondary" %>
+      </div>
+    </article>
+  <% end %>
+</div>

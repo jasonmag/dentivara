@@ -1,0 +1,52 @@
+<%= form_with(model: treatment_record) do |form| %>
+  <% if treatment_record.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(treatment_record.errors.count, "error") %> prohibited this treatment_record from being saved:</h2>
+
+      <ul>
+        <% treatment_record.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :patient_id, style: "display: block" %>
+    <%= form.text_field :patient_id %>
+  </div>
+
+  <div>
+    <%= form.label :user_id, style: "display: block" %>
+    <%= form.text_field :user_id %>
+  </div>
+
+  <div>
+    <%= form.label :appointment_id, style: "display: block" %>
+    <%= form.text_field :appointment_id %>
+  </div>
+
+  <div>
+    <%= form.label :service_type, style: "display: block" %>
+    <%= form.text_field :service_type %>
+  </div>
+
+  <div>
+    <%= form.label :clinical_notes, style: "display: block" %>
+    <%= form.textarea :clinical_notes %>
+  </div>
+
+  <div>
+    <%= form.label :cost, style: "display: block" %>
+    <%= form.text_field :cost %>
+  </div>
+
+  <div>
+    <%= form.label :performed_on, style: "display: block" %>
+    <%= form.date_field :performed_on %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

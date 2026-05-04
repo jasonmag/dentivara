@@ -1,0 +1,17 @@
+<% content_for :title, "Users" %>
+
+<div class="page-header">
+  <h1 class="page-title">Users</h1>
+  <%= link_to "New user", new_user_path, class: "btn btn-primary" %>
+</div>
+
+<div class="grid gap-4 xl:grid-cols-2">
+  <% @users.each do |user| %>
+    <article class="app-card">
+      <%= render user %>
+      <div class="mt-4">
+        <%= link_to "Show this user", user, class: "btn btn-secondary" %>
+      </div>
+    </article>
+  <% end %>
+</div>

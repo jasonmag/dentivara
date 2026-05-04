@@ -1,0 +1,17 @@
+<% content_for :title, "Appointments" %>
+
+<div class="page-header">
+  <h1 class="page-title">Appointments</h1>
+  <%= link_to "New appointment", new_appointment_path, class: "btn btn-primary" %>
+</div>
+
+<div class="grid gap-4 xl:grid-cols-2">
+  <% @appointments.each do |appointment| %>
+    <article class="app-card">
+      <%= render appointment %>
+      <div class="mt-4">
+        <%= link_to "Show this appointment", appointment, class: "btn btn-secondary" %>
+      </div>
+    </article>
+  <% end %>
+</div>

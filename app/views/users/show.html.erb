@@ -1,0 +1,11 @@
+<% content_for :title, "User" %>
+
+<div class="app-card">
+  <%= render @user %>
+
+  <div class="mt-6 flex flex-wrap gap-2">
+    <%= link_to "Edit this user", edit_user_path(@user), class: "btn btn-primary" %>
+    <%= link_to "Back to users", users_path, class: "btn btn-secondary" %>
+    <%= button_to "Destroy this user", @user, method: :delete, class: "btn btn-danger" %>
+  </div>
+</div>

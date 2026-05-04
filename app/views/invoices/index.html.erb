@@ -1,0 +1,17 @@
+<% content_for :title, "Invoices" %>
+
+<div class="page-header">
+  <h1 class="page-title">Invoices</h1>
+  <%= link_to "New invoice", new_invoice_path, class: "btn btn-primary" %>
+</div>
+
+<div class="grid gap-4 xl:grid-cols-2">
+  <% @invoices.each do |invoice| %>
+    <article class="app-card">
+      <%= render invoice %>
+      <div class="mt-4">
+        <%= link_to "Show this invoice", invoice, class: "btn btn-secondary" %>
+      </div>
+    </article>
+  <% end %>
+</div>

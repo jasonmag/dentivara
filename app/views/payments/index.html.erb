@@ -1,0 +1,17 @@
+<% content_for :title, "Payments" %>
+
+<div class="page-header">
+  <h1 class="page-title">Payments</h1>
+  <%= link_to "New payment", new_payment_path, class: "btn btn-primary" %>
+</div>
+
+<div class="grid gap-4 xl:grid-cols-2">
+  <% @payments.each do |payment| %>
+    <article class="app-card">
+      <%= render payment %>
+      <div class="mt-4">
+        <%= link_to "Show this payment", payment, class: "btn btn-secondary" %>
+      </div>
+    </article>
+  <% end %>
+</div>
