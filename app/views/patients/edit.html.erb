@@ -1,14 +1,14 @@
-<% content_for :title, "Editing patient" %>
+<% content_for :title, "Edit Patient" %>
 
-<div class="page-header">
-  <h1 class="page-title">Editing patient</h1>
-  <%= link_to "Back to patients", patients_path, class: "btn btn-secondary" %>
-</div>
-
-<div class="app-card">
-  <%= render "form", patient: @patient %>
-
-  <div class="mt-4">
-    <%= link_to "Show this patient", @patient, class: "btn btn-secondary" %>
+<div class="space-y-4">
+  <div class="page-header">
+    <h1 class="page-title">Edit Patient</h1>
+    <%= link_to "Back to patients", patients_path, class: "btn btn-secondary" %>
   </div>
+
+  <div class="app-card">
+    <%= render "form", patient: @patient %>
+  </div>
+
+  <%= link_to "Show patient", @patient, class: "btn btn-secondary" %>
 </div>

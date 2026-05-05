@@ -1,4 +1,6 @@
 class Payment < ApplicationRecord
+  include Auditable
+
   belongs_to :invoice
 
   validates :amount, numericality: { greater_than: 0 }

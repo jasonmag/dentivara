@@ -1,6 +1,10 @@
 class User < ApplicationRecord
+  include Auditable
+
   has_many :appointments, dependent: :destroy
   has_many :treatment_records, dependent: :destroy
+  has_one :patient, dependent: :nullify
+  has_secure_password validations: false
 
   enum :role, {
     clinic_owner: 0,
@@ -13,4 +17,5 @@ class User < ApplicationRecord
 
   validates :name, :email, :role, presence: true
   validates :email, uniqueness: true
+  validates :password, length: { minimum: 8 }, allow_nil: true
 end

@@ -1,42 +1,11 @@
-<div id="<%= dom_id appointment %>">
-  <p>
-    <strong>Patient:</strong>
-    <%= appointment.patient_id %>
-  </p>
-
-  <p>
-    <strong>User:</strong>
-    <%= appointment.user_id %>
-  </p>
-
-  <p>
-    <strong>Source:</strong>
-    <%= appointment.source %>
-  </p>
-
-  <p>
-    <strong>Booking type:</strong>
-    <%= appointment.booking_type %>
-  </p>
-
-  <p>
-    <strong>Starts at:</strong>
-    <%= appointment.starts_at %>
-  </p>
-
-  <p>
-    <strong>Ends at:</strong>
-    <%= appointment.ends_at %>
-  </p>
-
-  <p>
-    <strong>Status:</strong>
-    <%= appointment.status %>
-  </p>
-
-  <p>
-    <strong>Notes:</strong>
-    <%= appointment.notes %>
-  </p>
-
+<div id="<%= dom_id appointment %>" class="kv-grid">
+  <div class="kv-item"><p class="kv-label">Patient</p><p class="kv-value"><%= appointment.patient.full_name %></p></div>
+  <div class="kv-item"><p class="kv-label">Provider</p><p class="kv-value"><%= appointment.user.name %></p></div>
+  <div class="kv-item"><p class="kv-label">Source</p><p class="kv-value"><%= appointment.source.humanize %></p></div>
+  <div class="kv-item"><p class="kv-label">Booking Type</p><p class="kv-value"><%= appointment.booking_type.humanize %></p></div>
+  <div class="kv-item"><p class="kv-label">Starts At</p><p class="kv-value"><%= l(appointment.starts_at, format: :long) %></p></div>
+  <div class="kv-item"><p class="kv-label">Ends At</p><p class="kv-value"><%= l(appointment.ends_at, format: :long) %></p></div>
+  <div class="kv-item"><p class="kv-label">Status</p><p class="kv-value"><%= appointment.status.humanize %></p></div>
+  <div class="kv-item"><p class="kv-label">Operatory</p><p class="kv-value"><%= appointment.operatory.presence || "N/A" %></p></div>
+  <div class="kv-item sm:col-span-2"><p class="kv-label">Notes</p><p class="kv-value"><%= appointment.notes.presence || 'N/A' %></p></div>
 </div>

@@ -1,13 +1,16 @@
 class TreatmentRecordsController < ApplicationController
+  include AccessTrackable
+
   before_action :set_treatment_record, only: %i[ show edit update destroy ]
 
   # GET /treatment_records or /treatment_records.json
   def index
-    @treatment_records = TreatmentRecord.all
+    @treatment_records = TreatmentRecord.includes(:patient, :user, :appointment).order(performed_on: :desc)
   end
 
   # GET /treatment_records/1 or /treatment_records/1.json
   def show
+    track_access!(resource: @treatment_record, action: "view_treatment_record")
   end
 
   # GET /treatment_records/new
@@ -65,6 +68,6 @@ class TreatmentRecordsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def treatment_record_params
-      params.expect(treatment_record: [ :patient_id, :user_id, :appointment_id, :service_type, :clinical_notes, :cost, :performed_on ])
+      params.expect(treatment_record: [ :patient_id, :user_id, :appointment_id, :service_type, :clinical_notes, :cost, :performed_on, clinical_files: [] ])
     end
 end

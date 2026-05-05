@@ -3,7 +3,12 @@ class AppointmentsController < ApplicationController
 
   # GET /appointments or /appointments.json
   def index
-    @appointments = Appointment.all
+    @appointments = Appointment.includes(:patient, :user).order(:starts_at)
+    @week_start = Time.zone.today.beginning_of_week(:monday)
+    @week_end = @week_start + 4.days
+    @weekly_appointments = Appointment.includes(:patient, :user)
+                                      .where(starts_at: @week_start.beginning_of_day..@week_end.end_of_day)
+                                      .order(:starts_at)
   end
 
   # GET /appointments/1 or /appointments/1.json
@@ -65,6 +70,6 @@ class AppointmentsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def appointment_params
-      params.expect(appointment: [ :patient_id, :user_id, :source, :booking_type, :starts_at, :ends_at, :status, :notes ])
+      params.expect(appointment: [ :patient_id, :user_id, :source, :booking_type, :starts_at, :ends_at, :status, :operatory, :notes ])
     end
 end

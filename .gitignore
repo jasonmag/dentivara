@@ -1,1 +1,56 @@
-.bundle_home/
+# Bundler
+/.bundle
+/.bundle_home
+/vendor/bundle
+
+# Logs and runtime files
+/log/*
+!/log/.keep
+/tmp/*
+!/tmp/.keep
+!/tmp/pids/
+/tmp/pids/*
+!/tmp/pids/.keep
+
+# Database files
+/storage/*.sqlite3
+/storage/*.sqlite3-shm
+/storage/*.sqlite3-wal
+/db/*.sqlite3
+/db/*.sqlite3-shm
+/db/*.sqlite3-wal
+
+# Storage and uploads
+/storage/*
+!/storage/.keep
+/public/system/*
+/public/uploads/*
+
+# Rails generated assets
+/public/assets
+
+# Node / Yarn
+/node_modules
+/yarn-error.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment and credentials
+.env
+.env.*
+!.env.example
+/config/master.key
+
+# Editor and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Test and coverage output
+/coverage
+.byebug_history

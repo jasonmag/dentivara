@@ -1,42 +1,10 @@
-<div id="<%= dom_id invoice %>">
-  <p>
-    <strong>Patient:</strong>
-    <%= invoice.patient_id %>
-  </p>
-
-  <p>
-    <strong>Treatment record:</strong>
-    <%= invoice.treatment_record_id %>
-  </p>
-
-  <p>
-    <strong>Status:</strong>
-    <%= invoice.status %>
-  </p>
-
-  <p>
-    <strong>Total amount:</strong>
-    <%= invoice.total_amount %>
-  </p>
-
-  <p>
-    <strong>Balance amount:</strong>
-    <%= invoice.balance_amount %>
-  </p>
-
-  <p>
-    <strong>Issued on:</strong>
-    <%= invoice.issued_on %>
-  </p>
-
-  <p>
-    <strong>Approved by dentist at:</strong>
-    <%= invoice.approved_by_dentist_at %>
-  </p>
-
-  <p>
-    <strong>Approved by admin at:</strong>
-    <%= invoice.approved_by_admin_at %>
-  </p>
-
+<div id="<%= dom_id invoice %>" class="kv-grid">
+  <div class="kv-item"><p class="kv-label">Patient</p><p class="kv-value"><%= invoice.patient.full_name %></p></div>
+  <div class="kv-item"><p class="kv-label">Treatment Record</p><p class="kv-value">#<%= invoice.treatment_record_id %></p></div>
+  <div class="kv-item"><p class="kv-label">Status</p><p class="kv-value"><%= invoice.status.humanize %></p></div>
+  <div class="kv-item"><p class="kv-label">Issued On</p><p class="kv-value"><%= invoice.issued_on.present? ? l(invoice.issued_on, format: :long) : 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Total Amount</p><p class="kv-value"><%= number_to_currency(invoice.total_amount) %></p></div>
+  <div class="kv-item"><p class="kv-label">Balance Amount</p><p class="kv-value"><%= number_to_currency(invoice.balance_amount) %></p></div>
+  <div class="kv-item"><p class="kv-label">Dentist Approval</p><p class="kv-value"><%= invoice.approved_by_dentist_at.present? ? l(invoice.approved_by_dentist_at, format: :long) : 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Admin Approval</p><p class="kv-value"><%= invoice.approved_by_admin_at.present? ? l(invoice.approved_by_admin_at, format: :long) : 'N/A' %></p></div>
 </div>

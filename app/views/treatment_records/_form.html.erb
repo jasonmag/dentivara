@@ -1,9 +1,8 @@
 <%= form_with(model: treatment_record) do |form| %>
   <% if treatment_record.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(treatment_record.errors.count, "error") %> prohibited this treatment_record from being saved:</h2>
-
-      <ul>
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+      <p class="font-semibold"><%= pluralize(treatment_record.errors.count, "error") %> prevented this treatment record from being saved:</p>
+      <ul class="mt-2 list-disc pl-5">
         <% treatment_record.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,42 +10,42 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :patient_id, style: "display: block" %>
-    <%= form.text_field :patient_id %>
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div>
+      <%= form.label :patient_id, class: "input-label" %>
+      <%= form.collection_select :patient_id, Patient.order(:first_name), :id, :full_name, { prompt: "Select patient" }, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :user_id, class: "input-label" %>
+      <%= form.collection_select :user_id, User.order(:name), :id, :name, { prompt: "Select provider" }, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :appointment_id, class: "input-label" %>
+      <%= form.collection_select :appointment_id, Appointment.order(starts_at: :desc), :id, :id, { prompt: "Select appointment" }, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :service_type, class: "input-label" %>
+      <%= form.text_field :service_type, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :cost, class: "input-label" %>
+      <%= form.number_field :cost, step: 0.01, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :performed_on, class: "input-label" %>
+      <%= form.date_field :performed_on, class: "input-field" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :clinical_notes, class: "input-label" %>
+      <%= form.textarea :clinical_notes, class: "input-field" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :clinical_files, "Clinical Files (photos, charting, 2D/3D)", class: "input-label" %>
+      <%= form.file_field :clinical_files, multiple: true, direct_upload: true, class: "input-field" %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :user_id, style: "display: block" %>
-    <%= form.text_field :user_id %>
-  </div>
-
-  <div>
-    <%= form.label :appointment_id, style: "display: block" %>
-    <%= form.text_field :appointment_id %>
-  </div>
-
-  <div>
-    <%= form.label :service_type, style: "display: block" %>
-    <%= form.text_field :service_type %>
-  </div>
-
-  <div>
-    <%= form.label :clinical_notes, style: "display: block" %>
-    <%= form.textarea :clinical_notes %>
-  </div>
-
-  <div>
-    <%= form.label :cost, style: "display: block" %>
-    <%= form.text_field :cost %>
-  </div>
-
-  <div>
-    <%= form.label :performed_on, style: "display: block" %>
-    <%= form.date_field :performed_on %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+  <div class="mt-4">
+    <%= form.submit class: "btn btn-primary" %>
   </div>
 <% end %>

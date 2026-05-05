@@ -1,0 +1,48 @@
+<% content_for :title, "Patient Portal" %>
+<div class="space-y-8">
+  <section class="flex items-end justify-between">
+    <div>
+      <h1 class="page-title">Patient Portal</h1>
+      <p class="serene-subheading mt-1">Welcome, <%= current_user.name %>.</p>
+    </div>
+    <%= link_to "Submit Intake Form", new_portal_intake_form_path, class: "btn btn-primary" %>
+  </section>
+
+  <section class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+    <article class="serene-card p-6">
+      <h2 class="mb-3 font-serif text-xl text-stone-800">Upcoming Appointments</h2>
+      <div class="space-y-2">
+        <% @appointments.first(5).each do |appointment| %>
+          <div class="rounded-lg bg-stone-50 p-3">
+            <p class="text-sm font-semibold text-stone-800"><%= l(appointment.starts_at, format: :long) %></p>
+            <p class="text-xs text-stone-500"><%= appointment.booking_type.humanize %> - <%= appointment.status.humanize %></p>
+          </div>
+        <% end %>
+      </div>
+    </article>
+
+    <article class="serene-card p-6">
+      <h2 class="mb-3 font-serif text-xl text-stone-800">Billing</h2>
+      <div class="space-y-2">
+        <% @invoices.first(5).each do |invoice| %>
+          <div class="rounded-lg bg-stone-50 p-3">
+            <p class="text-sm font-semibold text-stone-800">Invoice #<%= invoice.id %></p>
+            <p class="text-xs text-stone-500">Balance: <%= number_to_currency(invoice.balance_amount) %></p>
+          </div>
+        <% end %>
+      </div>
+    </article>
+
+    <article class="serene-card p-6">
+      <h2 class="mb-3 font-serif text-xl text-stone-800">Notifications</h2>
+      <div class="space-y-2">
+        <% @notifications.first(5).each do |notification| %>
+          <div class="rounded-lg bg-stone-50 p-3">
+            <p class="text-sm text-stone-800"><%= notification.message %></p>
+            <p class="text-xs text-stone-500"><%= notification.category.humanize %></p>
+          </div>
+        <% end %>
+      </div>
+    </article>
+  </section>
+</div>

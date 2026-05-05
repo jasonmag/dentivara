@@ -2,53 +2,62 @@
 
 @theme {
   --font-sans: Manrope, "Segoe UI", sans-serif;
+  --font-serif: "Noto Serif", Georgia, serif;
 }
 
 @layer components {
-  .app-shell { @apply min-h-screen bg-[radial-gradient(circle_at_top_right,_#d3e4ff_0,_#fff9f0_45%,_#fff9f0_100%)] text-slate-900; }
-  .app-sidebar { @apply hidden w-64 flex-col border-r border-slate-200 bg-white/90 p-4 lg:flex; }
-  .app-main { @apply flex-1 px-4 py-6 sm:px-6 lg:px-8; }
-  .app-card { @apply rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_6px_24px_rgba(15,23,42,0.05)]; }
-  .page-header { @apply mb-4 flex items-center justify-between gap-3; }
-  .page-title { @apply text-2xl font-bold tracking-tight text-[#003e6b]; }
-  .btn { @apply inline-flex items-center rounded-lg px-3 py-2 text-sm font-semibold transition; }
-  .btn-primary { @apply bg-[#2b6cb0] text-white hover:bg-[#235a95]; }
-  .btn-secondary { @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50; }
+  .app-shell { @apply min-h-dvh bg-[#faf9f7] text-[#1a1c1b] antialiased; }
+  .app-layout { @apply flex min-h-dvh; }
+  .app-sidebar { @apply hidden h-dvh w-72 shrink-0 flex-col overflow-y-auto border-r border-stone-200 bg-[#F8F7F2] p-6 lg:flex; }
+  .app-main { @apply min-h-dvh w-full flex-1 overflow-x-hidden; }
+  .app-main-header { @apply sticky top-0 z-30 flex h-16 items-center justify-between border-b border-stone-100 bg-[#FDFCFB]/90 px-8 backdrop-blur-md shadow-[0_4px_20px_-4px_rgba(139,168,142,0.08)]; }
+  .app-main-body { @apply mx-auto w-full max-w-[1400px] p-4 sm:p-8 lg:p-10; }
+  .app-brand-title { @apply font-serif text-xl font-semibold tracking-tight text-stone-800; }
+  .app-brand-subtitle { @apply text-[10px] font-bold uppercase tracking-widest text-stone-500; }
+
+  .app-nav-link { @apply flex items-center gap-3 rounded-xl px-4 py-3 text-stone-500 transition-all hover:bg-stone-100/50 hover:text-stone-800; }
+  .app-nav-link.is-active { @apply bg-white font-semibold text-[#8BA88E] shadow-sm; }
+  .app-cta-button { @apply flex w-full items-center justify-center gap-2 rounded-xl bg-[#8BA88E] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-[#8BA88E]/20 transition hover:bg-[#7a967d]; }
+
+  .serene-card { @apply rounded-xl border border-stone-100 bg-white shadow-[0_4px_20px_-4px_rgba(139,168,142,0.08)]; }
+  .serene-kpi { @apply rounded-xl border border-stone-100 bg-white p-6; }
+  .serene-heading { @apply font-serif text-3xl text-stone-800; }
+  .serene-subheading { @apply text-sm text-stone-500; }
+
+  .btn { @apply inline-flex items-center rounded-xl px-4 py-2 text-sm font-semibold transition; }
+  .btn-primary { @apply bg-[#8BA88E] text-white hover:bg-[#7a967d]; }
+  .btn-secondary { @apply border border-stone-200 bg-white text-stone-700 hover:bg-stone-50; }
   .btn-danger { @apply border border-red-200 bg-red-50 text-red-700 hover:bg-red-100; }
-  .input-label { @apply mb-1 block text-sm font-semibold text-slate-600; }
-  .input-field { @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-[#2b6cb0] focus:border-[#2b6cb0] focus:ring-2; }
-  .form-grid { @apply grid grid-cols-1 gap-4 md:grid-cols-2; }
-  .table-shell { @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_6px_24px_rgba(15,23,42,0.05)]; }
+
+  .app-card { @apply rounded-xl border border-stone-200 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(139,168,142,0.08)]; }
+  .page-header { @apply mb-4 flex items-center justify-between gap-3; }
+  .page-title { @apply font-serif text-2xl text-stone-800; }
+
+  .table-shell { @apply overflow-hidden rounded-xl border border-stone-100 bg-white; }
   .data-table { @apply min-w-full text-sm; }
-  .data-table thead { @apply bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500; }
-  .data-table th, .data-table td { @apply border-b border-slate-100 px-4 py-3 align-top; }
-  .data-table tbody tr { @apply hover:bg-slate-50; }
+  .data-table thead { @apply bg-stone-50 text-left text-xs font-semibold uppercase tracking-wide text-stone-500; }
+  .data-table th, .data-table td { @apply border-b border-stone-100 px-4 py-3 align-top; }
+  .data-table tbody tr { @apply hover:bg-stone-50/70; }
   .kv-grid { @apply grid grid-cols-1 gap-3 sm:grid-cols-2; }
-  .kv-item { @apply rounded-xl border border-slate-100 bg-slate-50 p-3; }
-  .kv-label { @apply text-xs font-semibold uppercase tracking-wide text-slate-500; }
-  .kv-value { @apply mt-1 text-sm text-slate-800; }
+  .kv-item { @apply rounded-lg border border-stone-100 bg-stone-50 p-3; }
+  .kv-label { @apply text-xs font-semibold uppercase tracking-wide text-stone-500; }
+  .kv-value { @apply mt-1 text-sm text-stone-800; }
+
+  .input-label { @apply mb-1 block text-sm font-semibold text-stone-600; }
+  .input-field { @apply w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm outline-none ring-[#8BA88E] focus:border-[#8BA88E] focus:ring-2; }
 }
 
 @layer base {
+  .material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    vertical-align: middle;
+  }
+
   .app-card form > div { @apply mb-4; }
-  .app-card form label { @apply mb-1 block text-sm font-semibold text-slate-600; }
+  .app-card form label { @apply mb-1 block text-sm font-semibold text-stone-600; }
   .app-card form input,
   .app-card form textarea,
-  .app-card form select { @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-[#2b6cb0] focus:border-[#2b6cb0] focus:ring-2; }
+  .app-card form select { @apply w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm outline-none ring-[#8BA88E] focus:border-[#8BA88E] focus:ring-2; }
   .app-card form textarea { min-height: 110px; }
-  .app-card form input[type="submit"] { @apply inline-flex w-auto cursor-pointer items-center rounded-lg border-0 bg-[#2b6cb0] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#235a95]; }
-  .app-card > div[id^="appointment_"] p,
-  .app-card > div[id^="invoice_"] p,
-  .app-card > div[id^="notification_"] p,
-  .app-card > div[id^="patient_"] p,
-  .app-card > div[id^="payment_"] p,
-  .app-card > div[id^="treatment_record_"] p,
-  .app-card > div[id^="user_"] p { @apply mb-2 rounded-lg bg-slate-50 px-3 py-2 text-sm; }
-  .app-card > div[id^="appointment_"] strong,
-  .app-card > div[id^="invoice_"] strong,
-  .app-card > div[id^="notification_"] strong,
-  .app-card > div[id^="patient_"] strong,
-  .app-card > div[id^="payment_"] strong,
-  .app-card > div[id^="treatment_record_"] strong,
-  .app-card > div[id^="user_"] strong { @apply mr-1 text-slate-600; }
+  .app-card form input[type="submit"] { @apply inline-flex w-auto cursor-pointer items-center rounded-lg border-0 bg-[#8BA88E] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#7a967d]; }
 }

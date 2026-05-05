@@ -1,47 +1,9 @@
-<div id="<%= dom_id patient %>">
-  <p>
-    <strong>First name:</strong>
-    <%= patient.first_name %>
-  </p>
-
-  <p>
-    <strong>Last name:</strong>
-    <%= patient.last_name %>
-  </p>
-
-  <p>
-    <strong>Birth date:</strong>
-    <%= patient.birth_date %>
-  </p>
-
-  <p>
-    <strong>Phone:</strong>
-    <%= patient.phone %>
-  </p>
-
-  <p>
-    <strong>Email:</strong>
-    <%= patient.email %>
-  </p>
-
-  <p>
-    <strong>Emergency contact name:</strong>
-    <%= patient.emergency_contact_name %>
-  </p>
-
-  <p>
-    <strong>Emergency contact phone:</strong>
-    <%= patient.emergency_contact_phone %>
-  </p>
-
-  <p>
-    <strong>Medical history:</strong>
-    <%= patient.medical_history %>
-  </p>
-
-  <p>
-    <strong>Consented at:</strong>
-    <%= patient.consented_at %>
-  </p>
-
+<div id="<%= dom_id patient %>" class="kv-grid">
+  <div class="kv-item"><p class="kv-label">Full Name</p><p class="kv-value"><%= patient.full_name %></p></div>
+  <div class="kv-item"><p class="kv-label">Birth Date</p><p class="kv-value"><%= patient.birth_date.present? ? l(patient.birth_date, format: :long) : 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Phone</p><p class="kv-value"><%= patient.phone %></p></div>
+  <div class="kv-item"><p class="kv-label">Email</p><p class="kv-value"><%= patient.email.presence || 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Emergency Contact</p><p class="kv-value"><%= patient.emergency_contact_name.presence || 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Emergency Phone</p><p class="kv-value"><%= patient.emergency_contact_phone.presence || 'N/A' %></p></div>
+  <div class="kv-item sm:col-span-2"><p class="kv-label">Medical History</p><p class="kv-value"><%= patient.medical_history.presence || 'N/A' %></p></div>
 </div>

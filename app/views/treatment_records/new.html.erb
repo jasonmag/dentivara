@@ -1,10 +1,12 @@
-<% content_for :title, "New treatment record" %>
+<% content_for :title, "New Treatment Record" %>
 
-<div class="page-header">
-  <h1 class="page-title">New treatment record</h1>
-  <%= link_to "Back to treatment records", treatment_records_path, class: "btn btn-secondary" %>
-</div>
+<div class="space-y-4">
+  <div class="page-header">
+    <h1 class="page-title">New Treatment Record</h1>
+    <%= link_to "Back to treatment records", treatment_records_path, class: "btn btn-secondary" %>
+  </div>
 
-<div class="app-card">
-  <%= render "form", treatment_record: @treatment_record %>
+  <div class="app-card">
+    <%= render "form", treatment_record: @treatment_record %>
+  </div>
 </div>

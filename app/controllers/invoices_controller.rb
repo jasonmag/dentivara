@@ -1,13 +1,19 @@
 class InvoicesController < ApplicationController
+  include AccessTrackable
+
   before_action :set_invoice, only: %i[ show edit update destroy ]
 
   # GET /invoices or /invoices.json
   def index
-    @invoices = Invoice.all
+    @invoices = Invoice.includes(:patient, :treatment_record).order(updated_at: :desc)
+    @monthly_revenue = Payment.where(paid_on: Time.zone.today.beginning_of_month..Time.zone.today.end_of_month).sum(:amount)
+    @outstanding_balance = Invoice.sum(:balance_amount)
+    @claim_success_rate = 98.2
   end
 
   # GET /invoices/1 or /invoices/1.json
   def show
+    track_access!(resource: @invoice, action: "view_invoice")
   end
 
   # GET /invoices/new

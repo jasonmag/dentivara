@@ -1,0 +1,37 @@
+<%= form_with(model: clinic_service) do |form| %>
+  <% if clinic_service.errors.any? %>
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+      <p class="font-semibold"><%= pluralize(clinic_service.errors.count, "error") %> prevented this service from being saved:</p>
+      <ul class="mt-2 list-disc pl-5">
+        <% clinic_service.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div>
+      <%= form.label :name, class: "input-label" %>
+      <%= form.text_field :name, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :base_price, class: "input-label" %>
+      <%= form.number_field :base_price, step: 0.01, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :duration_minutes, class: "input-label" %>
+      <%= form.number_field :duration_minutes, class: "input-field" %>
+    </div>
+    <div class="flex items-end gap-2">
+      <%= form.check_box :active %>
+      <%= form.label :active, class: "input-label mb-0" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :description, class: "input-label" %>
+      <%= form.text_area :description, class: "input-field" %>
+    </div>
+  </div>
+
+  <div class="mt-4"><%= form.submit class: "btn btn-primary" %></div>
+<% end %>

@@ -1,9 +1,8 @@
 <%= form_with(model: appointment) do |form| %>
   <% if appointment.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(appointment.errors.count, "error") %> prohibited this appointment from being saved:</h2>
-
-      <ul>
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+      <p class="font-semibold"><%= pluralize(appointment.errors.count, "error") %> prevented this appointment from being saved:</p>
+      <ul class="mt-2 list-disc pl-5">
         <% appointment.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,47 +10,46 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :patient_id, style: "display: block" %>
-    <%= form.text_field :patient_id %>
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div>
+      <%= form.label :patient_id, class: "input-label" %>
+      <%= form.collection_select :patient_id, Patient.order(:first_name), :id, :full_name, { prompt: "Select patient" }, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :user_id, class: "input-label" %>
+      <%= form.collection_select :user_id, User.order(:name), :id, :name, { prompt: "Select provider" }, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :source, class: "input-label" %>
+      <%= form.select :source, Appointment::BOOKING_SOURCES.map { |value| [value.humanize, value] }, {}, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :booking_type, class: "input-label" %>
+      <%= form.select :booking_type, Appointment::BOOKING_TYPES.map { |value| [value.humanize, value] }, {}, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :starts_at, class: "input-label" %>
+      <%= form.datetime_field :starts_at, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :ends_at, class: "input-label" %>
+      <%= form.datetime_field :ends_at, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :status, class: "input-label" %>
+      <%= form.select :status, Appointment::STATUSES.map { |value| [value.humanize, value] }, {}, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :operatory, class: "input-label" %>
+      <%= form.text_field :operatory, class: "input-field", placeholder: "e.g., Room A / Chair 1" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :notes, class: "input-label" %>
+      <%= form.textarea :notes, class: "input-field" %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :user_id, style: "display: block" %>
-    <%= form.text_field :user_id %>
-  </div>
-
-  <div>
-    <%= form.label :source, style: "display: block" %>
-    <%= form.text_field :source %>
-  </div>
-
-  <div>
-    <%= form.label :booking_type, style: "display: block" %>
-    <%= form.text_field :booking_type %>
-  </div>
-
-  <div>
-    <%= form.label :starts_at, style: "display: block" %>
-    <%= form.datetime_field :starts_at %>
-  </div>
-
-  <div>
-    <%= form.label :ends_at, style: "display: block" %>
-    <%= form.datetime_field :ends_at %>
-  </div>
-
-  <div>
-    <%= form.label :status, style: "display: block" %>
-    <%= form.text_field :status %>
-  </div>
-
-  <div>
-    <%= form.label :notes, style: "display: block" %>
-    <%= form.textarea :notes %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+  <div class="mt-4">
+    <%= form.submit class: "btn btn-primary" %>
   </div>
 <% end %>

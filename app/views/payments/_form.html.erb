@@ -1,9 +1,8 @@
 <%= form_with(model: payment) do |form| %>
   <% if payment.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(payment.errors.count, "error") %> prohibited this payment from being saved:</h2>
-
-      <ul>
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+      <p class="font-semibold"><%= pluralize(payment.errors.count, "error") %> prevented this payment from being saved:</p>
+      <ul class="mt-2 list-disc pl-5">
         <% payment.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,32 +10,30 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :invoice_id, style: "display: block" %>
-    <%= form.text_field :invoice_id %>
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div>
+      <%= form.label :invoice_id, class: "input-label" %>
+      <%= form.collection_select :invoice_id, Invoice.order(updated_at: :desc), :id, :id, { prompt: "Select invoice" }, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :amount, class: "input-label" %>
+      <%= form.number_field :amount, step: 0.01, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :paid_on, class: "input-label" %>
+      <%= form.date_field :paid_on, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :method, class: "input-label" %>
+      <%= form.text_field :method, class: "input-field" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :reference_code, class: "input-label" %>
+      <%= form.text_field :reference_code, class: "input-field" %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :amount, style: "display: block" %>
-    <%= form.text_field :amount %>
-  </div>
-
-  <div>
-    <%= form.label :paid_on, style: "display: block" %>
-    <%= form.date_field :paid_on %>
-  </div>
-
-  <div>
-    <%= form.label :method, style: "display: block" %>
-    <%= form.text_field :method %>
-  </div>
-
-  <div>
-    <%= form.label :reference_code, style: "display: block" %>
-    <%= form.text_field :reference_code %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+  <div class="mt-4">
+    <%= form.submit class: "btn btn-primary" %>
   </div>
 <% end %>

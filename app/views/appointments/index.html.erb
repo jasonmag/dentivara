@@ -1,17 +1,85 @@
 <% content_for :title, "Appointments" %>
 
-<div class="page-header">
-  <h1 class="page-title">Appointments</h1>
-  <%= link_to "New appointment", new_appointment_path, class: "btn btn-primary" %>
-</div>
+<div class="space-y-8">
+  <section class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div>
+      <h1 class="page-title">Weekly Schedule</h1>
+      <p class="serene-subheading mt-1"><%= @week_start.strftime('%B %d') %> — <%= @week_end.strftime('%B %d, %Y') %></p>
+    </div>
+    <%= link_to new_appointment_path, class: "btn btn-primary gap-2 px-6 py-3" do %>
+      <span class="material-symbols-outlined">add</span>
+      <span>New Appointment</span>
+    <% end %>
+  </section>
 
-<div class="grid gap-4 xl:grid-cols-2">
-  <% @appointments.each do |appointment| %>
-    <article class="app-card">
-      <%= render appointment %>
-      <div class="mt-4">
-        <%= link_to "Show this appointment", appointment, class: "btn btn-secondary" %>
+  <section class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+    <article class="serene-card p-6 xl:col-span-2">
+      <div class="mb-5 flex items-center justify-between">
+        <h2 class="font-serif text-2xl text-stone-800">Appointments by Day</h2>
+        <span class="text-xs font-semibold uppercase tracking-wider text-stone-500"><%= @weekly_appointments.count %> this week</span>
+      </div>
+      <div class="space-y-4">
+        <% (@week_start..@week_end).each do |day| %>
+          <% day_items = @weekly_appointments.select { |appointment| appointment.starts_at.to_date == day } %>
+          <div class="rounded-xl border border-stone-100 p-4">
+            <div class="mb-3 flex items-center justify-between">
+              <h3 class="font-serif text-xl text-stone-800"><%= day.strftime('%A') %></h3>
+              <span class="text-xs text-stone-500"><%= day.strftime('%b %d') %></span>
+            </div>
+            <div class="space-y-2">
+              <% if day_items.any? %>
+                <% day_items.each do |appointment| %>
+                  <% marker = case appointment.status
+                             when 'confirmed' then 'border-[#8BA88E] bg-[#E8F1E9]'
+                             when 'completed' then 'border-stone-300 bg-stone-100'
+                             when 'cancelled', 'no_show' then 'border-red-300 bg-red-50'
+                             else 'border-amber-300 bg-amber-50'
+                             end %>
+                  <div class="flex items-center justify-between rounded-lg border-l-4 <%= marker %> p-3">
+                    <div>
+                      <p class="font-semibold text-stone-800"><%= appointment.patient.full_name %></p>
+                      <p class="text-xs text-stone-500"><%= appointment.booking_type.humanize %> with <%= appointment.user.name %></p>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-sm font-semibold text-stone-800"><%= l(appointment.starts_at, format: "%I:%M %p") %></p>
+                      <p class="text-xs text-stone-500"><%= appointment.status.humanize %></p>
+                    </div>
+                  </div>
+                <% end %>
+              <% else %>
+                <p class="text-sm text-stone-400">No appointments</p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
       </div>
     </article>
-  <% end %>
+
+    <aside class="space-y-6">
+      <article class="serene-card p-6">
+        <h3 class="mb-3 font-serif text-xl text-stone-800">Status Summary</h3>
+        <% grouped = @appointments.group_by(&:status) %>
+        <div class="space-y-2">
+          <% Appointment::STATUSES.each do |status| %>
+            <div class="flex items-center justify-between rounded-lg bg-stone-50 px-3 py-2">
+              <span class="text-sm text-stone-700"><%= status.humanize %></span>
+              <span class="text-sm font-semibold text-stone-800"><%= grouped.fetch(status, []).size %></span>
+            </div>
+          <% end %>
+        </div>
+      </article>
+
+      <article class="serene-card p-6">
+        <h3 class="mb-3 font-serif text-xl text-stone-800">Upcoming Queue</h3>
+        <div class="space-y-2">
+          <% @appointments.where('starts_at >= ?', Time.current).first(6).each do |appointment| %>
+            <div class="rounded-lg border border-stone-100 p-3">
+              <p class="text-sm font-semibold text-stone-800"><%= appointment.patient.full_name %></p>
+              <p class="text-xs text-stone-500"><%= l(appointment.starts_at, format: :short) %></p>
+            </div>
+          <% end %>
+        </div>
+      </article>
+    </aside>
+  </section>
 </div>

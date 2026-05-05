@@ -1,11 +1,13 @@
 <% content_for :title, "Notification" %>
 
-<div class="app-card">
-  <%= render @notification %>
+<div class="space-y-4">
+  <div class="app-card">
+    <%= render @notification %>
+  </div>
 
-  <div class="mt-6 flex flex-wrap gap-2">
-    <%= link_to "Edit this notification", edit_notification_path(@notification), class: "btn btn-primary" %>
-    <%= link_to "Back to notifications", notifications_path, class: "btn btn-secondary" %>
-    <%= button_to "Destroy this notification", @notification, method: :delete, class: "btn btn-danger" %>
+  <div class="flex flex-wrap gap-2">
+    <%= link_to "Edit", edit_notification_path(@notification), class: "btn btn-primary" %>
+    <%= link_to "Back", notifications_path, class: "btn btn-secondary" %>
+    <%= button_to "Destroy", @notification, method: :delete, class: "btn btn-danger" %>
   </div>
 </div>

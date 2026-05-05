@@ -1,37 +1,9 @@
-<div id="<%= dom_id notification %>">
-  <p>
-    <strong>Patient:</strong>
-    <%= notification.patient_id %>
-  </p>
-
-  <p>
-    <strong>Channel:</strong>
-    <%= notification.channel %>
-  </p>
-
-  <p>
-    <strong>Category:</strong>
-    <%= notification.category %>
-  </p>
-
-  <p>
-    <strong>Scheduled for:</strong>
-    <%= notification.scheduled_for %>
-  </p>
-
-  <p>
-    <strong>Sent at:</strong>
-    <%= notification.sent_at %>
-  </p>
-
-  <p>
-    <strong>Status:</strong>
-    <%= notification.status %>
-  </p>
-
-  <p>
-    <strong>Message:</strong>
-    <%= notification.message %>
-  </p>
-
+<div id="<%= dom_id notification %>" class="kv-grid">
+  <div class="kv-item"><p class="kv-label">Patient</p><p class="kv-value"><%= notification.patient.full_name %></p></div>
+  <div class="kv-item"><p class="kv-label">Channel</p><p class="kv-value"><%= notification.channel %></p></div>
+  <div class="kv-item"><p class="kv-label">Category</p><p class="kv-value"><%= notification.category %></p></div>
+  <div class="kv-item"><p class="kv-label">Status</p><p class="kv-value"><%= notification.status %></p></div>
+  <div class="kv-item"><p class="kv-label">Scheduled For</p><p class="kv-value"><%= notification.scheduled_for.present? ? l(notification.scheduled_for, format: :long) : 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Sent At</p><p class="kv-value"><%= notification.sent_at.present? ? l(notification.sent_at, format: :long) : 'N/A' %></p></div>
+  <div class="kv-item sm:col-span-2"><p class="kv-label">Message</p><p class="kv-value"><%= notification.message %></p></div>
 </div>

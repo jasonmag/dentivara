@@ -13,38 +13,116 @@
     <link rel="apple-touch-icon" href="/icon.png">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <%= javascript_importmap_tags %>
   </head>
 
   <body class="app-shell">
-    <div class="flex min-h-screen">
+    <div class="app-layout">
       <aside class="app-sidebar">
-        <h1 class="mb-6 text-lg font-extrabold text-[#003e6b]">Dentivara Clinic OS</h1>
-        <nav class="space-y-1 text-sm font-semibold text-slate-700">
-          <%= link_to "Dashboard", root_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
-          <%= link_to "Patients", patients_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
-          <%= link_to "Appointments", appointments_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
-          <%= link_to "Treatments", treatment_records_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
-          <%= link_to "Invoices", invoices_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
-          <%= link_to "Payments", payments_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
-          <%= link_to "Notifications", notifications_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
-          <%= link_to "Users", users_path, class: "block rounded-lg px-3 py-2 hover:bg-slate-100" %>
+        <div class="px-2 pb-8">
+          <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8BA88E] text-white">
+              <span class="material-symbols-outlined">dentistry</span>
+            </div>
+            <div>
+              <h2 class="app-brand-title">Dentivara</h2>
+              <p class="app-brand-subtitle">Premium Management</p>
+            </div>
+          </div>
+        </div>
+
+        <nav class="space-y-1 px-1 text-sm font-semibold text-slate-700">
+          <%= link_to root_path, class: "app-nav-link #{current_page?(root_path) ? 'is-active' : ''}" do %>
+            <span class="material-symbols-outlined">dashboard_customize</span>
+            <span>Dashboard</span>
+          <% end %>
+          <%= link_to patients_path, class: "app-nav-link #{current_page?(patients_path) ? 'is-active' : ''}" do %>
+            <span class="material-symbols-outlined">group</span>
+            <span>Patients</span>
+          <% end %>
+          <%= link_to appointments_path, class: "app-nav-link #{current_page?(appointments_path) ? 'is-active' : ''}" do %>
+            <span class="material-symbols-outlined">calendar_today</span>
+            <span>Schedule</span>
+          <% end %>
+          <%= link_to invoices_path, class: "app-nav-link #{(controller_name == 'invoices' || controller_name == 'payments') ? 'is-active' : ''}" do %>
+            <span class="material-symbols-outlined">account_balance_wallet</span>
+            <span>Billing</span>
+          <% end %>
+          <%= link_to users_path, class: "app-nav-link #{current_page?(users_path) ? 'is-active' : ''}" do %>
+            <span class="material-symbols-outlined">settings</span>
+            <span>Settings</span>
+          <% end %>
+          <% if current_user&.clinic_owner? || current_user&.system_admin? %>
+            <%= link_to audit_logs_path, class: "app-nav-link #{current_page?(audit_logs_path) ? 'is-active' : ''}" do %>
+              <span class="material-symbols-outlined">fact_check</span>
+              <span>Audit Logs</span>
+            <% end %>
+            <%= link_to compliance_path, class: "app-nav-link #{current_page?(compliance_path) ? 'is-active' : ''}" do %>
+              <span class="material-symbols-outlined">shield</span>
+              <span>Compliance</span>
+            <% end %>
+          <% end %>
+          <%= link_to clinic_services_path, class: "app-nav-link #{current_page?(clinic_services_path) ? 'is-active' : ''}" do %>
+            <span class="material-symbols-outlined">medical_services</span>
+            <span>Services</span>
+          <% end %>
+          <%= link_to document_templates_path, class: "app-nav-link #{current_page?(document_templates_path) ? 'is-active' : ''}" do %>
+            <span class="material-symbols-outlined">description</span>
+            <span>Documents</span>
+          <% end %>
+          <% if current_user&.patient? %>
+            <%= link_to portal_dashboard_path, class: "app-nav-link #{current_page?(portal_dashboard_path) ? 'is-active' : ''}" do %>
+              <span class="material-symbols-outlined">person</span>
+              <span>Patient Portal</span>
+            <% end %>
+          <% end %>
         </nav>
+
+        <div class="mt-auto px-1 pt-6">
+          <%= link_to new_appointment_path, class: "app-cta-button" do %>
+            <span class="material-symbols-outlined">add</span>
+            <span>New Appointment</span>
+          <% end %>
+        </div>
       </aside>
 
       <main class="app-main">
+        <header class="app-main-header">
+          <div class="flex items-center gap-8">
+            <span class="hidden font-serif text-lg font-bold tracking-tight text-stone-900 md:block">Dentivara</span>
+            <div class="relative hidden lg:block">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-stone-400">search</span>
+              <input class="w-64 rounded-full border-none bg-stone-100 px-4 py-1.5 pl-10 text-sm focus:ring-1 focus:ring-[#8BA88E]" placeholder="Search patients or records..." type="text">
+            </div>
+          </div>
+          <div class="flex items-center gap-5 text-stone-500">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="material-symbols-outlined">help_outline</span>
+            <div class="hidden h-8 w-px bg-stone-200 md:block"></div>
+            <div class="hidden text-right md:block">
+              <p class="text-xs font-bold text-stone-800"><%= current_user&.name %></p>
+              <p class="text-[10px] text-stone-500"><%= current_user&.role&.humanize %></p>
+            </div>
+            <%= button_to "Logout", logout_path, method: :delete, class: "btn btn-secondary hidden md:inline-flex" %>
+          </div>
+        </header>
+
+        <div class="app-main-body">
         <div class="mb-4 flex items-center justify-between lg:hidden">
-          <h1 class="text-lg font-extrabold text-[#003e6b]">Dentivara Clinic OS</h1>
+          <h1 class="text-lg font-semibold text-stone-800">Dentivara</h1>
           <%= link_to "Dashboard", root_path, class: "btn btn-secondary" %>
         </div>
 
         <% if notice.present? %>
-          <p class="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm text-blue-900"><%= notice %></p>
+          <p class="mb-4 rounded-xl border border-[#8BA88E]/20 bg-[#8BA88E]/10 px-4 py-2 text-sm text-[#334d38]"><%= notice %></p>
         <% end %>
         <% if alert.present? %>
           <p class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-900"><%= alert %></p>
         <% end %>
         <%= yield %>
+        </div>
       </main>
     </div>
   </body>

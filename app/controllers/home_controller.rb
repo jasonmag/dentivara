@@ -1,8 +1,9 @@
 class HomeController < ApplicationController
   def index
     today = Time.zone.today
-    month_start = today.beginning_of_month
-    month_end = today.end_of_month
+    selected_month = parse_month_param(params[:month]) || today
+    month_start = selected_month.beginning_of_month
+    month_end = selected_month.end_of_month
     calendar_start = month_start.beginning_of_week(:sunday)
     calendar_end = month_end.end_of_week(:sunday)
 
@@ -21,5 +22,17 @@ class HomeController < ApplicationController
                                                .order(:starts_at)
                                                .group_by { |appointment| appointment.starts_at.to_date }
     @calendar_month_label = month_start.strftime("%B %Y")
+    @previous_calendar_month = (month_start - 1.month).strftime("%Y-%m")
+    @next_calendar_month = (month_start + 1.month).strftime("%Y-%m")
+  end
+
+  private
+
+  def parse_month_param(raw_month)
+    return if raw_month.blank?
+
+    Date.strptime(raw_month, "%Y-%m")
+  rescue ArgumentError
+    nil
   end
 end

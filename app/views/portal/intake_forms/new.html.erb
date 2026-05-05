@@ -1,0 +1,31 @@
+<% content_for :title, "New Intake Form" %>
+<div class="space-y-4">
+  <div class="page-header">
+    <h1 class="page-title">New Intake Form</h1>
+    <%= link_to "Back", portal_intake_forms_path, class: "btn btn-secondary" %>
+  </div>
+
+  <div class="app-card">
+    <%= form_with model: @intake_form, url: portal_intake_forms_path do |form| %>
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="md:col-span-2">
+          <%= form.label :chief_concern, class: "input-label" %>
+          <%= form.text_area :chief_concern, class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :allergies, class: "input-label" %>
+          <%= form.text_area :allergies, class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :current_medication, class: "input-label" %>
+          <%= form.text_area :current_medication, class: "input-field" %>
+        </div>
+        <div class="md:col-span-2">
+          <%= form.label :preferred_contact, class: "input-label" %>
+          <%= form.text_field :preferred_contact, class: "input-field", placeholder: "Email or Mobile" %>
+        </div>
+      </div>
+      <div class="mt-4"><%= form.submit "Submit Intake Form", class: "btn btn-primary" %></div>
+    <% end %>
+  </div>
+</div>

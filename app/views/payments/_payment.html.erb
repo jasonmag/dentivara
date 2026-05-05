@@ -1,27 +1,8 @@
-<div id="<%= dom_id payment %>">
-  <p>
-    <strong>Invoice:</strong>
-    <%= payment.invoice_id %>
-  </p>
-
-  <p>
-    <strong>Amount:</strong>
-    <%= payment.amount %>
-  </p>
-
-  <p>
-    <strong>Paid on:</strong>
-    <%= payment.paid_on %>
-  </p>
-
-  <p>
-    <strong>Method:</strong>
-    <%= payment.method %>
-  </p>
-
-  <p>
-    <strong>Reference code:</strong>
-    <%= payment.reference_code %>
-  </p>
-
+<div id="<%= dom_id payment %>" class="kv-grid">
+  <div class="kv-item"><p class="kv-label">Invoice</p><p class="kv-value">#<%= payment.invoice_id %></p></div>
+  <div class="kv-item"><p class="kv-label">Patient</p><p class="kv-value"><%= payment.invoice.patient.full_name %></p></div>
+  <div class="kv-item"><p class="kv-label">Amount</p><p class="kv-value"><%= number_to_currency(payment.amount) %></p></div>
+  <div class="kv-item"><p class="kv-label">Paid On</p><p class="kv-value"><%= payment.paid_on.present? ? l(payment.paid_on, format: :long) : 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Method</p><p class="kv-value"><%= payment.method.presence || 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Reference</p><p class="kv-value"><%= payment.reference_code.presence || 'N/A' %></p></div>
 </div>

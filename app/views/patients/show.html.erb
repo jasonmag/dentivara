@@ -1,11 +1,59 @@
 <% content_for :title, "Patient" %>
 
-<div class="app-card">
-  <%= render @patient %>
+<div class="space-y-4">
+  <div class="app-card">
+    <%= render @patient %>
+  </div>
 
-  <div class="mt-6 flex flex-wrap gap-2">
-    <%= link_to "Edit this patient", edit_patient_path(@patient), class: "btn btn-primary" %>
-    <%= link_to "Back to patients", patients_path, class: "btn btn-secondary" %>
-    <%= button_to "Destroy this patient", @patient, method: :delete, class: "btn btn-danger" %>
+  <div class="app-card">
+    <h2 class="mb-3 font-serif text-xl text-stone-800">Consent Versions</h2>
+    <div class="mb-4">
+      <%= form_with model: [@patient, PatientConsent.new], class: "grid grid-cols-1 gap-3 md:grid-cols-4" do |form| %>
+        <div>
+          <%= form.label :consent_type, class: "input-label" %>
+          <%= form.select :consent_type, PatientConsent::CONSENT_TYPES.map { |type| [type.humanize, type] }, {}, class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :document_version, class: "input-label" %>
+          <%= form.text_field :document_version, class: "input-field", placeholder: "e.g., DPA-v1.2" %>
+        </div>
+        <div>
+          <%= form.label :consented_at, class: "input-label" %>
+          <%= form.datetime_field :consented_at, class: "input-field", value: Time.current.strftime("%Y-%m-%dT%H:%M") %>
+        </div>
+        <div class="flex items-end">
+          <%= form.submit "Record Consent", class: "btn btn-primary w-full justify-center" %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="table-shell">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Version</th>
+            <th>Consented At</th>
+            <th>Recorded By</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @patient.patient_consents.order(consented_at: :desc).limit(20).each do |consent| %>
+            <tr>
+              <td><%= consent.consent_type.humanize %></td>
+              <td><%= consent.document_version %></td>
+              <td><%= l(consent.consented_at, format: :long) %></td>
+              <td><%= consent.user.name %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <%= link_to "Edit", edit_patient_path(@patient), class: "btn btn-primary" %>
+    <%= link_to "Back", patients_path, class: "btn btn-secondary" %>
+    <%= button_to "Destroy", @patient, method: :delete, class: "btn btn-danger" %>
   </div>
 </div>

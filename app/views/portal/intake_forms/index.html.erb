@@ -1,0 +1,23 @@
+<% content_for :title, "Intake Forms" %>
+<div class="space-y-6">
+  <div class="page-header">
+    <h1 class="page-title">Intake Forms</h1>
+    <%= link_to "New Intake Form", new_portal_intake_form_path, class: "btn btn-primary" %>
+  </div>
+
+  <section class="table-shell">
+    <table class="data-table">
+      <thead><tr><th>Submitted</th><th>Status</th><th>Chief Concern</th><th>Preferred Contact</th></tr></thead>
+      <tbody>
+        <% @intake_forms.each do |form| %>
+          <tr>
+            <td><%= l(form.created_at, format: :long) %></td>
+            <td><%= form.status.humanize %></td>
+            <td><%= form.payload["chief_concern"].presence || "N/A" %></td>
+            <td><%= form.payload["preferred_contact"].presence || "N/A" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </section>
+</div>

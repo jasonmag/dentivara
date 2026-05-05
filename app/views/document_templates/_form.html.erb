@@ -1,0 +1,23 @@
+<%= form_with(model: document_template) do |form| %>
+  <% if document_template.errors.any? %>
+    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+      <p class="font-semibold"><%= pluralize(document_template.errors.count, "error") %> prevented this template from being saved:</p>
+      <ul class="mt-2 list-disc pl-5">
+        <% document_template.errors.each do |error| %><li><%= error.full_message %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div><%= form.label :name, class: "input-label" %><%= form.text_field :name, class: "input-field" %></div>
+    <div><%= form.label :kind, class: "input-label" %><%= form.select :kind, DocumentTemplate::KINDS.map { |k| [k.humanize, k] }, {}, class: "input-field" %></div>
+    <div><%= form.label :digital_signature_name, class: "input-label" %><%= form.text_field :digital_signature_name, class: "input-field" %></div>
+    <div><%= form.label :digital_signature_title, class: "input-label" %><%= form.text_field :digital_signature_title, class: "input-field" %></div>
+    <div class="md:col-span-2"><%= form.label :header_text, class: "input-label" %><%= form.text_area :header_text, class: "input-field" %></div>
+    <div class="md:col-span-2"><%= form.label :body_template, class: "input-label" %><%= form.text_area :body_template, class: "input-field", rows: 8 %><p class="mt-1 text-xs text-stone-500">Use placeholders like {{patient_name}}, {{dentist_name}}, {{today}}.</p></div>
+    <div class="md:col-span-2"><%= form.label :footer_text, class: "input-label" %><%= form.text_area :footer_text, class: "input-field" %></div>
+    <div class="flex items-end gap-2"><%= form.check_box :active %><%= form.label :active, class: "input-label mb-0" %></div>
+  </div>
+
+  <div class="mt-4"><%= form.submit class: "btn btn-primary" %></div>
+<% end %>

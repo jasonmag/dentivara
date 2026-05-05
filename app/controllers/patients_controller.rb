@@ -1,13 +1,19 @@
 class PatientsController < ApplicationController
+  include AccessTrackable
+
   before_action :set_patient, only: %i[ show edit update destroy ]
 
   # GET /patients or /patients.json
   def index
-    @patients = Patient.all
+    @patients = Patient.order(updated_at: :desc)
+    @active_treatment_count = TreatmentRecord.where(performed_on: 30.days.ago.to_date..Date.current).select(:patient_id).distinct.count
+    @urgent_cases_count = Appointment.where(status: "confirmed").where("starts_at <= ?", 24.hours.from_now).count
+    @attendance_rate = appointment_attendance_rate
   end
 
   # GET /patients/1 or /patients/1.json
   def show
+    track_access!(resource: @patient, action: "view_patient")
   end
 
   # GET /patients/new
@@ -66,5 +72,13 @@ class PatientsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def patient_params
       params.expect(patient: [ :first_name, :last_name, :birth_date, :phone, :email, :emergency_contact_name, :emergency_contact_phone, :medical_history, :consented_at ])
+    end
+
+    def appointment_attendance_rate
+      total = Appointment.where(starts_at: 30.days.ago..Time.current).count
+      return 100 if total.zero?
+
+      completed = Appointment.where(starts_at: 30.days.ago..Time.current, status: "completed").count
+      ((completed.to_f / total) * 100).round
     end
 end
