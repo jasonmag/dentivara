@@ -26,9 +26,11 @@ class NotificationsController < ApplicationController
     respond_to do |format|
       if @notification.save
         format.html { redirect_to @notification, notice: "Notification was successfully created." }
+        format.turbo_stream { redirect_to @notification, notice: "Notification was successfully created." }
         format.json { render :show, status: :created, location: @notification }
       else
         format.html { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :new, status: :unprocessable_entity }
         format.json { render json: @notification.errors, status: :unprocessable_entity }
       end
     end
@@ -39,9 +41,11 @@ class NotificationsController < ApplicationController
     respond_to do |format|
       if @notification.update(notification_params)
         format.html { redirect_to @notification, notice: "Notification was successfully updated.", status: :see_other }
+        format.turbo_stream { redirect_to @notification, notice: "Notification was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @notification }
       else
         format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :edit, status: :unprocessable_entity }
         format.json { render json: @notification.errors, status: :unprocessable_entity }
       end
     end
@@ -53,6 +57,7 @@ class NotificationsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to notifications_path, notice: "Notification was successfully destroyed.", status: :see_other }
+      format.turbo_stream { redirect_to notifications_path, notice: "Notification was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
     end
   end

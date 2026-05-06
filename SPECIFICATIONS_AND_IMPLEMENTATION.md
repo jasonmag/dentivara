@@ -49,6 +49,7 @@
 - Hotwire enabled (`turbo-rails`, `stimulus-rails`).
 - TailwindCSS integrated (`tailwindcss-rails`) and applied to app shell/dashboard views.
 - Versioned API namespace: `/api/v1`.
+- API CORS middleware enabled (`rack-cors`) for cross-platform client access.
 - CI/CD workflow in `.github/workflows/ci.yml` (security scans, lint, tests).
 
 ### Domain Models Implemented
@@ -74,6 +75,11 @@
 ### UI and Mobile Readiness
 - Dashboard root page with operational summary cards and tables.
 - Dashboard schedule calendar for the current month with per-day appointment lists (time, status, patient, assigned dentist).
+- Dashboard now includes a rendered monthly calendar grid (Sun-Sat) with:
+  - day-level appointment counts
+  - preview of upcoming appointments per date
+  - previous/next month navigation bound to the rendered grid
+  - click-through day cells that open appointments index filtered to the selected date
 - SaaS-style application shell with sidebar navigation and mobile fallback header.
 - Tailwind utility classes used for responsive layout, cards, tables, and navigation.
 - Brand-aligned visual styling mapped from provided design guidance.
@@ -114,7 +120,27 @@
   - payments
   - notifications
 - Token-based API guard in `Api::V1::BaseController` using bearer auth.
+- API base controller now enforces JSON request format for consistent client behavior.
+- CORS policy configured in `config/initializers/cors.rb` with `API_CORS_ORIGINS`.
 - JSON CRUD patterns ready for external client integration.
+
+### Hotwire + Tailwind + API Multiplatform Compatibility (Updated)
+- Browser frontend:
+  - Rails views with Turbo navigation/updates and Stimulus behavior hooks.
+  - TailwindCSS as the styling system for responsive layouts and components.
+  - shared turbo `flash` frame pattern for app-wide notices and alerts.
+  - shared `form_errors` partial applied across all CRUD form partials for consistent validation UX.
+  - Stimulus-based flash auto-dismiss controller for less manual UI state handling.
+  - explicit `format.turbo_stream` CRUD branches in major web controllers (create/update/destroy).
+  - dashboard calendar to appointments day-filter flow implemented via query parameter (`/appointments?date=YYYY-MM-DD`).
+- Multiplatform frontend clients:
+  - Native mobile, SPA, or desktop clients consume the same `/api/v1` resources.
+  - Bearer-token API auth for platform-independent integration.
+  - CORS-enabled API edge for browser-based clients from approved origins.
+- Routing split:
+  - Public experience at `/` and `/login`.
+  - Authenticated dashboard at `/dashboard`.
+  - API surface isolated under `/api/v1`.
 
 ### Functional Data and Demo Readiness
 - Expanded `db/seeds.rb` with functional sample data:
@@ -195,6 +221,9 @@
 
 ## How to Run
 - Install gems: `bundle install`
+- Latest install run (May 6, 2026):
+  - completed successfully with 25 dependencies and 125 gems installed
+  - non-blocking warning observed for ambiguous `psych` specs; optional maintenance command: `gem cleanup psych`
 - Setup DB: `bin/rails db:setup`
 - Run app: `bin/dev` or `bin/rails server`
   - `bin/dev` now runs `bin/rails assets:clobber` and `bin/rails assets:precompile` before starting Foreman.

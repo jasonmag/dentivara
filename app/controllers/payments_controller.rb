@@ -26,9 +26,11 @@ class PaymentsController < ApplicationController
     respond_to do |format|
       if @payment.save
         format.html { redirect_to @payment, notice: "Payment was successfully created." }
+        format.turbo_stream { redirect_to @payment, notice: "Payment was successfully created." }
         format.json { render :show, status: :created, location: @payment }
       else
         format.html { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :new, status: :unprocessable_entity }
         format.json { render json: @payment.errors, status: :unprocessable_entity }
       end
     end
@@ -39,9 +41,11 @@ class PaymentsController < ApplicationController
     respond_to do |format|
       if @payment.update(payment_params)
         format.html { redirect_to @payment, notice: "Payment was successfully updated.", status: :see_other }
+        format.turbo_stream { redirect_to @payment, notice: "Payment was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @payment }
       else
         format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :edit, status: :unprocessable_entity }
         format.json { render json: @payment.errors, status: :unprocessable_entity }
       end
     end
@@ -53,6 +57,7 @@ class PaymentsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to payments_path, notice: "Payment was successfully destroyed.", status: :see_other }
+      format.turbo_stream { redirect_to payments_path, notice: "Payment was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
     end
   end

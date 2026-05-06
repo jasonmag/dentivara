@@ -1,12 +1,5 @@
 <%= form_with(model: document_template) do |form| %>
-  <% if document_template.errors.any? %>
-    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-      <p class="font-semibold"><%= pluralize(document_template.errors.count, "error") %> prevented this template from being saved:</p>
-      <ul class="mt-2 list-disc pl-5">
-        <% document_template.errors.each do |error| %><li><%= error.full_message %></li><% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%= render "shared/form_errors", model: document_template %>
 
   <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
     <div><%= form.label :name, class: "input-label" %><%= form.text_field :name, class: "input-field" %></div>

@@ -17,24 +17,40 @@ class DocumentTemplatesController < ApplicationController
   def create
     @document_template = DocumentTemplate.new(document_template_params)
 
-    if @document_template.save
-      redirect_to @document_template, notice: "Document template created successfully."
-    else
-      render :new, status: :unprocessable_entity
+    respond_to do |format|
+      if @document_template.save
+        format.html { redirect_to @document_template, notice: "Document template created successfully." }
+        format.turbo_stream { redirect_to @document_template, notice: "Document template created successfully." }
+        format.json { render :show, status: :created, location: @document_template }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :new, status: :unprocessable_entity }
+        format.json { render json: @document_template.errors, status: :unprocessable_entity }
+      end
     end
   end
 
   def update
-    if @document_template.update(document_template_params)
-      redirect_to @document_template, notice: "Document template updated successfully.", status: :see_other
-    else
-      render :edit, status: :unprocessable_entity
+    respond_to do |format|
+      if @document_template.update(document_template_params)
+        format.html { redirect_to @document_template, notice: "Document template updated successfully.", status: :see_other }
+        format.turbo_stream { redirect_to @document_template, notice: "Document template updated successfully.", status: :see_other }
+        format.json { render :show, status: :ok, location: @document_template }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :edit, status: :unprocessable_entity }
+        format.json { render json: @document_template.errors, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @document_template.destroy!
-    redirect_to document_templates_path, notice: "Document template deleted successfully.", status: :see_other
+    respond_to do |format|
+      format.html { redirect_to document_templates_path, notice: "Document template deleted successfully.", status: :see_other }
+      format.turbo_stream { redirect_to document_templates_path, notice: "Document template deleted successfully.", status: :see_other }
+      format.json { head :no_content }
+    end
   end
 
   def preview

@@ -1,118 +1,21 @@
-<div class="space-y-10">
-  <section class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-    <div>
-      <h1 class="serene-heading">Welcome back</h1>
-      <p class="serene-subheading mt-2">Here is a calm overview of your clinic flow for today.</p>
+<section class="landing-page">
+  <div class="landing-hero">
+    <p class="landing-eyebrow">Dental Clinic OS</p>
+    <h1 class="landing-title">Dentivara</h1>
+    <p class="landing-subtitle">
+      One place to manage patients, schedules, billing, and compliance for modern dental teams.
+    </p>
+    <div class="mt-8">
+      <%= link_to "Login to Dentivara", login_path, class: "btn btn-primary" %>
     </div>
-    <div class="rounded-full border border-stone-200 bg-stone-50 px-5 py-2 text-sm text-stone-700">
-      <span class="material-symbols-outlined mr-2 text-base text-[#4a654e]">calendar_month</span>
-      <%= Time.zone.today.strftime('%A, %B %d') %>
-    </div>
-  </section>
+  </div>
 
-  <section class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-    <article class="serene-kpi">
-      <p class="text-xs font-semibold uppercase tracking-wider text-stone-500">Total Patients</p>
-      <p class="mt-3 font-serif text-4xl text-stone-800"><%= @stats[:patients] %></p>
-    </article>
-    <article class="serene-kpi">
-      <p class="text-xs font-semibold uppercase tracking-wider text-stone-500">Pending Bills</p>
-      <p class="mt-3 font-serif text-4xl text-stone-800"><%= @recent_invoices.count { |invoice| invoice.balance_amount.to_f.positive? } %></p>
-    </article>
-    <article class="serene-kpi md:col-span-2">
-      <div class="mb-4 flex items-center justify-between">
-        <p class="text-xs font-semibold uppercase tracking-wider text-stone-500">Monthly Revenue Progress</p>
-        <span class="text-sm font-semibold text-[#4a654e]"><%= @stats[:treatments_this_month] %> treatments</span>
-      </div>
-      <% progress = [(@stats[:treatments_this_month] * 5), 100].min %>
-      <div class="h-3 w-full overflow-hidden rounded-full bg-stone-100">
-        <div class="h-full rounded-full bg-[#8BA88E]" style="width: <%= progress %>%"></div>
-      </div>
-      <p class="mt-3 text-sm text-stone-500"><%= progress %>% of benchmark</p>
-    </article>
-  </section>
-
-  <section class="grid grid-cols-1 gap-8 xl:grid-cols-3">
-    <div class="space-y-6 xl:col-span-2">
-      <article class="serene-card p-6">
-        <div class="mb-4 flex items-center justify-between">
-          <h2 class="font-serif text-2xl text-stone-800">Today's Schedule</h2>
-          <%= link_to "View Full Calendar", appointments_path, class: "text-sm font-semibold text-[#4a654e] hover:underline" %>
-        </div>
-        <div class="space-y-3">
-          <% @upcoming_appointments.first(6).each do |appointment| %>
-            <% badge_class = case appointment.status
-                            when 'confirmed' then 'bg-[#e8f1e9] text-[#4a654e]'
-                            when 'completed' then 'bg-stone-100 text-stone-700'
-                            when 'cancelled', 'no_show' then 'bg-red-50 text-red-700'
-                            else 'bg-amber-50 text-amber-700'
-                            end %>
-            <div class="flex flex-col gap-3 rounded-xl border border-stone-100 bg-white p-4 md:flex-row md:items-center">
-              <div class="min-w-20 text-center md:border-r md:border-stone-100 md:pr-4">
-                <p class="font-serif text-xl text-stone-800"><%= l(appointment.starts_at, format: "%I:%M") %></p>
-                <p class="text-xs uppercase tracking-wider text-stone-500"><%= l(appointment.starts_at, format: "%p") %></p>
-              </div>
-              <div class="flex-1">
-                <p class="font-semibold text-stone-900"><%= appointment.patient.full_name %></p>
-                <p class="text-sm text-stone-500"><%= appointment.booking_type.humanize %> with <%= appointment.user.name %></p>
-              </div>
-              <span class="self-start rounded-full px-3 py-1 text-xs font-semibold <%= badge_class %>"><%= appointment.status.humanize %></span>
-            </div>
-          <% end %>
-        </div>
+  <div class="landing-news-grid">
+    <% @news_items.each do |item| %>
+      <article class="landing-news-card">
+        <h2><%= item[:title] %></h2>
+        <p><%= item[:detail] %></p>
       </article>
-
-      <article class="serene-card p-6">
-        <h3 class="mb-3 font-serif text-xl text-stone-800">Recent Invoices</h3>
-        <div class="table-shell">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Patient</th>
-                <th>Status</th>
-                <th>Total</th>
-                <th>Balance</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @recent_invoices.first(5).each do |invoice| %>
-                <tr>
-                  <td><%= invoice.patient.full_name %></td>
-                  <td><%= invoice.status.humanize %></td>
-                  <td><%= number_to_currency(invoice.total_amount) %></td>
-                  <td><%= number_to_currency(invoice.balance_amount) %></td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      </article>
-    </div>
-
-    <div class="space-y-6">
-      <article class="serene-card p-6">
-        <h3 class="mb-4 font-serif text-xl text-stone-800">Pending Billing</h3>
-        <div class="space-y-3">
-          <% @recent_invoices.select { |invoice| invoice.balance_amount.to_f.positive? }.first(5).each do |invoice| %>
-            <div class="flex items-center justify-between rounded-lg bg-stone-50 p-3">
-              <div>
-                <p class="text-sm font-semibold text-stone-800">Inv #<%= invoice.id %></p>
-                <p class="text-xs text-stone-500"><%= invoice.patient.full_name %></p>
-              </div>
-              <p class="text-sm font-semibold text-stone-800"><%= number_to_currency(invoice.balance_amount) %></p>
-            </div>
-          <% end %>
-        </div>
-      </article>
-
-      <article class="overflow-hidden rounded-xl bg-[#8BA88E] p-6 text-white shadow-[0_8px_20px_rgba(74,101,78,0.2)]">
-        <h3 class="font-serif text-xl">Clinic Insight</h3>
-        <p class="mt-2 text-sm text-white/90">Monthly view is set to <%= @calendar_month_label %>. Track peak slots and staffing capacity weekly.</p>
-        <div class="mt-4 flex gap-2">
-          <%= link_to "Prev", root_path(month: @previous_calendar_month), class: "rounded-lg bg-white/20 px-3 py-1.5 text-xs font-semibold hover:bg-white/30" %>
-          <%= link_to "Next", root_path(month: @next_calendar_month), class: "rounded-lg bg-white/20 px-3 py-1.5 text-xs font-semibold hover:bg-white/30" %>
-        </div>
-      </article>
-    </div>
-  </section>
-</div>
+    <% end %>
+  </div>
+</section>

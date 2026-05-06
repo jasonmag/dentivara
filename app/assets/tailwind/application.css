@@ -6,6 +6,9 @@
 }
 
 @layer components {
+  .public-shell { @apply min-h-dvh bg-[radial-gradient(circle_at_top_right,_#f0f6f1_0%,_#f6f4ef_40%,_#fcfbf8_100%)] text-[#1a1c1b] antialiased; }
+  .public-main { @apply min-h-dvh px-4 py-8 sm:px-6 lg:px-8; }
+
   .app-shell { @apply min-h-dvh bg-[#faf9f7] text-[#1a1c1b] antialiased; }
   .app-layout { @apply flex min-h-dvh; }
   .app-sidebar { @apply hidden h-dvh w-72 shrink-0 flex-col overflow-y-auto border-r border-stone-200 bg-[#F8F7F2] p-6 lg:flex; }
@@ -45,6 +48,22 @@
 
   .input-label { @apply mb-1 block text-sm font-semibold text-stone-600; }
   .input-field { @apply w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm outline-none ring-[#8BA88E] focus:border-[#8BA88E] focus:ring-2; }
+
+  .login-page { @apply mx-auto flex min-h-[80dvh] w-full max-w-5xl items-center justify-center; }
+  .login-card { @apply w-full max-w-md rounded-2xl border border-stone-200 bg-white/90 p-8 shadow-[0_20px_60px_-24px_rgba(74,101,78,0.45)] backdrop-blur; }
+  .login-kicker { @apply text-xs font-bold uppercase tracking-[0.2em] text-[#4a654e]; }
+  .login-card h1 { @apply mt-2 font-serif text-3xl text-stone-900; }
+  .login-description { @apply mt-2 mb-6 text-sm text-stone-600; }
+
+  .landing-page { @apply mx-auto w-full max-w-5xl space-y-12 py-8 sm:py-16; }
+  .landing-hero { @apply rounded-3xl border border-stone-200/80 bg-white/80 p-8 shadow-[0_20px_60px_-30px_rgba(74,101,78,0.5)] sm:p-12; }
+  .landing-eyebrow { @apply text-xs font-bold uppercase tracking-[0.24em] text-[#4a654e]; }
+  .landing-title { @apply mt-3 font-serif text-5xl leading-tight text-stone-900 sm:text-6xl; }
+  .landing-subtitle { @apply mt-4 max-w-2xl text-base text-stone-600 sm:text-lg; }
+  .landing-news-grid { @apply grid grid-cols-1 gap-5 md:grid-cols-3; }
+  .landing-news-card { @apply rounded-2xl border border-stone-200 bg-white p-6 shadow-[0_8px_24px_-14px_rgba(74,101,78,0.4)]; }
+  .landing-news-card h2 { @apply font-serif text-xl text-stone-900; }
+  .landing-news-card p { @apply mt-2 text-sm text-stone-600; }
 }
 
 @layer base {

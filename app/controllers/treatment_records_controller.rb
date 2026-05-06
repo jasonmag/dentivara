@@ -29,9 +29,11 @@ class TreatmentRecordsController < ApplicationController
     respond_to do |format|
       if @treatment_record.save
         format.html { redirect_to @treatment_record, notice: "Treatment record was successfully created." }
+        format.turbo_stream { redirect_to @treatment_record, notice: "Treatment record was successfully created." }
         format.json { render :show, status: :created, location: @treatment_record }
       else
         format.html { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :new, status: :unprocessable_entity }
         format.json { render json: @treatment_record.errors, status: :unprocessable_entity }
       end
     end
@@ -42,9 +44,11 @@ class TreatmentRecordsController < ApplicationController
     respond_to do |format|
       if @treatment_record.update(treatment_record_params)
         format.html { redirect_to @treatment_record, notice: "Treatment record was successfully updated.", status: :see_other }
+        format.turbo_stream { redirect_to @treatment_record, notice: "Treatment record was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @treatment_record }
       else
         format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :edit, status: :unprocessable_entity }
         format.json { render json: @treatment_record.errors, status: :unprocessable_entity }
       end
     end
@@ -56,6 +60,7 @@ class TreatmentRecordsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to treatment_records_path, notice: "Treatment record was successfully destroyed.", status: :see_other }
+      format.turbo_stream { redirect_to treatment_records_path, notice: "Treatment record was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
     end
   end

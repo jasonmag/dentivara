@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   delete "logout", to: "sessions#destroy"
 
   root "home#index"
+  get "dashboard", to: "home#dashboard"
 
   resources :users
   resources :patients do

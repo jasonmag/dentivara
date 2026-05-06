@@ -17,24 +17,40 @@ class ClinicServicesController < ApplicationController
   def create
     @clinic_service = ClinicService.new(clinic_service_params)
 
-    if @clinic_service.save
-      redirect_to @clinic_service, notice: "Service was successfully created."
-    else
-      render :new, status: :unprocessable_entity
+    respond_to do |format|
+      if @clinic_service.save
+        format.html { redirect_to @clinic_service, notice: "Service was successfully created." }
+        format.turbo_stream { redirect_to @clinic_service, notice: "Service was successfully created." }
+        format.json { render :show, status: :created, location: @clinic_service }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :new, status: :unprocessable_entity }
+        format.json { render json: @clinic_service.errors, status: :unprocessable_entity }
+      end
     end
   end
 
   def update
-    if @clinic_service.update(clinic_service_params)
-      redirect_to @clinic_service, notice: "Service was successfully updated.", status: :see_other
-    else
-      render :edit, status: :unprocessable_entity
+    respond_to do |format|
+      if @clinic_service.update(clinic_service_params)
+        format.html { redirect_to @clinic_service, notice: "Service was successfully updated.", status: :see_other }
+        format.turbo_stream { redirect_to @clinic_service, notice: "Service was successfully updated.", status: :see_other }
+        format.json { render :show, status: :ok, location: @clinic_service }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :edit, status: :unprocessable_entity }
+        format.json { render json: @clinic_service.errors, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @clinic_service.destroy!
-    redirect_to clinic_services_path, notice: "Service was successfully deleted.", status: :see_other
+    respond_to do |format|
+      format.html { redirect_to clinic_services_path, notice: "Service was successfully deleted.", status: :see_other }
+      format.turbo_stream { redirect_to clinic_services_path, notice: "Service was successfully deleted.", status: :see_other }
+      format.json { head :no_content }
+    end
   end
 
   private

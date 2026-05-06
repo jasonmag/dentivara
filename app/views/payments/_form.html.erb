@@ -1,14 +1,5 @@
 <%= form_with(model: payment) do |form| %>
-  <% if payment.errors.any? %>
-    <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-      <p class="font-semibold"><%= pluralize(payment.errors.count, "error") %> prevented this payment from being saved:</p>
-      <ul class="mt-2 list-disc pl-5">
-        <% payment.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%= render "shared/form_errors", model: payment %>
 
   <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
     <div>
