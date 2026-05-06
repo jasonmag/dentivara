@@ -5,7 +5,47 @@ class PatientsController < ApplicationController
 
   # GET /patients or /patients.json
   def index
+    @search_query = params[:search].to_s.strip
     @patients = Patient.order(updated_at: :desc)
+    if @search_query.present?
+      q = Patient.sanitize_sql_like(@search_query.downcase)
+      contains_term = "%#{q}%"
+      starts_term = "#{q}%"
+
+      email_user_sql = "LOWER(CASE WHEN INSTR(COALESCE(email, ''), '@') > 0 THEN SUBSTR(COALESCE(email, ''), 1, INSTR(COALESCE(email, ''), '@') - 1) ELSE COALESCE(email, '') END)"
+      full_name_sql = "LOWER(COALESCE(first_name, '') || ' ' || COALESCE(last_name, ''))"
+      email_match_sql = @search_query.include?("@") ? "LOWER(COALESCE(email, ''))" : email_user_sql
+
+      filter_conditions = [
+        "LOWER(COALESCE(first_name, '')) LIKE :contains_term",
+        "LOWER(COALESCE(last_name, '')) LIKE :contains_term",
+        "#{full_name_sql} LIKE :contains_term",
+        "LOWER(COALESCE(phone, '')) LIKE :contains_term",
+        "LOWER(COALESCE(emergency_contact_name, '')) LIKE :contains_term",
+        "LOWER(COALESCE(emergency_contact_phone, '')) LIKE :contains_term",
+        "#{email_match_sql} LIKE :contains_term"
+      ]
+
+      # Relevance ranking: prefix matches rank higher than contains matches.
+      order_sql = <<~SQL.squish
+        CASE
+          WHEN #{full_name_sql} = :exact_term THEN 0
+          WHEN LOWER(COALESCE(first_name, '')) LIKE :starts_term THEN 1
+          WHEN LOWER(COALESCE(last_name, '')) LIKE :starts_term THEN 2
+          WHEN #{full_name_sql} LIKE :starts_term THEN 3
+          WHEN #{email_match_sql} LIKE :starts_term THEN 4
+          WHEN LOWER(COALESCE(phone, '')) LIKE :starts_term THEN 5
+          WHEN LOWER(COALESCE(emergency_contact_name, '')) LIKE :starts_term THEN 6
+          WHEN LOWER(COALESCE(emergency_contact_phone, '')) LIKE :starts_term THEN 7
+          ELSE 8
+        END ASC,
+        updated_at DESC
+      SQL
+
+      @patients = @patients
+        .where(filter_conditions.join(" OR "), contains_term: contains_term)
+        .order(Arel.sql(Patient.send(:sanitize_sql_array, [order_sql, exact_term: q, starts_term: starts_term])))
+    end
     @active_treatment_count = TreatmentRecord.where(performed_on: 30.days.ago.to_date..Date.current).select(:patient_id).distinct.count
     @urgent_cases_count = Appointment.where(status: "confirmed").where("starts_at <= ?", 24.hours.from_now).count
     @attendance_rate = appointment_attendance_rate

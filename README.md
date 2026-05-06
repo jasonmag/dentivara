@@ -58,6 +58,8 @@
 - `POST /login` -> `sessions#create`
 - `DELETE /logout` -> `sessions#destroy`
 - `GET /dashboard` -> `home#dashboard` (authenticated app dashboard)
+- `GET /patients` -> `patients#index` (patient directory)
+  - Search: `GET /patients?search=<name_or_keyword>` -> filtered patient results
 - `GET /appointments?date=YYYY-MM-DD` -> filtered day view within appointments index
 
 ## Multiplatform API Access

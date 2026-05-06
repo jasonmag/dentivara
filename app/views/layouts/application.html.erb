@@ -18,8 +18,10 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="<%= current_user.present? ? 'app-shell' : 'public-shell' %>">
-    <% if current_user.present? %>
+  <% public_page = (controller_name == "home" && action_name == "index") || (controller_name == "sessions" && %w[new create].include?(action_name)) %>
+  <% use_app_shell = current_user.present? && !public_page %>
+  <body class="<%= use_app_shell ? 'app-shell' : 'public-shell' %>">
+    <% if use_app_shell %>
       <div class="app-layout">
         <aside class="app-sidebar">
           <div class="px-2 pb-8">
@@ -93,10 +95,6 @@
           <header class="app-main-header">
             <div class="flex items-center gap-8">
               <span class="hidden font-serif text-lg font-bold tracking-tight text-stone-900 md:block">Dentivara</span>
-              <div class="relative hidden lg:block">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-stone-400">search</span>
-                <input class="w-64 rounded-full border-none bg-stone-100 px-4 py-1.5 pl-10 text-sm focus:ring-1 focus:ring-[#8BA88E]" placeholder="Search patients or records..." type="text">
-              </div>
             </div>
             <div class="flex items-center gap-5 text-stone-500">
               <span class="material-symbols-outlined">notifications</span>

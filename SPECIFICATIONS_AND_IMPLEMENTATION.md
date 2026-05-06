@@ -92,7 +92,9 @@
 - Refreshed UI to the latest Stitch **Serene Dental** pack and applied across modules:
   - global shell rethemed to serene palette with serif headlines (`Noto Serif`) + Manrope body text
   - dashboard updated to serene schedule + financial snapshot presentation
-  - patient directory page rebuilt with KPI cards and structured patient table
+  - patient directory page rebuilt with KPI cards, a patient search function directly under the cards, and a structured patient table/list below
+  - patient search is live (per-character with debounce), updates in the background via Turbo Frame (no full page refresh), and auto-resyncs to the latest typed query to avoid stale result flashes from overlapping requests
+  - patient search uses case-insensitive contains matching across patient name, email, contact number, emergency contact name, and emergency contact number
   - booking/scheduling page rebuilt as weekly schedule with daily grouped appointments
   - billing/revenue page rebuilt with financial KPIs and richer invoice status table
   - payment ledger page aligned to billing visual language

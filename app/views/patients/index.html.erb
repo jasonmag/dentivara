@@ -31,38 +31,61 @@
     </article>
   </section>
 
-  <section class="table-shell">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Patient</th>
-          <th>Contact</th>
-          <th>Emergency Contact</th>
-          <th>Last Updated</th>
-          <th class="text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @patients.each do |patient| %>
-          <tr>
-            <td>
-              <div class="font-semibold text-stone-800"><%= patient.full_name %></div>
-              <div class="text-xs text-stone-500"><%= patient.email.presence || "No email" %></div>
-            </td>
-            <td>
-              <div><%= patient.phone %></div>
-            </td>
-            <td>
-              <div><%= patient.emergency_contact_name.presence || "N/A" %></div>
-              <div class="text-xs text-stone-500"><%= patient.emergency_contact_phone.presence || "N/A" %></div>
-            </td>
-            <td><%= l(patient.updated_at, format: :short) %></td>
-            <td class="text-right">
-              <%= link_to "View", patient_path(patient), class: "btn btn-secondary px-3 py-1.5 text-xs" %>
-            </td>
-          </tr>
+  <section class="rounded-3xl border border-sky-100 bg-white/90 p-5 shadow-sm">
+    <%= form_with url: patients_path, method: :get, data: { controller: "patient-search", turbo_frame: "patients_results" }, class: "flex flex-col gap-3 md:flex-row md:items-end" do %>
+      <div class="w-full md:max-w-xl">
+        <label for="patients_search" class="text-xs font-semibold uppercase tracking-wider text-stone-500">Search Patients</label>
+        <%= text_field_tag :search, @search_query, id: "patients_search", placeholder: "Search by name, email, or phone", data: { action: "input->patient-search#scheduleSubmit", patient_search_target: "input" }, class: "mt-2 w-full rounded-xl border border-stone-200 px-4 py-2.5 text-sm text-stone-700 shadow-sm focus:border-[#2B6CB0] focus:outline-none focus:ring-2 focus:ring-[#2B6CB0]/20" %>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= submit_tag "Search", class: "btn btn-primary px-5 py-2.5" %>
+        <% if @search_query.present? %>
+          <%= link_to "Clear", patients_path, data: { turbo_frame: "patients_results" }, class: "btn btn-secondary px-5 py-2.5" %>
         <% end %>
-      </tbody>
-    </table>
+      </div>
+    <% end %>
   </section>
+
+  <%= turbo_frame_tag "patients_results", data: { search_query: @search_query.to_s } do %>
+    <section class="table-shell">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Contact</th>
+            <th>Emergency Contact</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @patients.any? %>
+            <% @patients.each do |patient| %>
+              <tr>
+                <td>
+                  <div class="font-semibold text-stone-800"><%= patient.full_name %></div>
+                  <div class="text-xs text-stone-500"><%= patient.email.presence || "No email" %></div>
+                </td>
+                <td>
+                  <div><%= patient.phone %></div>
+                </td>
+                <td>
+                  <div><%= patient.emergency_contact_name.presence || "N/A" %></div>
+                  <div class="text-xs text-stone-500"><%= patient.emergency_contact_phone.presence || "N/A" %></div>
+                </td>
+                <td class="text-right">
+                  <%= link_to "View", patient_path(patient), class: "btn btn-secondary px-3 py-1.5 text-xs" %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="4" class="py-10 text-center text-sm text-stone-500">
+                No patients found<%= @search_query.present? ? " for \"#{@search_query}\"" : "" %>.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+  <% end %>
 </div>
