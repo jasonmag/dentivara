@@ -21,6 +21,9 @@ class DocumentTemplate < ApplicationRecord
 
   has_one_attached :logo
 
+  scope :kept, -> { where(deleted_at: nil) }
+  scope :deleted, -> { where.not(deleted_at: nil) }
+
   validates :name, :kind, presence: true
   validates :kind, inclusion: { in: KINDS }
   validate :default_for_prescription_must_be_prescription_kind
@@ -77,6 +80,14 @@ class DocumentTemplate < ApplicationRecord
     }
   end
 
+  def soft_delete!
+    update!(deleted_at: Time.current, default_for_prescription: false)
+  end
+
+  def deleted?
+    deleted_at.present?
+  end
+
   private
 
   def interpolate_placeholders(text, values)
@@ -116,9 +127,9 @@ class DocumentTemplate < ApplicationRecord
   end
 
   def single_default_for_prescription
-    return unless default_for_prescription? && kind == "prescription"
+    return unless !deleted? && active? && default_for_prescription? && kind == "prescription"
 
-    existing = DocumentTemplate.where(kind: "prescription", default_for_prescription: true).where.not(id: id)
+    existing = DocumentTemplate.kept.where(kind: "prescription", active: true, default_for_prescription: true).where.not(id: id)
     errors.add(:default_for_prescription, "already set on another prescription template") if existing.exists?
   end
 end

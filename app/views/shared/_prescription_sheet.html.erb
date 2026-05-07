@@ -2,7 +2,7 @@
 <% header_lines = rendered[:header].to_s.lines.map(&:strip).reject(&:blank?) %>
 <% footer_lines = rendered[:footer].to_s.lines.map(&:strip).reject(&:blank?) %>
 
-<article class="prescription-sheet overflow-hidden rounded-xl border border-stone-300 bg-white shadow-sm">
+<article class="prescription-sheet overflow-hidden rounded-xl border border-stone-300 bg-white text-left shadow-sm">
   <header class="prescription-header flex items-start justify-between gap-4 border-b-2 border-stone-900 px-7 py-6">
     <div class="min-w-0">
       <h1 class="clinic-name text-2xl font-bold tracking-tight text-stone-900"><%= header_lines.first.presence || "Dentivara Dental Clinic" %></h1>
@@ -31,7 +31,7 @@
 
   <section class="prescription-body relative min-h-[360px] px-7 py-7">
     <div class="rx-watermark pointer-events-none absolute left-8 top-8 text-[120px] font-bold leading-none text-stone-100">Rx</div>
-    <pre class="prescription-content relative z-10 ml-20 whitespace-pre-wrap text-[15px] leading-relaxed text-stone-900"><%= rendered[:body] %></pre>
+    <pre class="prescription-content relative z-10 ml-20 whitespace-pre-wrap text-left text-[15px] leading-relaxed text-stone-900"><%= rendered[:body] %></pre>
   </section>
 
   <section class="prescription-signature flex justify-end px-7 pb-6">

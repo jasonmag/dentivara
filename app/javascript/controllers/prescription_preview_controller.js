@@ -26,8 +26,8 @@ export default class extends Controller {
           <title></title>
           <base href="${window.location.origin}">
           <style>
-            body { font-family: "Times New Roman", serif; margin: 24px; color: #111; }
-            .prescription-sheet { border: 1px solid #d1d5db; border-radius: 10px; overflow: hidden; background: #fff; }
+            body { font-family: "Times New Roman", serif; margin: 24px; color: #111; text-align: left; }
+            .prescription-sheet { border: 1px solid #d1d5db; border-radius: 10px; overflow: hidden; background: #fff; text-align: left; }
             .prescription-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 28px 32px 22px; border-bottom: 2px solid #111; }
             .clinic-name { margin: 0; font-family: Arial, sans-serif; font-size: 28px; font-weight: 700; color: #111; }
             .clinic-details { margin-top: 6px; white-space: pre-line; font-family: Arial, sans-serif; font-size: 13px; line-height: 1.55; color: #333; }
@@ -39,7 +39,7 @@ export default class extends Controller {
             .field-line { min-height: 22px; flex: 1; border-bottom: 1px solid #6b7280; padding: 0 8px; color: #111; }
             .prescription-body { position: relative; min-height: 360px; padding: 28px 32px; }
             .rx-watermark { position: absolute; left: 34px; top: 30px; color: #f3f4f6; font-size: 120px; font-weight: 700; line-height: 1; pointer-events: none; }
-            .prescription-content { position: relative; z-index: 1; margin: 0 0 0 92px; white-space: pre-wrap; font-size: 15px; line-height: 1.65; color: #111; }
+            .prescription-content { position: relative; z-index: 1; margin: 0 0 0 92px; white-space: pre-wrap; font-size: 15px; line-height: 1.65; color: #111; text-align: left; }
             .prescription-signature { display: flex; justify-content: flex-end; padding: 0 32px 24px; }
             .prescription-signature > div { width: 260px; text-align: center; }
             .signature-image { max-height: 64px; max-width: 220px; object-fit: contain; display: block; margin: 0 auto; }

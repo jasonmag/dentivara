@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_08_123000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_08_130000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -128,6 +128,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_123000) do
     t.datetime "updated_at", null: false
     t.boolean "default_for_prescription", default: false, null: false
     t.text "information_header_text"
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_document_templates_on_deleted_at"
+    t.index ["kind", "active", "deleted_at"], name: "idx_doc_templates_kind_active_deleted_at"
     t.index ["kind", "active"], name: "index_document_templates_on_kind_and_active"
     t.index ["kind", "default_for_prescription"], name: "idx_doc_templates_kind_default"
   end

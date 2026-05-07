@@ -31,7 +31,12 @@
               <td><%= prescription.status.humanize %></td>
               <td><%= prescription.drafted_by_user.name %></td>
               <td><%= prescription.signed_by_user&.name || "N/A" %></td>
-              <td class="text-right"><%= link_to "View", patient_prescription_path(@patient, prescription), class: "btn btn-secondary px-3 py-1.5 text-xs" %></td>
+              <td class="text-right">
+                <div class="flex justify-end gap-2">
+                  <%= link_to "Open", patient_prescription_path(@patient, prescription), class: "btn btn-secondary px-3 py-1.5 text-xs" %>
+                  <%= render "preview_dialog", patient: @patient, prescription: prescription %>
+                </div>
+              </td>
             </tr>
           <% end %>
         <% else %>

@@ -3,7 +3,7 @@ class DocumentTemplatesController < ApplicationController
   before_action -> { require_roles(:clinic_owner, :system_admin, :dentist, :receptionist) }
 
   def index
-    @document_templates = DocumentTemplate.order(:kind, :name)
+    @document_templates = DocumentTemplate.kept.order(:kind, :name)
   end
 
   def show
@@ -51,7 +51,7 @@ class DocumentTemplatesController < ApplicationController
   end
 
   def destroy
-    @document_template.destroy!
+    @document_template.soft_delete!
     respond_to do |format|
       format.html { redirect_to document_templates_path, notice: "Document template deleted successfully.", status: :see_other }
       format.turbo_stream { redirect_to document_templates_path, notice: "Document template deleted successfully.", status: :see_other }
@@ -96,10 +96,15 @@ class DocumentTemplatesController < ApplicationController
   def normalize_default_for_prescription(template)
     return unless template.kind == "prescription"
 
-    has_existing_default = DocumentTemplate.where(kind: "prescription", default_for_prescription: true).where.not(id: template.id).exists?
+    if template.deleted? || !ActiveModel::Type::Boolean.new.cast(template.active)
+      template.default_for_prescription = false
+      return
+    end
+
+    has_existing_default = DocumentTemplate.kept.where(kind: "prescription", active: true, default_for_prescription: true).where.not(id: template.id).exists?
     template.default_for_prescription = true if !has_existing_default && !template.default_for_prescription?
     return unless ActiveModel::Type::Boolean.new.cast(template.default_for_prescription)
 
-    DocumentTemplate.where(kind: "prescription", default_for_prescription: true).where.not(id: template.id).update_all(default_for_prescription: false)
+    DocumentTemplate.kept.where(kind: "prescription", active: true, default_for_prescription: true).where.not(id: template.id).update_all(default_for_prescription: false)
   end
 end
