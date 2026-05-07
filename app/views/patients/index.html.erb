@@ -6,10 +6,16 @@
       <h1 class="page-title">Patient Directory</h1>
       <p class="serene-subheading mt-1">Manage and monitor patient care cycles with serene precision.</p>
     </div>
-    <%= link_to new_patient_path, class: "btn btn-primary gap-2 px-6 py-3" do %>
-      <span class="material-symbols-outlined">person_add</span>
-      <span>Register New Patient</span>
-    <% end %>
+    <div class="flex flex-wrap gap-2">
+      <%= link_to dental_chart_surfaces_report_path, class: "btn btn-secondary gap-2 px-5 py-3" do %>
+        <span class="material-symbols-outlined">query_stats</span>
+        <span>Surface Report</span>
+      <% end %>
+      <%= link_to new_patient_path, class: "btn btn-primary gap-2 px-6 py-3" do %>
+        <span class="material-symbols-outlined">person_add</span>
+        <span>Register New Patient</span>
+      <% end %>
+    </div>
   </section>
 
   <section class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -73,7 +79,7 @@
                   <div class="text-xs text-stone-500"><%= patient.emergency_contact_phone.presence || "N/A" %></div>
                 </td>
                 <td class="text-right">
-                  <%= link_to "View", patient_path(patient), class: "btn btn-secondary px-3 py-1.5 text-xs" %>
+                  <%= link_to "View", patient_path(patient), data: { turbo_frame: "_top" }, class: "btn btn-secondary px-3 py-1.5 text-xs" %>
                 </td>
               </tr>
             <% end %>

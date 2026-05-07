@@ -3,6 +3,9 @@ class User < ApplicationRecord
 
   has_many :appointments, dependent: :destroy
   has_many :treatment_records, dependent: :destroy
+  has_many :dental_chart_entries, dependent: :restrict_with_exception
+  has_many :drafted_prescriptions, class_name: "Prescription", foreign_key: :drafted_by_user_id, dependent: :restrict_with_exception
+  has_many :signed_prescriptions, class_name: "Prescription", foreign_key: :signed_by_user_id, dependent: :nullify
   has_one :patient, dependent: :nullify
   has_secure_password validations: false
 

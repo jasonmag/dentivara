@@ -116,7 +116,13 @@ class PatientsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def patient_params
-      params.expect(patient: [ :first_name, :last_name, :birth_date, :phone, :email, :emergency_contact_name, :emergency_contact_phone, :medical_history, :consented_at ])
+      params.expect(patient: [
+        :first_name, :last_name, :birth_date, :phone, :email,
+        :emergency_contact_name, :emergency_contact_phone, :medical_history, :consented_at,
+        :chief_complaint, :known_allergies, :current_medications, :medical_conditions, :last_dental_visit_on,
+        :address_line1, :address_line2, :city, :state, :postal_code, :preferred_contact_method,
+        :insurance_provider, :insurance_policy_number, :dental_chart
+      ])
     end
 
     def appointment_attendance_rate

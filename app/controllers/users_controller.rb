@@ -3,7 +3,16 @@ class UsersController < ApplicationController
 
   # GET /users or /users.json
   def index
+    @search_query = params[:search].to_s.strip
     @users = User.order(updated_at: :desc)
+
+    return if @search_query.blank?
+
+    query = "%#{ActiveRecord::Base.sanitize_sql_like(@search_query.downcase)}%"
+    @users = @users.where(
+      "LOWER(name) LIKE :query OR LOWER(email) LIKE :query OR LOWER(role) LIKE :query",
+      query: query
+    )
   end
 
   # GET /users/1 or /users/1.json

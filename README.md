@@ -10,6 +10,35 @@
 
 ### Implemented in This Update
 
+- Implemented clinic workflow-aligned patient care features:
+  - structured dental chart entries per patient with:
+    - tooth code
+    - chart entry type (exam/diagnosis/procedure/periodontal/restorative/notes)
+    - notes
+    - optional marked dental chart image upload (assistant/dentist annotated image)
+    - in-browser annotation canvas (mouse/touch drawing) that saves the marked chart image to patient records
+    - default preloaded adult odontogram (FDI 18-48) with per-tooth outlines and M/O/D/B/L surface markers when no image is uploaded
+    - localized default chart asset (`app/assets/images/default_odontogram.jpg`) to avoid cross-origin canvas save issues
+    - annotation tools: brush color picker, brush size, eraser, and clear
+    - interactive surface charting: click tooth surfaces and apply status colors (caries, filling, missing, crown, root canal, watch)
+    - structured odontogram data persistence: each surface click is stored as tooth/surface/status JSON in patient chart entries
+    - recorded date
+    - recorded-by user traceability
+  - prescription workflow per patient:
+    - `draft` creation by assistant/dentist roles
+    - `finalized` state before signature
+    - `signed` state with digital signature metadata (`signed_by_user`, `signed_at`, signature snapshot)
+  - patient page now includes:
+    - dental charting section with add-entry form and history table
+    - prescriptions section with quick create/list/view actions
+- Expanded patient profile capture for dental clinic workflows:
+  - charting notes (`dental_chart`)
+  - chief complaint
+  - allergies, medications, and relevant medical conditions
+  - last dental visit date
+  - preferred contact method
+  - address fields
+  - insurance provider and policy number
 - Added CORS support for API routes via `rack-cors`.
 - Added API CORS initializer at `config/initializers/cors.rb`.
 - API requests under `/api/*` now force JSON format in `Api::V1::BaseController`.
@@ -60,7 +89,16 @@
 - `GET /dashboard` -> `home#dashboard` (authenticated app dashboard)
 - `GET /patients` -> `patients#index` (patient directory)
   - Search: `GET /patients?search=<name_or_keyword>` -> filtered patient results
+- `GET /users` -> `users#index` (settings user management)
+  - Search: `GET /users?search=<name_or_email_or_role>` -> filtered users list in Settings
 - `GET /appointments?date=YYYY-MM-DD` -> filtered day view within appointments index
+- `POST /patients/:patient_id/dental_chart_entries` -> add patient chart entry (assistant/dentist/admin roles)
+- `GET /reports/dental_chart_surfaces` -> filter/report structured odontogram marks by status, tooth, and surface
+- `GET /patients/:patient_id/prescriptions` -> list patient prescriptions
+- `GET /patients/:patient_id/prescriptions/new` -> create prescription draft
+- `POST /patients/:patient_id/prescriptions` -> save prescription draft
+- `PATCH /patients/:patient_id/prescriptions/:id/finalize` -> finalize draft
+- `PATCH /patients/:patient_id/prescriptions/:id/sign` -> digitally sign finalized prescription (dentist/admin roles)
 
 ## Multiplatform API Access
 

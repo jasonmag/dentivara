@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_05_234200) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_07_133000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -97,6 +97,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_05_234200) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_clinic_services_on_name", unique: true
+  end
+
+  create_table "dental_chart_entries", force: :cascade do |t|
+    t.integer "patient_id", null: false
+    t.integer "user_id", null: false
+    t.string "tooth_code"
+    t.string "entry_type", null: false
+    t.text "notes", null: false
+    t.date "recorded_on", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.json "surface_marks", default: [], null: false
+    t.index ["entry_type"], name: "index_dental_chart_entries_on_entry_type"
+    t.index ["patient_id", "recorded_on"], name: "index_dental_chart_entries_on_patient_id_and_recorded_on"
+    t.index ["patient_id"], name: "index_dental_chart_entries_on_patient_id"
+    t.index ["user_id"], name: "index_dental_chart_entries_on_user_id"
   end
 
   create_table "document_templates", force: :cascade do |t|
@@ -186,6 +202,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_05_234200) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id"
+    t.text "dental_chart"
+    t.text "chief_complaint"
+    t.text "known_allergies"
+    t.text "current_medications"
+    t.text "medical_conditions"
+    t.date "last_dental_visit_on"
+    t.string "address_line1"
+    t.string "address_line2"
+    t.string "city"
+    t.string "state"
+    t.string "postal_code"
+    t.string "preferred_contact_method"
+    t.string "insurance_provider"
+    t.string "insurance_policy_number"
     t.index ["user_id"], name: "index_patients_on_user_id", unique: true
   end
 
@@ -198,6 +228,26 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_05_234200) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["invoice_id"], name: "index_payments_on_invoice_id"
+  end
+
+  create_table "prescriptions", force: :cascade do |t|
+    t.integer "patient_id", null: false
+    t.integer "document_template_id"
+    t.integer "drafted_by_user_id", null: false
+    t.integer "signed_by_user_id"
+    t.string "status", default: "draft", null: false
+    t.date "issued_on", null: false
+    t.datetime "signed_at"
+    t.text "body", null: false
+    t.text "signature_snapshot"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["document_template_id"], name: "index_prescriptions_on_document_template_id"
+    t.index ["drafted_by_user_id"], name: "index_prescriptions_on_drafted_by_user_id"
+    t.index ["patient_id", "issued_on"], name: "index_prescriptions_on_patient_id_and_issued_on"
+    t.index ["patient_id"], name: "index_prescriptions_on_patient_id"
+    t.index ["signed_by_user_id"], name: "index_prescriptions_on_signed_by_user_id"
+    t.index ["status"], name: "index_prescriptions_on_status"
   end
 
   create_table "treatment_records", force: :cascade do |t|
@@ -231,6 +281,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_05_234200) do
   add_foreign_key "appointments", "patients"
   add_foreign_key "appointments", "users"
   add_foreign_key "audit_logs", "users"
+  add_foreign_key "dental_chart_entries", "patients"
+  add_foreign_key "dental_chart_entries", "users"
   add_foreign_key "intake_form_submissions", "patients"
   add_foreign_key "intake_form_submissions", "users", column: "submitted_by_user_id"
   add_foreign_key "invoices", "patients"
@@ -240,6 +292,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_05_234200) do
   add_foreign_key "patient_consents", "users"
   add_foreign_key "patients", "users"
   add_foreign_key "payments", "invoices"
+  add_foreign_key "prescriptions", "document_templates"
+  add_foreign_key "prescriptions", "patients"
+  add_foreign_key "prescriptions", "users", column: "drafted_by_user_id"
+  add_foreign_key "prescriptions", "users", column: "signed_by_user_id"
   add_foreign_key "treatment_records", "appointments"
   add_foreign_key "treatment_records", "patients"
   add_foreign_key "treatment_records", "users"

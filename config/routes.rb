@@ -9,8 +9,16 @@ Rails.application.routes.draw do
   get "dashboard", to: "home#dashboard"
 
   resources :users
+  get "reports/dental_chart_surfaces", to: "reports#dental_chart_surfaces", as: :dental_chart_surfaces_report
   resources :patients do
     resources :patient_consents, only: :create
+    resources :dental_chart_entries, only: :create
+    resources :prescriptions, only: %i[index show new create] do
+      member do
+        patch :finalize
+        patch :sign
+      end
+    end
   end
   resources :appointments
   resources :treatment_records

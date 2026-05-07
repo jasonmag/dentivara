@@ -6,6 +6,186 @@
   </div>
 
   <div class="app-card">
+    <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+      <div>
+        <h2 class="font-serif text-xl text-stone-800">Dental Chart Entries</h2>
+        <p class="serene-subheading mt-1">Assistants and dentists can add structured chart notes per visit.</p>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <%= form_with model: [@patient, DentalChartEntry.new], class: "grid grid-cols-1 gap-3 md:grid-cols-5", data: { controller: "chart-annotator", chart_annotator_default_image_url_value: image_path("default_odontogram.png") } do |form| %>
+        <div>
+          <%= form.label :recorded_on, class: "input-label" %>
+          <%= form.date_field :recorded_on, class: "input-field", value: Date.current %>
+        </div>
+        <div>
+          <%= form.label :tooth_code, "Tooth", class: "input-label" %>
+          <%= form.text_field :tooth_code, class: "input-field", placeholder: "e.g., 16, 31, A" %>
+        </div>
+        <div>
+          <%= form.label :entry_type, class: "input-label" %>
+          <%= form.select :entry_type, DentalChartEntry::ENTRY_TYPES.map { |type| [type.humanize, type] }, {}, class: "input-field" %>
+        </div>
+        <div class="md:col-span-2">
+          <%= form.label :notes, class: "input-label" %>
+          <%= form.text_field :notes, class: "input-field", placeholder: "Findings, procedure, restorations, periodontal observations..." %>
+        </div>
+        <div class="md:col-span-5">
+          <%= form.label :chart_image, "Marked Dental Chart Image", class: "input-label" %>
+          <%= form.file_field :chart_image, direct_upload: true, accept: "image/png,image/jpeg,image/webp", class: "input-field", data: { chart_annotator_target: "file", action: "change->chart-annotator#loadImage" } %>
+          <p class="mt-1 text-xs text-stone-500">Optional upload. A default adult dental chart is preloaded for direct annotation.</p>
+        </div>
+        <div class="md:col-span-5 rounded-xl border border-stone-200 bg-stone-50 p-3">
+          <div class="mb-2 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <p class="text-sm font-semibold text-stone-700">In-Browser Chart Annotation</p>
+            <div class="flex flex-wrap items-center gap-2">
+              <label class="text-xs text-stone-600">
+                Surface Status
+                <select class="input-field ml-1 inline-block w-40 py-1.5 text-xs" data-chart-annotator-target="status" data-action="change->chart-annotator#updateStatus">
+                  <option value="caries">Caries</option>
+                  <option value="filling">Filling</option>
+                  <option value="missing">Missing</option>
+                  <option value="crown">Crown</option>
+                  <option value="root_canal">Root Canal</option>
+                  <option value="watch">Watch</option>
+                </select>
+              </label>
+              <label class="text-xs text-stone-600">
+                Color
+                <input type="color" value="#c0392b" class="ml-1 h-8 w-8 cursor-pointer rounded border border-stone-300 align-middle" data-chart-annotator-target="color" data-action="input->chart-annotator#updateBrushColor">
+              </label>
+              <label class="text-xs text-stone-600">
+                Size
+                <input type="range" min="1" max="14" value="3" class="ml-1 w-24 align-middle" data-chart-annotator-target="size" data-action="input->chart-annotator#updateBrushSize">
+              </label>
+              <button type="button" class="btn btn-secondary px-3 py-1.5 text-xs" data-chart-annotator-target="eraser" data-action="chart-annotator#toggleEraser">Eraser</button>
+              <button type="button" class="btn btn-secondary px-3 py-1.5 text-xs" data-chart-annotator-target="clear" data-action="chart-annotator#clearCanvas">Clear Annotations</button>
+            </div>
+          </div>
+          <div class="relative overflow-auto rounded-lg border border-stone-300 bg-white p-2">
+            <p class="absolute left-4 top-4 text-xs text-stone-500" data-chart-annotator-target="placeholder">Draw with mouse or touch. Upload to replace the default chart.</p>
+            <canvas data-chart-annotator-target="canvas" class="block max-w-full touch-none"></canvas>
+          </div>
+          <div class="mt-2 flex flex-wrap items-center gap-3 text-xs text-stone-600">
+            <span class="font-semibold">Legend:</span>
+            <span><span class="mr-1 inline-block h-3 w-3 rounded bg-red-600/60"></span>Caries</span>
+            <span><span class="mr-1 inline-block h-3 w-3 rounded bg-blue-600/50"></span>Filling</span>
+            <span><span class="mr-1 inline-block h-3 w-3 rounded bg-slate-600/60"></span>Missing</span>
+            <span><span class="mr-1 inline-block h-3 w-3 rounded bg-amber-500/60"></span>Crown</span>
+            <span><span class="mr-1 inline-block h-3 w-3 rounded bg-emerald-500/60"></span>Root Canal</span>
+            <span><span class="mr-1 inline-block h-3 w-3 rounded bg-purple-500/60"></span>Watch</span>
+          </div>
+          <%= hidden_field_tag "dental_chart_entry[annotated_image_data]", "", data: { chart_annotator_target: "hidden" } %>
+          <%= hidden_field_tag "dental_chart_entry[surface_marks_data]", "[]", data: { chart_annotator_target: "surfaceData" } %>
+        </div>
+        <div class="md:col-span-5 flex justify-end">
+          <%= form.submit "Add Chart Entry", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="table-shell">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Tooth</th>
+            <th>Type</th>
+            <th>Notes</th>
+            <th>Surface Marks</th>
+            <th>Chart Image</th>
+            <th>Recorded By</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% entries = @patient.dental_chart_entries.order(recorded_on: :desc, created_at: :desc).limit(30) %>
+          <% if entries.any? %>
+            <% entries.each do |entry| %>
+              <tr>
+                <td><%= l(entry.recorded_on, format: :long) %></td>
+                <td><%= entry.tooth_code.presence || "N/A" %></td>
+                <td><%= entry.entry_type.humanize %></td>
+                <td><%= entry.notes.presence || "N/A" %></td>
+                <td>
+                  <% if entry.surface_marks.present? %>
+                    <div class="max-w-xs space-y-1 text-xs text-stone-700">
+                      <% entry.surface_marks.first(8).each do |mark| %>
+                        <div><span class="font-semibold"><%= mark["tooth"] %>-<%= mark["surface"] %></span>: <%= mark["status"].to_s.humanize %></div>
+                      <% end %>
+                      <% if entry.surface_marks.size > 8 %>
+                        <div class="text-stone-500">+<%= entry.surface_marks.size - 8 %> more</div>
+                      <% end %>
+                    </div>
+                  <% else %>
+                    <span class="text-stone-500">N/A</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if entry.chart_image.attached? %>
+                    <div class="space-y-2">
+                      <%= image_tag entry.chart_image, class: "h-16 w-16 rounded border border-stone-200 object-cover" %>
+                      <%= link_to "Open", url_for(entry.chart_image), target: "_blank", rel: "noopener", class: "text-xs font-semibold text-[#4a654e] hover:underline" %>
+                    </div>
+                  <% else %>
+                    <span class="text-stone-500">N/A</span>
+                  <% end %>
+                </td>
+                <td><%= entry.user.name %></td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr><td colspan="7" class="py-10 text-center text-sm text-stone-500">No dental chart entries yet.</td></tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="app-card">
+    <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+      <div>
+        <h2 class="font-serif text-xl text-stone-800">Prescriptions</h2>
+        <p class="serene-subheading mt-1">Draft by assistant/dentist, finalize, then digitally sign by dentist.</p>
+      </div>
+      <div class="flex gap-2">
+        <%= link_to "View All", patient_prescriptions_path(@patient), class: "btn btn-secondary" %>
+        <%= link_to "New Prescription", new_patient_prescription_path(@patient), class: "btn btn-primary" %>
+      </div>
+    </div>
+
+    <div class="table-shell">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Issued On</th>
+            <th>Status</th>
+            <th>Drafted By</th>
+            <th>Signed By</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recent_prescriptions = @patient.prescriptions.recent_first.limit(10) %>
+          <% if recent_prescriptions.any? %>
+            <% recent_prescriptions.each do |prescription| %>
+              <tr>
+                <td><%= l(prescription.issued_on, format: :long) %></td>
+                <td><%= prescription.status.humanize %></td>
+                <td><%= prescription.drafted_by_user.name %></td>
+                <td><%= prescription.signed_by_user&.name || "N/A" %></td>
+                <td class="text-right"><%= link_to "View", patient_prescription_path(@patient, prescription), class: "btn btn-secondary px-3 py-1.5 text-xs" %></td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr><td colspan="5" class="py-10 text-center text-sm text-stone-500">No prescriptions yet.</td></tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="app-card">
     <h2 class="mb-3 font-serif text-xl text-stone-800">Consent Versions</h2>
     <div class="mb-4">
       <%= form_with model: [@patient, PatientConsent.new], class: "grid grid-cols-1 gap-3 md:grid-cols-4" do |form| %>

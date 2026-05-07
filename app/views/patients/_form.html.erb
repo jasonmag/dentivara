@@ -38,6 +38,62 @@
       <%= form.label :medical_history, class: "input-label" %>
       <%= form.textarea :medical_history, class: "input-field" %>
     </div>
+    <div class="md:col-span-2">
+      <%= form.label :chief_complaint, class: "input-label" %>
+      <%= form.textarea :chief_complaint, class: "input-field", placeholder: "Primary reason for today's dental visit" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :dental_chart, "Dental Charting Notes", class: "input-label" %>
+      <%= form.textarea :dental_chart, class: "input-field", rows: 6, placeholder: "Tooth numbers, conditions, restorations, and periodontal notes" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :known_allergies, class: "input-label" %>
+      <%= form.textarea :known_allergies, class: "input-field", placeholder: "Drug/latex/food allergies and reactions" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :current_medications, class: "input-label" %>
+      <%= form.textarea :current_medications, class: "input-field", placeholder: "Current medications and dosages" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :medical_conditions, class: "input-label" %>
+      <%= form.textarea :medical_conditions, class: "input-field", placeholder: "Relevant conditions (e.g., diabetes, hypertension, bleeding disorders)" %>
+    </div>
+    <div>
+      <%= form.label :last_dental_visit_on, class: "input-label" %>
+      <%= form.date_field :last_dental_visit_on, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :preferred_contact_method, class: "input-label" %>
+      <%= form.select :preferred_contact_method, [["Phone", "phone"], ["SMS", "sms"], ["Email", "email"]], { include_blank: "Select contact method" }, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :address_line1, class: "input-label" %>
+      <%= form.text_field :address_line1, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :address_line2, class: "input-label" %>
+      <%= form.text_field :address_line2, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :city, class: "input-label" %>
+      <%= form.text_field :city, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :state, class: "input-label" %>
+      <%= form.text_field :state, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :postal_code, class: "input-label" %>
+      <%= form.text_field :postal_code, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :insurance_provider, class: "input-label" %>
+      <%= form.text_field :insurance_provider, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :insurance_policy_number, class: "input-label" %>
+      <%= form.text_field :insurance_policy_number, class: "input-field" %>
+    </div>
   </div>
 
   <div class="mt-4">

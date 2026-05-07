@@ -195,6 +195,21 @@
     - audit chain integrity check summary
     - direct audit CSV export and retention task guidance
 
+### Clinical Workflow Enhancements (May 7, 2026)
+- Implemented operational flow support from intake through treatment documentation:
+  - patient profiles can be created/updated by patient-facing and clinic-side workflows
+  - assistant and dentist can both document chairside findings
+- Added structured charting module:
+  - `DentalChartEntry` with patient/user linkage
+  - per-entry date, tooth code, chart type, and notes
+  - chart history displayed on patient profile for continuity of care
+- Added prescription lifecycle module:
+  - `Prescription` model linked to patient and optional prescription template
+  - status workflow: `draft` -> `finalized` -> `signed`
+  - draft/finalize available to assistant/dentist/admin roles
+  - digital signing restricted to dentist/admin roles
+  - digital signature capture includes signer identity and timestamp snapshot
+
 ### Implemented Against Requested Scope
 - Patient Management:
   - Booking sources include online/social/phone/SMS/walk-in/admin
