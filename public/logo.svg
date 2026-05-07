@@ -1,7 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" role="img" aria-label="Dentivara logo">
   <rect width="720" height="200" rx="44" fill="#FAF9F7"/>
-  <rect x="36" y="36" width="128" height="128" rx="36" fill="#8BA88E"/>
-  <path fill="#FFFFFF" d="M100 68c-10 0-19-7-32-7-25 0-43 20-43 47 0 16 7 30 14 43 6 10 8 24 11 38 3 22 10 38 24 38 10 0 14-14 18-30 3-13 5-22 8-22s5 9 8 22c4 16 8 30 18 30 14 0 21-16 24-38 3-14 5-28 11-38 7-13 14-27 14-43 0-27-18-47-43-47-13 0-22 7-32 7Zm-33 30c-9 5-15 14-15 26 0 5-4 9-9 9s-9-4-9-9c0-19 10-35 25-42 5-3 10-1 12 4 3 5 1 10-4 12Z" transform="translate(0 -2)"/>
+  <g transform="translate(25 30) scale(0.292969)">
+    <rect width="512" height="512" rx="128" fill="#8BA88E"/>
+    <path fill="#FFFFFF" d="M256 142c-18 0-33-12-55-12-43 0-75 34-75 81 0 28 12 51 25 74 10 18 14 41 18 66 6 38 17 65 42 65 18 0 25-24 32-52 5-22 9-38 13-38s8 16 13 38c7 28 14 52 32 52 25 0 36-27 42-65 4-25 8-48 18-66 13-23 25-46 25-74 0-47-32-81-75-81-22 0-37 12-55 12Zm-56 52c-16 8-27 24-27 44 0 8-7 15-15 15s-15-7-15-15c0-32 18-59 43-72 8-4 17-1 21 7s1 17-7 21Z"/>
+  </g>
   <text x="196" y="94" fill="#1A1C1B" font-family="Noto Serif, Georgia, serif" font-size="52" font-weight="600" letter-spacing="-1.2">Dentivara</text>
   <text x="200" y="132" fill="#737972" font-family="Manrope, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="4">PREMIUM DENTAL CARE</text>
 </svg>
