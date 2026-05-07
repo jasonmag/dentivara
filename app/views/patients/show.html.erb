@@ -124,8 +124,12 @@
         <p class="serene-subheading mt-1">Draft by assistant/dentist, finalize, then digitally sign by dentist.</p>
       </div>
       <div class="flex gap-2">
-        <%= link_to "View All", patient_prescriptions_path(@patient), class: "btn btn-secondary" %>
-        <%= link_to "New Prescription", new_patient_prescription_path(@patient), class: "btn btn-primary" %>
+        <% if can_access_feature?(:prescriptions, :view) %>
+          <%= link_to "View All", patient_prescriptions_path(@patient), class: "btn btn-secondary" %>
+        <% end %>
+        <% if can_access_feature?(:prescriptions, :create) %>
+          <%= link_to "New Prescription", new_patient_prescription_path(@patient), class: "btn btn-primary" %>
+        <% end %>
       </div>
     </div>
 
@@ -212,9 +216,13 @@
   </div>
 
   <div class="flex flex-wrap gap-2">
-    <%= link_to "Edit", edit_patient_path(@patient), class: "btn btn-primary" %>
+    <% if can_access_feature?(:patients, :update) %>
+      <%= link_to "Edit", edit_patient_path(@patient), class: "btn btn-primary" %>
+    <% end %>
     <%= link_to "Back", patients_path, class: "btn btn-secondary" %>
-    <%= button_to "Destroy", @patient, method: :delete, class: "btn btn-danger" %>
+    <% if can_access_feature?(:patients, :destroy) %>
+      <%= button_to "Destroy", @patient, method: :delete, class: "btn btn-danger" %>
+    <% end %>
   </div>
 
   <dialog

@@ -6,7 +6,9 @@
       <h1 class="page-title">Treatment Records</h1>
       <p class="serene-subheading mt-1">Clinical procedures and outcomes across appointments.</p>
     </div>
-    <%= link_to "New Treatment Record", new_treatment_record_path, class: "btn btn-primary" %>
+    <% if can_access_feature?(:treatment_records, :create) %>
+      <%= link_to "New Treatment Record", new_treatment_record_path, class: "btn btn-primary" %>
+    <% end %>
   </section>
 
   <section class="table-shell">
@@ -29,7 +31,7 @@
             <td><%= record.service_type %></td>
             <td><%= number_to_currency(record.cost || 0) %></td>
             <td><%= l(record.performed_on, format: :long) %></td>
-            <td class="text-right"><%= link_to "View", treatment_record_path(record), class: "btn btn-secondary px-3 py-1.5 text-xs" %></td>
+            <td class="text-right"><% if can_access_feature?(:treatment_records, :view) %><%= link_to "View", treatment_record_path(record), class: "btn btn-secondary px-3 py-1.5 text-xs" %><% end %></td>
           </tr>
         <% end %>
       </tbody>

@@ -1,6 +1,9 @@
 class DocumentTemplatesController < ApplicationController
   before_action :set_document_template, only: %i[show edit update destroy preview]
-  before_action -> { require_roles(:clinic_owner, :system_admin, :dentist, :receptionist) }
+  before_action -> { require_permission!(:document_templates, :view) }, only: %i[index show preview]
+  before_action -> { require_permission!(:document_templates, :create) }, only: %i[new create]
+  before_action -> { require_permission!(:document_templates, :update) }, only: %i[edit update]
+  before_action -> { require_permission!(:document_templates, :destroy) }, only: :destroy
 
   def index
     @document_templates = DocumentTemplate.kept.order(:kind, :name)

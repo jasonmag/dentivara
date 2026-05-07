@@ -7,13 +7,17 @@
       <p class="serene-subheading mt-1">Managing revenue, outstanding balances, and billing flow.</p>
     </div>
     <div class="flex gap-3">
-      <%= link_to payments_path, class: "btn btn-secondary gap-2" do %>
-        <span class="material-symbols-outlined text-base">payments</span>
-        <span>View Payments</span>
+      <% if can_access_feature?(:payments, :view) %>
+        <%= link_to payments_path, class: "btn btn-secondary gap-2" do %>
+          <span class="material-symbols-outlined text-base">payments</span>
+          <span>View Payments</span>
+        <% end %>
       <% end %>
-      <%= link_to new_invoice_path, class: "btn btn-primary gap-2" do %>
-        <span class="material-symbols-outlined text-base">receipt_long</span>
-        <span>Create Invoice</span>
+      <% if can_access_feature?(:invoices, :create) %>
+        <%= link_to new_invoice_path, class: "btn btn-primary gap-2" do %>
+          <span class="material-symbols-outlined text-base">receipt_long</span>
+          <span>Create Invoice</span>
+        <% end %>
       <% end %>
     </div>
   </section>
@@ -61,7 +65,7 @@
             <td><%= number_to_currency(invoice.total_amount) %></td>
             <td><%= number_to_currency(invoice.balance_amount) %></td>
             <td><%= invoice.issued_on.present? ? l(invoice.issued_on, format: :long) : 'N/A' %></td>
-            <td class="text-right"><%= link_to "View", invoice_path(invoice), class: "btn btn-secondary px-3 py-1.5 text-xs" %></td>
+            <td class="text-right"><% if can_access_feature?(:invoices, :view) %><%= link_to "View", invoice_path(invoice), class: "btn btn-secondary px-3 py-1.5 text-xs" %><% end %></td>
           </tr>
         <% end %>
       </tbody>

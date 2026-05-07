@@ -2,6 +2,10 @@ class TreatmentRecordsController < ApplicationController
   include AccessTrackable
 
   before_action :set_treatment_record, only: %i[ show edit update destroy ]
+  before_action -> { require_permission!(:treatment_records, :view) }, only: %i[index show]
+  before_action -> { require_permission!(:treatment_records, :create) }, only: %i[new create]
+  before_action -> { require_permission!(:treatment_records, :update) }, only: %i[edit update]
+  before_action -> { require_permission!(:treatment_records, :destroy) }, only: :destroy
 
   # GET /treatment_records or /treatment_records.json
   def index

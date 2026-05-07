@@ -1,5 +1,6 @@
 class ReportsController < ApplicationController
   before_action -> { require_roles(:clinic_owner, :system_admin, :dentist, :receptionist) }
+  before_action -> { require_permission!(:reports, :view) }
 
   def dental_chart_surfaces
     @status_filter = params[:status].to_s.strip

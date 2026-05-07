@@ -40,39 +40,53 @@
               <span class="material-symbols-outlined">dashboard_customize</span>
               <span>Dashboard</span>
             <% end %>
-            <%= link_to patients_path, class: "app-nav-link #{current_page?(patients_path) ? 'is-active' : ''}" do %>
-              <span class="material-symbols-outlined">group</span>
-              <span>Patients</span>
+            <% if can_access_feature?(:patients, :view) %>
+              <%= link_to patients_path, class: "app-nav-link #{current_page?(patients_path) ? 'is-active' : ''}" do %>
+                <span class="material-symbols-outlined">group</span>
+                <span>Patients</span>
+              <% end %>
             <% end %>
-            <%= link_to appointments_path, class: "app-nav-link #{current_page?(appointments_path) ? 'is-active' : ''}" do %>
-              <span class="material-symbols-outlined">calendar_today</span>
-              <span>Schedule</span>
+            <% if can_access_feature?(:appointments, :view) %>
+              <%= link_to appointments_path, class: "app-nav-link #{current_page?(appointments_path) ? 'is-active' : ''}" do %>
+                <span class="material-symbols-outlined">calendar_today</span>
+                <span>Schedule</span>
+              <% end %>
             <% end %>
-            <%= link_to invoices_path, class: "app-nav-link #{(controller_name == 'invoices' || controller_name == 'payments') ? 'is-active' : ''}" do %>
-              <span class="material-symbols-outlined">account_balance_wallet</span>
-              <span>Billing</span>
+            <% if can_access_feature?(:invoices, :view) || can_access_feature?(:payments, :view) %>
+              <%= link_to invoices_path, class: "app-nav-link #{(controller_name == 'invoices' || controller_name == 'payments') ? 'is-active' : ''}" do %>
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                <span>Billing</span>
+              <% end %>
             <% end %>
-            <%= link_to users_path, class: "app-nav-link #{current_page?(users_path) ? 'is-active' : ''}" do %>
-              <span class="material-symbols-outlined">settings</span>
-              <span>Settings</span>
+            <% if can_access_feature?(:users, :view) %>
+              <%= link_to users_path, class: "app-nav-link #{current_page?(users_path) ? 'is-active' : ''}" do %>
+                <span class="material-symbols-outlined">settings</span>
+                <span>Settings</span>
+              <% end %>
             <% end %>
-            <% if current_user&.clinic_owner? || current_user&.system_admin? %>
+            <% if can_access_feature?(:audit_logs, :view) %>
               <%= link_to audit_logs_path, class: "app-nav-link #{current_page?(audit_logs_path) ? 'is-active' : ''}" do %>
                 <span class="material-symbols-outlined">fact_check</span>
                 <span>Audit Logs</span>
               <% end %>
+            <% end %>
+            <% if can_access_feature?(:compliance, :view) %>
               <%= link_to compliance_path, class: "app-nav-link #{current_page?(compliance_path) ? 'is-active' : ''}" do %>
                 <span class="material-symbols-outlined">shield</span>
                 <span>Compliance</span>
               <% end %>
             <% end %>
-            <%= link_to clinic_services_path, class: "app-nav-link #{current_page?(clinic_services_path) ? 'is-active' : ''}" do %>
-              <span class="material-symbols-outlined">medical_services</span>
-              <span>Services</span>
+            <% if can_access_feature?(:clinic_services, :view) %>
+              <%= link_to clinic_services_path, class: "app-nav-link #{current_page?(clinic_services_path) ? 'is-active' : ''}" do %>
+                <span class="material-symbols-outlined">medical_services</span>
+                <span>Services</span>
+              <% end %>
             <% end %>
-            <%= link_to document_templates_path, class: "app-nav-link #{current_page?(document_templates_path) ? 'is-active' : ''}" do %>
-              <span class="material-symbols-outlined">description</span>
-              <span>Documents</span>
+            <% if can_access_feature?(:document_templates, :view) %>
+              <%= link_to document_templates_path, class: "app-nav-link #{current_page?(document_templates_path) ? 'is-active' : ''}" do %>
+                <span class="material-symbols-outlined">description</span>
+                <span>Documents</span>
+              <% end %>
             <% end %>
             <% if current_user&.patient? %>
               <%= link_to portal_dashboard_path, class: "app-nav-link #{current_page?(portal_dashboard_path) ? 'is-active' : ''}" do %>
@@ -97,16 +111,30 @@
                 <summary class="btn btn-secondary list-none cursor-pointer px-3 py-2">Menu</summary>
                 <nav class="absolute left-0 top-12 z-40 w-64 space-y-1 rounded-xl border border-stone-200 bg-white p-3 shadow-xl">
                   <%= link_to "Dashboard", dashboard_path, class: "app-nav-link #{current_page?(dashboard_path) ? 'is-active' : ''}" %>
-                  <%= link_to "Patients", patients_path, class: "app-nav-link #{current_page?(patients_path) ? 'is-active' : ''}" %>
-                  <%= link_to "Schedule", appointments_path, class: "app-nav-link #{current_page?(appointments_path) ? 'is-active' : ''}" %>
-                  <%= link_to "Billing", invoices_path, class: "app-nav-link #{(controller_name == 'invoices' || controller_name == 'payments') ? 'is-active' : ''}" %>
-                  <%= link_to "Settings", users_path, class: "app-nav-link #{current_page?(users_path) ? 'is-active' : ''}" %>
-                  <% if current_user&.clinic_owner? || current_user&.system_admin? %>
+                  <% if can_access_feature?(:patients, :view) %>
+                    <%= link_to "Patients", patients_path, class: "app-nav-link #{current_page?(patients_path) ? 'is-active' : ''}" %>
+                  <% end %>
+                  <% if can_access_feature?(:appointments, :view) %>
+                    <%= link_to "Schedule", appointments_path, class: "app-nav-link #{current_page?(appointments_path) ? 'is-active' : ''}" %>
+                  <% end %>
+                  <% if can_access_feature?(:invoices, :view) || can_access_feature?(:payments, :view) %>
+                    <%= link_to "Billing", invoices_path, class: "app-nav-link #{(controller_name == 'invoices' || controller_name == 'payments') ? 'is-active' : ''}" %>
+                  <% end %>
+                  <% if can_access_feature?(:users, :view) %>
+                    <%= link_to "Settings", users_path, class: "app-nav-link #{current_page?(users_path) ? 'is-active' : ''}" %>
+                  <% end %>
+                  <% if can_access_feature?(:audit_logs, :view) %>
                     <%= link_to "Audit Logs", audit_logs_path, class: "app-nav-link #{current_page?(audit_logs_path) ? 'is-active' : ''}" %>
+                  <% end %>
+                  <% if can_access_feature?(:compliance, :view) %>
                     <%= link_to "Compliance", compliance_path, class: "app-nav-link #{current_page?(compliance_path) ? 'is-active' : ''}" %>
                   <% end %>
-                  <%= link_to "Services", clinic_services_path, class: "app-nav-link #{current_page?(clinic_services_path) ? 'is-active' : ''}" %>
-                  <%= link_to "Documents", document_templates_path, class: "app-nav-link #{current_page?(document_templates_path) ? 'is-active' : ''}" %>
+                  <% if can_access_feature?(:clinic_services, :view) %>
+                    <%= link_to "Services", clinic_services_path, class: "app-nav-link #{current_page?(clinic_services_path) ? 'is-active' : ''}" %>
+                  <% end %>
+                  <% if can_access_feature?(:document_templates, :view) %>
+                    <%= link_to "Documents", document_templates_path, class: "app-nav-link #{current_page?(document_templates_path) ? 'is-active' : ''}" %>
+                  <% end %>
                   <% if current_user&.patient? %>
                     <%= link_to "Patient Portal", portal_dashboard_path, class: "app-nav-link #{current_page?(portal_dashboard_path) ? 'is-active' : ''}" %>
                   <% end %>

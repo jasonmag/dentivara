@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_08_130000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_08_140000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -257,6 +257,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_130000) do
     t.index ["status"], name: "index_prescriptions_on_status"
   end
 
+  create_table "role_permissions", force: :cascade do |t|
+    t.integer "role", null: false
+    t.json "permissions", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["role"], name: "index_role_permissions_on_role", unique: true
+  end
+
   create_table "treatment_records", force: :cascade do |t|
     t.integer "patient_id", null: false
     t.integer "user_id", null: false
@@ -279,6 +287,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_130000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "password_digest"
+    t.json "permissions", default: {}, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

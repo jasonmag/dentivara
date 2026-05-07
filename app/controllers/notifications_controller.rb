@@ -1,5 +1,9 @@
 class NotificationsController < ApplicationController
   before_action :set_notification, only: %i[ show edit update destroy ]
+  before_action -> { require_permission!(:notifications, :view) }, only: %i[index show]
+  before_action -> { require_permission!(:notifications, :create) }, only: %i[new create]
+  before_action -> { require_permission!(:notifications, :update) }, only: %i[edit update]
+  before_action -> { require_permission!(:notifications, :destroy) }, only: :destroy
 
   # GET /notifications or /notifications.json
   def index

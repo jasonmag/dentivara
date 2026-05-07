@@ -8,6 +8,9 @@ class PrescriptionsController < ApplicationController
   before_action :set_prescription, only: %i[show finalize sign]
   before_action :require_prescription_writer!, only: %i[index show new create finalize render_template]
   before_action :require_dentist_signer!, only: :sign
+  before_action -> { require_permission!(:prescriptions, :view) }, only: %i[index show]
+  before_action -> { require_permission!(:prescriptions, :create) }, only: %i[new create render_template]
+  before_action -> { require_permission!(:prescriptions, :update) }, only: %i[finalize sign]
 
   def index
     @prescriptions = @patient.prescriptions.recent_first
@@ -127,11 +130,11 @@ class PrescriptionsController < ApplicationController
   end
 
   def require_prescription_writer!
-    require_roles(:clinic_owner, :system_admin, :dentist, :receptionist)
+    true
   end
 
   def require_dentist_signer!
-    require_roles(:clinic_owner, :system_admin, :dentist)
+    true
   end
 
   def attach_signature_image(prescription, data_url)

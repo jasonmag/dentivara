@@ -13,11 +13,17 @@
     <div class="kv-item sm:col-span-2"><p class="kv-label">Footer</p><p class="kv-value whitespace-pre-line"><%= @document_template.footer_text %></p></div>
   </div>
   <div class="flex flex-wrap gap-2">
-    <button type="button" class="btn btn-secondary" data-action="modal#open">Preview</button>
-    <%= link_to "Edit", edit_document_template_path(@document_template), class: "btn btn-primary" %>
+    <% if can_access_feature?(:document_templates, :view) %>
+      <button type="button" class="btn btn-secondary" data-action="modal#open">Preview</button>
+    <% end %>
+    <% if can_access_feature?(:document_templates, :update) %>
+      <%= link_to "Edit", edit_document_template_path(@document_template), class: "btn btn-primary" %>
+    <% end %>
     <%= link_to "Back", document_templates_path, class: "btn btn-secondary" %>
     <% unless @document_template.deleted? %>
-      <%= button_to "Delete Template", @document_template, method: :delete, class: "btn btn-danger", data: { turbo_confirm: "Delete this template? Existing prescriptions will keep using it, but it will be hidden from the app." } %>
+      <% if can_access_feature?(:document_templates, :destroy) %>
+        <%= button_to "Delete Template", @document_template, method: :delete, class: "btn btn-danger", data: { turbo_confirm: "Delete this template? Existing prescriptions will keep using it, but it will be hidden from the app." } %>
+      <% end %>
     <% end %>
   </div>
 

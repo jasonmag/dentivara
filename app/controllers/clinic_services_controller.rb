@@ -1,6 +1,9 @@
 class ClinicServicesController < ApplicationController
   before_action :set_clinic_service, only: %i[show edit update destroy]
-  before_action -> { require_roles(:clinic_owner, :system_admin, :receptionist, :dentist) }
+  before_action -> { require_permission!(:clinic_services, :view) }, only: %i[index show]
+  before_action -> { require_permission!(:clinic_services, :create) }, only: %i[new create]
+  before_action -> { require_permission!(:clinic_services, :update) }, only: %i[edit update]
+  before_action -> { require_permission!(:clinic_services, :destroy) }, only: :destroy
 
   def index
     @clinic_services = ClinicService.order(:name)

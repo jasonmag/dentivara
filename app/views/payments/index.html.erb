@@ -7,11 +7,15 @@
       <p class="serene-subheading mt-1">Track collections and references across all invoices.</p>
     </div>
     <div class="flex gap-3">
-      <%= link_to invoices_path, class: "btn btn-secondary" do %>
-        Back to Invoices
+      <% if can_access_feature?(:invoices, :view) %>
+        <%= link_to invoices_path, class: "btn btn-secondary" do %>
+          Back to Invoices
+        <% end %>
       <% end %>
-      <%= link_to new_payment_path, class: "btn btn-primary" do %>
-        New Payment
+      <% if can_access_feature?(:payments, :create) %>
+        <%= link_to new_payment_path, class: "btn btn-primary" do %>
+          New Payment
+        <% end %>
       <% end %>
     </div>
   </section>
@@ -40,7 +44,7 @@
             <td><%= payment.method.presence || 'N/A' %></td>
             <td><%= payment.paid_on.present? ? l(payment.paid_on, format: :long) : 'N/A' %></td>
             <td><%= payment.reference_code.presence || 'N/A' %></td>
-            <td class="text-right"><%= link_to "View", payment_path(payment), class: "btn btn-secondary px-3 py-1.5 text-xs" %></td>
+            <td class="text-right"><% if can_access_feature?(:payments, :view) %><%= link_to "View", payment_path(payment), class: "btn btn-secondary px-3 py-1.5 text-xs" %><% end %></td>
           </tr>
         <% end %>
       </tbody>

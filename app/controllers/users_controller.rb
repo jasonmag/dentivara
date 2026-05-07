@@ -1,5 +1,9 @@
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
+  before_action -> { require_permission!(:users, :view) }, only: %i[index show]
+  before_action -> { require_permission!(:users, :create) }, only: %i[new create]
+  before_action -> { require_permission!(:users, :update) }, only: %i[edit update]
+  before_action -> { require_permission!(:users, :destroy) }, only: :destroy
 
   # GET /users or /users.json
   def index
@@ -79,6 +83,6 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.expect(user: [ :name, :email, :role ])
+      params.require(:user).permit(:name, :email, :role)
     end
 end

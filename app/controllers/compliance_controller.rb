@@ -1,5 +1,5 @@
 class ComplianceController < ApplicationController
-  before_action -> { require_roles(:clinic_owner, :system_admin) }
+  before_action -> { require_permission!(:compliance, :view) }
 
   def show
     @total_patients = Patient.count

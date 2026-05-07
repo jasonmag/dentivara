@@ -1,6 +1,6 @@
 class PatientConsentsController < ApplicationController
-  before_action -> { require_roles(:clinic_owner, :system_admin, :dentist, :receptionist) }
   before_action :set_patient
+  before_action -> { require_permission!(:patients, :update) }, only: :create
 
   def create
     consent = @patient.patient_consents.new(consent_params)

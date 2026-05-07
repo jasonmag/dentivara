@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   get "dashboard", to: "home#dashboard"
 
   resources :users
+  resource :role_permission, only: %i[new create]
   get "reports/dental_chart_surfaces", to: "reports#dental_chart_surfaces", as: :dental_chart_surfaces_report
   resources :patients do
     resources :patient_consents, only: :create

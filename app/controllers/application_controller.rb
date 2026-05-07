@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   helper_method :current_user
+  helper_method :can_access_feature?
   before_action :require_login
   before_action :set_current_user
 
@@ -27,5 +28,15 @@ class ApplicationController < ActionController::Base
     return if current_user.present? && roles.map(&:to_s).include?(current_user.role)
 
     redirect_to root_path, alert: "You are not authorized for this action."
+  end
+
+  def require_permission!(feature, action = :view)
+    return if can_access_feature?(feature, action)
+
+    redirect_to root_path, alert: "You are not authorized for this action."
+  end
+
+  def can_access_feature?(feature, action = :view)
+    current_user&.can_access?(feature, action) || false
   end
 end

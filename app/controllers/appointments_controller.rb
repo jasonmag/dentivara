@@ -1,5 +1,9 @@
 class AppointmentsController < ApplicationController
   before_action :set_appointment, only: %i[ show edit update destroy ]
+  before_action -> { require_permission!(:appointments, :view) }, only: %i[index show]
+  before_action -> { require_permission!(:appointments, :create) }, only: %i[new create]
+  before_action -> { require_permission!(:appointments, :update) }, only: %i[edit update]
+  before_action -> { require_permission!(:appointments, :destroy) }, only: :destroy
 
   # GET /appointments or /appointments.json
   def index

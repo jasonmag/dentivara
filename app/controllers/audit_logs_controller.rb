@@ -1,5 +1,5 @@
 class AuditLogsController < ApplicationController
-  before_action -> { require_roles(:clinic_owner, :system_admin) }
+  before_action -> { require_permission!(:audit_logs, :view) }
 
   def index
     @audit_logs = AuditLog.includes(:user).order(created_at: :desc).limit(500)

@@ -6,7 +6,9 @@
       <h1 class="page-title">Notifications</h1>
       <p class="serene-subheading mt-1">Track reminders and patient communication status.</p>
     </div>
-    <%= link_to "New Notification", new_notification_path, class: "btn btn-primary" %>
+    <% if can_access_feature?(:notifications, :create) %>
+      <%= link_to "New Notification", new_notification_path, class: "btn btn-primary" %>
+    <% end %>
   </section>
 
   <section class="table-shell">
@@ -29,7 +31,7 @@
             <td><%= notification.category %></td>
             <td><%= notification.status %></td>
             <td><%= notification.scheduled_for.present? ? l(notification.scheduled_for, format: :short) : 'N/A' %></td>
-            <td class="text-right"><%= link_to "View", notification_path(notification), class: "btn btn-secondary px-3 py-1.5 text-xs" %></td>
+            <td class="text-right"><% if can_access_feature?(:notifications, :view) %><%= link_to "View", notification_path(notification), class: "btn btn-secondary px-3 py-1.5 text-xs" %><% end %></td>
           </tr>
         <% end %>
       </tbody>

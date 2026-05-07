@@ -2,6 +2,10 @@ class InvoicesController < ApplicationController
   include AccessTrackable
 
   before_action :set_invoice, only: %i[ show edit update destroy ]
+  before_action -> { require_permission!(:invoices, :view) }, only: %i[index show]
+  before_action -> { require_permission!(:invoices, :create) }, only: %i[new create]
+  before_action -> { require_permission!(:invoices, :update) }, only: %i[edit update]
+  before_action -> { require_permission!(:invoices, :destroy) }, only: :destroy
 
   # GET /invoices or /invoices.json
   def index

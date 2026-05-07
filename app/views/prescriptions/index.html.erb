@@ -8,7 +8,9 @@
     </div>
     <div class="flex gap-2">
       <%= link_to "Back to Patient", patient_path(@patient), class: "btn btn-secondary" %>
-      <%= link_to "New Prescription", new_patient_prescription_path(@patient), class: "btn btn-primary" %>
+      <% if can_access_feature?(:prescriptions, :create) %>
+        <%= link_to "New Prescription", new_patient_prescription_path(@patient), class: "btn btn-primary" %>
+      <% end %>
     </div>
   </section>
 
@@ -33,8 +35,10 @@
               <td><%= prescription.signed_by_user&.name || "N/A" %></td>
               <td class="text-right">
                 <div class="flex justify-end gap-2">
-                  <%= link_to "Open", patient_prescription_path(@patient, prescription), class: "btn btn-secondary px-3 py-1.5 text-xs" %>
-                  <%= render "preview_dialog", patient: @patient, prescription: prescription %>
+                  <% if can_access_feature?(:prescriptions, :view) %>
+                    <%= link_to "Open", patient_prescription_path(@patient, prescription), class: "btn btn-secondary px-3 py-1.5 text-xs" %>
+                    <%= render "preview_dialog", patient: @patient, prescription: prescription %>
+                  <% end %>
                 </div>
               </td>
             </tr>

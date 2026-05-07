@@ -8,8 +8,10 @@
     </div>
     <div class="flex flex-wrap gap-2">
       <%= link_to "Back", patient_prescriptions_path(@patient), class: "btn btn-secondary" %>
-      <button type="button" class="btn btn-secondary" data-action="prescription-preview#open">Preview</button>
-      <% if @prescription.can_finalize? %>
+      <% if can_access_feature?(:prescriptions, :view) %>
+        <button type="button" class="btn btn-secondary" data-action="prescription-preview#open">Preview</button>
+      <% end %>
+      <% if @prescription.can_finalize? && can_access_feature?(:prescriptions, :update) %>
         <%= button_to "Finalize", finalize_patient_prescription_path(@patient, @prescription), method: :patch, class: "btn btn-primary" %>
       <% end %>
     </div>
@@ -42,7 +44,7 @@
     <% end %>
   </section>
 
-  <% if @prescription.can_sign? && (current_user&.dentist? || current_user&.clinic_owner? || current_user&.system_admin?) %>
+  <% if @prescription.can_sign? && can_access_feature?(:prescriptions, :update) %>
     <section class="app-card" data-controller="signature-pad">
       <h3 class="mb-2 font-serif text-xl text-stone-800">Dentist Signature</h3>
       <p class="mb-3 text-sm text-stone-600">Sign using mouse, touchpad, iPad, or phone.</p>

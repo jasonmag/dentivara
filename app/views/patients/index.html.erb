@@ -6,9 +6,11 @@
       <h1 class="page-title">Patient Directory</h1>
       <p class="serene-subheading mt-1">Manage and monitor patient care cycles with serene precision.</p>
     </div>
-    <%= link_to new_patient_path, class: "btn btn-primary gap-2 px-6 py-3" do %>
-      <span class="material-symbols-outlined">person_add</span>
-      <span>Register New Patient</span>
+    <% if can_access_feature?(:patients, :create) %>
+      <%= link_to new_patient_path, class: "btn btn-primary gap-2 px-6 py-3" do %>
+        <span class="material-symbols-outlined">person_add</span>
+        <span>Register New Patient</span>
+      <% end %>
     <% end %>
   </section>
 
@@ -73,7 +75,9 @@
                   <div class="text-xs text-stone-500"><%= patient.emergency_contact_phone.presence || "N/A" %></div>
                 </td>
                 <td class="text-right">
-                  <%= link_to "View", patient_path(patient), data: { turbo_frame: "_top" }, class: "btn btn-secondary px-3 py-1.5 text-xs" %>
+                  <% if can_access_feature?(:patients, :view) %>
+                    <%= link_to "View", patient_path(patient), data: { turbo_frame: "_top" }, class: "btn btn-secondary px-3 py-1.5 text-xs" %>
+                  <% end %>
                 </td>
               </tr>
             <% end %>

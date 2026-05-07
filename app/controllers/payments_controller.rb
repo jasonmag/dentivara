@@ -1,5 +1,9 @@
 class PaymentsController < ApplicationController
   before_action :set_payment, only: %i[ show edit update destroy ]
+  before_action -> { require_permission!(:payments, :view) }, only: %i[index show]
+  before_action -> { require_permission!(:payments, :create) }, only: %i[new create]
+  before_action -> { require_permission!(:payments, :update) }, only: %i[edit update]
+  before_action -> { require_permission!(:payments, :destroy) }, only: :destroy
 
   # GET /payments or /payments.json
   def index

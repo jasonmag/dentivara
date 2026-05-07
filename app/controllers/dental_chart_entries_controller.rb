@@ -2,8 +2,8 @@ class DentalChartEntriesController < ApplicationController
   require "base64"
   require "stringio"
 
-  before_action -> { require_roles(:clinic_owner, :system_admin, :dentist, :receptionist) }
   before_action :set_patient
+  before_action -> { require_permission!(:dental_chart_entries, :create) }, only: :create
 
   def create
     entry = @patient.dental_chart_entries.new(dental_chart_entry_params.except(:annotated_image_data))

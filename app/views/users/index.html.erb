@@ -6,7 +6,12 @@
       <h1 class="page-title">Users</h1>
       <p class="serene-subheading mt-1">Manage clinic team roles and access.</p>
     </div>
-    <%= link_to "New User", new_user_path, class: "btn btn-primary" %>
+    <div class="flex gap-2">
+      <%= link_to "New User", new_user_path, class: "btn btn-primary" %>
+      <% if current_user&.system_admin? %>
+        <%= link_to "Role", new_role_permission_path, class: "btn btn-secondary" %>
+      <% end %>
+    </div>
   </section>
 
   <section class="rounded-3xl border border-sky-100 bg-white/90 p-5 shadow-sm">

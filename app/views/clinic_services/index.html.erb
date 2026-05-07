@@ -2,7 +2,9 @@
 <div class="space-y-8">
   <section class="flex items-end justify-between">
     <div><h1 class="page-title">Clinic Services</h1><p class="serene-subheading mt-1">Configure procedures and pricing.</p></div>
-    <%= link_to "New Service", new_clinic_service_path, class: "btn btn-primary" %>
+    <% if can_access_feature?(:clinic_services, :create) %>
+      <%= link_to "New Service", new_clinic_service_path, class: "btn btn-primary" %>
+    <% end %>
   </section>
   <section class="table-shell">
     <table class="data-table">
@@ -14,7 +16,7 @@
             <td><%= number_to_currency(service.base_price) %></td>
             <td><%= service.duration_minutes %> min</td>
             <td><%= service.active? ? "Active" : "Inactive" %></td>
-            <td class="text-right"><%= link_to "View", clinic_service_path(service), class: "btn btn-secondary px-3 py-1.5 text-xs" %></td>
+            <td class="text-right"><% if can_access_feature?(:clinic_services, :view) %><%= link_to "View", clinic_service_path(service), class: "btn btn-secondary px-3 py-1.5 text-xs" %><% end %></td>
           </tr>
         <% end %>
       </tbody>
