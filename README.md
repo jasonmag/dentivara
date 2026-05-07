@@ -17,11 +17,9 @@
     - notes
     - optional marked dental chart image upload (assistant/dentist annotated image)
     - in-browser annotation canvas (mouse/touch drawing) that saves the marked chart image to patient records
-    - default preloaded adult odontogram (FDI 18-48) with per-tooth outlines and M/O/D/B/L surface markers when no image is uploaded
-    - localized default chart asset (`app/assets/images/default_odontogram.jpg`) to avoid cross-origin canvas save issues
+    - default preloaded chart image for direct annotation when no upload is provided
+    - localized default chart asset (`app/assets/images/default_odontogram.png`) to avoid cross-origin canvas save issues
     - annotation tools: brush color picker, brush size, eraser, and clear
-    - interactive surface charting: click tooth surfaces and apply status colors (caries, filling, missing, crown, root canal, watch)
-    - structured odontogram data persistence: each surface click is stored as tooth/surface/status JSON in patient chart entries
     - recorded date
     - recorded-by user traceability
   - prescription workflow per patient:
@@ -93,7 +91,6 @@
   - Search: `GET /users?search=<name_or_email_or_role>` -> filtered users list in Settings
 - `GET /appointments?date=YYYY-MM-DD` -> filtered day view within appointments index
 - `POST /patients/:patient_id/dental_chart_entries` -> add patient chart entry (assistant/dentist/admin roles)
-- `GET /reports/dental_chart_surfaces` -> filter/report structured odontogram marks by status, tooth, and surface
 - `GET /patients/:patient_id/prescriptions` -> list patient prescriptions
 - `GET /patients/:patient_id/prescriptions/new` -> create prescription draft
 - `POST /patients/:patient_id/prescriptions` -> save prescription draft

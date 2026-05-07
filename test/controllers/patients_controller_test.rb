@@ -3,6 +3,7 @@ require "test_helper"
 class PatientsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @patient = patients(:one)
+    sign_in_as(users(:one))
   end
 
   test "should get index" do
@@ -45,4 +46,4 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to patients_url
   end
-end
+  end

@@ -6,9 +6,8 @@ class DentalChartEntriesController < ApplicationController
   before_action :set_patient
 
   def create
-    entry = @patient.dental_chart_entries.new(dental_chart_entry_params.except(:annotated_image_data, :surface_marks_data))
+    entry = @patient.dental_chart_entries.new(dental_chart_entry_params.except(:annotated_image_data))
     entry.user = current_user
-    entry.surface_marks = parse_surface_marks
     attach_annotated_image(entry)
 
     if entry.save
@@ -25,28 +24,7 @@ class DentalChartEntriesController < ApplicationController
   end
 
   def dental_chart_entry_params
-    params.expect(dental_chart_entry: %i[tooth_code entry_type notes recorded_on chart_image annotated_image_data surface_marks_data])
-  end
-
-  def parse_surface_marks
-    raw = params.dig(:dental_chart_entry, :surface_marks_data).to_s
-    return [] if raw.blank?
-
-    parsed = JSON.parse(raw)
-    return [] unless parsed.is_a?(Array)
-
-    parsed
-      .select { |item| item.is_a?(Hash) }
-      .map do |item|
-        {
-          "tooth" => item["tooth"].to_s,
-          "surface" => item["surface"].to_s,
-          "status" => item["status"].to_s
-        }
-      end
-      .select { |item| item["tooth"].present? && item["surface"].present? && item["status"].present? }
-  rescue JSON::ParserError
-    []
+    params.expect(dental_chart_entry: %i[tooth_code entry_type notes recorded_on chart_image annotated_image_data])
   end
 
   def attach_annotated_image(entry)

@@ -7,7 +7,7 @@
   <div class="kv-item"><p class="kv-label">Last Dental Visit</p><p class="kv-value"><%= patient.last_dental_visit_on.present? ? l(patient.last_dental_visit_on, format: :long) : 'N/A' %></p></div>
   <div class="kv-item"><p class="kv-label">Emergency Contact</p><p class="kv-value"><%= patient.emergency_contact_name.presence || 'N/A' %></p></div>
   <div class="kv-item"><p class="kv-label">Emergency Phone</p><p class="kv-value"><%= patient.emergency_contact_phone.presence || 'N/A' %></p></div>
-  <div class="kv-item sm:col-span-2"><p class="kv-label">Address</p><p class="kv-value"><%= [patient.address_line1, patient.address_line2, patient.city, patient.state, patient.postal_code].reject(&:blank?).join(', ').presence || 'N/A' %></p></div>
+  <div class="kv-item sm:col-span-2"><p class="kv-label">Address</p><p class="kv-value"><%= [patient.address_line1, patient.address_line2, patient.city, patient.state, patient.postal_code, patient.country].reject(&:blank?).join(', ').presence || 'N/A' %></p></div>
   <div class="kv-item"><p class="kv-label">Insurance Provider</p><p class="kv-value"><%= patient.insurance_provider.presence || 'N/A' %></p></div>
   <div class="kv-item"><p class="kv-label">Policy Number</p><p class="kv-value"><%= patient.insurance_policy_number.presence || 'N/A' %></p></div>
   <div class="kv-item sm:col-span-2"><p class="kv-label">Medical History</p><p class="kv-value"><%= patient.medical_history.presence || 'N/A' %></p></div>

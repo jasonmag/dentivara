@@ -1,4 +1,4 @@
-<%= form_with(model: patient) do |form| %>
+<%= form_with(model: patient, data: { turbo: false }) do |form| %>
   <%= render "shared/form_errors", model: patient %>
 
   <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -12,11 +12,11 @@
     </div>
     <div>
       <%= form.label :birth_date, class: "input-label" %>
-      <%= form.date_field :birth_date, class: "input-field" %>
+      <%= form.date_field :birth_date, max: Date.current, class: "input-field" %>
     </div>
     <div>
       <%= form.label :phone, class: "input-label" %>
-      <%= form.text_field :phone, class: "input-field" %>
+      <%= form.telephone_field :phone, class: "input-field", placeholder: "+1 202 555 0123", pattern: "^\\+?[0-9][0-9\\-\\s()]{6,19}$" %>
     </div>
     <div>
       <%= form.label :email, class: "input-label" %>
@@ -32,7 +32,7 @@
     </div>
     <div>
       <%= form.label :emergency_contact_phone, class: "input-label" %>
-      <%= form.text_field :emergency_contact_phone, class: "input-field" %>
+      <%= form.telephone_field :emergency_contact_phone, class: "input-field", placeholder: "+1 202 555 0199", pattern: "^\\+?[0-9][0-9\\-\\s()]{6,19}$" %>
     </div>
     <div class="md:col-span-2">
       <%= form.label :medical_history, class: "input-label" %>
@@ -59,10 +59,6 @@
       <%= form.textarea :medical_conditions, class: "input-field", placeholder: "Relevant conditions (e.g., diabetes, hypertension, bleeding disorders)" %>
     </div>
     <div>
-      <%= form.label :last_dental_visit_on, class: "input-label" %>
-      <%= form.date_field :last_dental_visit_on, class: "input-field" %>
-    </div>
-    <div>
       <%= form.label :preferred_contact_method, class: "input-label" %>
       <%= form.select :preferred_contact_method, [["Phone", "phone"], ["SMS", "sms"], ["Email", "email"]], { include_blank: "Select contact method" }, class: "input-field" %>
     </div>
@@ -87,12 +83,22 @@
       <%= form.text_field :postal_code, class: "input-field" %>
     </div>
     <div>
-      <%= form.label :insurance_provider, class: "input-label" %>
-      <%= form.text_field :insurance_provider, class: "input-field" %>
+      <%= form.label :country, class: "input-label" %>
+      <%= form.text_field :country, class: "input-field", placeholder: "e.g., Philippines, United States, Singapore" %>
     </div>
-    <div>
-      <%= form.label :insurance_policy_number, class: "input-label" %>
-      <%= form.text_field :insurance_policy_number, class: "input-field" %>
+  </div>
+
+  <div class="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-4">
+    <h3 class="mb-3 font-semibold text-stone-800">Insurance Information</h3>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div>
+        <%= form.label :insurance_provider, class: "input-label" %>
+        <%= form.text_field :insurance_provider, class: "input-field" %>
+      </div>
+      <div>
+        <%= form.label :insurance_policy_number, class: "input-label" %>
+        <%= form.text_field :insurance_policy_number, class: "input-field" %>
+      </div>
     </div>
   </div>
 

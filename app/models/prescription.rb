@@ -5,6 +5,7 @@ class Prescription < ApplicationRecord
   belongs_to :document_template, optional: true
   belongs_to :drafted_by_user, class_name: "User"
   belongs_to :signed_by_user, class_name: "User", optional: true
+  has_one_attached :signature_image
 
   validates :status, inclusion: { in: STATUSES }
   validates :issued_on, :body, presence: true

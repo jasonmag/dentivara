@@ -3,6 +3,7 @@ require "test_helper"
 class NotificationsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @notification = notifications(:one)
+    sign_in_as(users(:one))
   end
 
   test "should get index" do
@@ -45,4 +46,4 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to notifications_url
   end
-end
+  end

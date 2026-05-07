@@ -6,9 +6,6 @@ one:
   birth_date: 1993-05-02
   phone: "09171234567"
   email: juan@example.com
-  emergency_contact_name: Maria Dela Cruz
-  emergency_contact_phone: "09179990000"
-  medical_history: No known allergies.
   consented_at: 2026-05-02 23:57:35
 
 two:
@@ -17,7 +14,4 @@ two:
   birth_date: 1988-09-11
   phone: "09181112222"
   email: liza@example.com
-  emergency_contact_name: Carlo Santos
-  emergency_contact_phone: "09183334444"
-  medical_history: Sensitive gums.
   consented_at: 2026-05-02 23:57:35

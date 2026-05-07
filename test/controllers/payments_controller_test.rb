@@ -3,6 +3,7 @@ require "test_helper"
 class PaymentsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @payment = payments(:one)
+    sign_in_as(users(:one))
   end
 
   test "should get index" do
@@ -45,4 +46,4 @@ class PaymentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to payments_url
   end
-end
+  end

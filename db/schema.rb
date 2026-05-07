@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_07_133000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_08_100000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -216,6 +216,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_07_133000) do
     t.string "preferred_contact_method"
     t.string "insurance_provider"
     t.string "insurance_policy_number"
+    t.string "country"
     t.index ["user_id"], name: "index_patients_on_user_id", unique: true
   end
 

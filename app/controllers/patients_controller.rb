@@ -76,7 +76,7 @@ class PatientsController < ApplicationController
         format.json { render :show, status: :created, location: @patient }
       else
         format.html { render :new, status: :unprocessable_entity }
-        format.turbo_stream { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :new, formats: :html, status: :unprocessable_entity }
         format.json { render json: @patient.errors, status: :unprocessable_entity }
       end
     end
@@ -91,7 +91,7 @@ class PatientsController < ApplicationController
         format.json { render :show, status: :ok, location: @patient }
       else
         format.html { render :edit, status: :unprocessable_entity }
-        format.turbo_stream { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :edit, formats: :html, status: :unprocessable_entity }
         format.json { render json: @patient.errors, status: :unprocessable_entity }
       end
     end
@@ -120,7 +120,7 @@ class PatientsController < ApplicationController
         :first_name, :last_name, :birth_date, :phone, :email,
         :emergency_contact_name, :emergency_contact_phone, :medical_history, :consented_at,
         :chief_complaint, :known_allergies, :current_medications, :medical_conditions, :last_dental_visit_on,
-        :address_line1, :address_line2, :city, :state, :postal_code, :preferred_contact_method,
+        :address_line1, :address_line2, :city, :state, :postal_code, :country, :preferred_contact_method,
         :insurance_provider, :insurance_policy_number, :dental_chart
       ])
     end

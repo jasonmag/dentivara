@@ -3,6 +3,7 @@ require "test_helper"
 class AppointmentsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @appointment = appointments(:one)
+    sign_in_as(users(:one))
   end
 
   test "should get index" do
@@ -16,8 +17,22 @@ class AppointmentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create appointment" do
+    starts_at = 7.days.from_now.change(hour: 15, min: 0)
+    ends_at = starts_at + 45.minutes
+
     assert_difference("Appointment.count") do
-      post appointments_url, params: { appointment: { booking_type: @appointment.booking_type, ends_at: @appointment.ends_at, notes: @appointment.notes, patient_id: @appointment.patient_id, source: @appointment.source, starts_at: @appointment.starts_at, status: @appointment.status, user_id: @appointment.user_id } }
+      post appointments_url, params: {
+        appointment: {
+          booking_type: @appointment.booking_type,
+          ends_at: ends_at,
+          notes: @appointment.notes,
+          patient_id: @appointment.patient_id,
+          source: @appointment.source,
+          starts_at: starts_at,
+          status: @appointment.status,
+          user_id: @appointment.user_id
+        }
+      }
     end
 
     assert_redirected_to appointment_url(Appointment.last)
@@ -45,4 +60,4 @@ class AppointmentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to appointments_url
   end
-end
+  end

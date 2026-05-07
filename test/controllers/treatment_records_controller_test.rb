@@ -3,6 +3,7 @@ require "test_helper"
 class TreatmentRecordsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @treatment_record = treatment_records(:one)
+    sign_in_as(users(:one))
   end
 
   test "should get index" do
@@ -45,4 +46,4 @@ class TreatmentRecordsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to treatment_records_url
   end
-end
+  end
