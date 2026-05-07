@@ -144,6 +144,11 @@ This is the most important clinical module.
 - Document templates
 - Clinic header/footer setup
 - Prescription template
+  - Clinic header with logo
+  - Patient/prescription information placeholder block
+  - Rx body area with automatic Rx background mark
+  - Automatic clinic footer with clinic name, address, and contact number
+  - Centered preview and print-ready prescription layout
 - Dental certificate template
 - Digital signature setup
 
@@ -282,4 +287,3 @@ A simple, secure, and scalable dental clinic operations platform that allows sma
 - Notifications
 
 All from a single unified system.
-

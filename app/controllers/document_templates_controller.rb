@@ -6,7 +6,9 @@ class DocumentTemplatesController < ApplicationController
     @document_templates = DocumentTemplate.order(:kind, :name)
   end
 
-  def show; end
+  def show
+    @rendered_preview = render_preview_payload(@document_template)
+  end
 
   def new
     @document_template = DocumentTemplate.new
@@ -16,6 +18,7 @@ class DocumentTemplatesController < ApplicationController
 
   def create
     @document_template = DocumentTemplate.new(document_template_params)
+    normalize_default_for_prescription(@document_template)
 
     respond_to do |format|
       if @document_template.save
@@ -24,21 +27,24 @@ class DocumentTemplatesController < ApplicationController
         format.json { render :show, status: :created, location: @document_template }
       else
         format.html { render :new, status: :unprocessable_entity }
-        format.turbo_stream { render :new, status: :unprocessable_entity }
+        format.turbo_stream { render :new, formats: :html, status: :unprocessable_entity }
         format.json { render json: @document_template.errors, status: :unprocessable_entity }
       end
     end
   end
 
   def update
+    @document_template.assign_attributes(document_template_params)
+    normalize_default_for_prescription(@document_template)
+
     respond_to do |format|
-      if @document_template.update(document_template_params)
+      if @document_template.save
         format.html { redirect_to @document_template, notice: "Document template updated successfully.", status: :see_other }
         format.turbo_stream { redirect_to @document_template, notice: "Document template updated successfully.", status: :see_other }
         format.json { render :show, status: :ok, location: @document_template }
       else
         format.html { render :edit, status: :unprocessable_entity }
-        format.turbo_stream { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :edit, formats: :html, status: :unprocessable_entity }
         format.json { render json: @document_template.errors, status: :unprocessable_entity }
       end
     end
@@ -54,9 +60,7 @@ class DocumentTemplatesController < ApplicationController
   end
 
   def preview
-    patient = Patient.order(:id).first
-    dentist = User.dentist.first || User.order(:id).first
-    @rendered = @document_template.render_for(patient: patient, dentist: dentist, context: params.fetch(:context, {}).to_h)
+    @rendered = render_preview_payload(@document_template)
   end
 
   private
@@ -66,6 +70,36 @@ class DocumentTemplatesController < ApplicationController
   end
 
   def document_template_params
-    params.expect(document_template: %i[name kind header_text body_template footer_text digital_signature_name digital_signature_title active])
+    params.expect(document_template: %i[name kind header_text information_header_text body_template footer_text digital_signature_name digital_signature_title active default_for_prescription logo])
+  end
+
+  def render_preview_payload(template)
+    patient = Patient.order(:id).first || Patient.new(first_name: "Maria", last_name: "Santos", birth_date: Date.new(1993, 5, 2))
+    dentist = User.dentist.first || User.order(:id).first || User.new(name: "Dr. Sample Dentist")
+
+    template.render_for(
+      patient: patient,
+      dentist: dentist,
+      context: {
+        medication: "Amoxicillin 500mg capsule",
+        dosage: "1 capsule every 8 hours",
+        duration: "7 days",
+        diagnosis: "Acute pulpitis (tooth 16)",
+        patient_gender: "Female",
+        patient_weight: "54 kg",
+        instructions: "Take after meals; complete full course.",
+        next_visit: (Date.current + 7.days).to_s
+      }
+    )
+  end
+
+  def normalize_default_for_prescription(template)
+    return unless template.kind == "prescription"
+
+    has_existing_default = DocumentTemplate.where(kind: "prescription", default_for_prescription: true).where.not(id: template.id).exists?
+    template.default_for_prescription = true if !has_existing_default && !template.default_for_prescription?
+    return unless ActiveModel::Type::Boolean.new.cast(template.default_for_prescription)
+
+    DocumentTemplate.where(kind: "prescription", default_for_prescription: true).where.not(id: template.id).update_all(default_for_prescription: false)
   end
 end

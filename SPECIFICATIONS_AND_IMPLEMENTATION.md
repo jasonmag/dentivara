@@ -209,6 +209,10 @@
   - draft/finalize available to assistant/dentist/admin roles
   - digital signing restricted to dentist/admin roles
   - digital signature capture includes signer identity and timestamp snapshot
+- Added prescription document template layout support:
+  - prescription templates render with clinic header, optional logo, prescription information fields, Rx body watermark, signature area, and automatic clinic footer
+  - template placeholders support patient, diagnosis, doctor, clinic, medication, dosage, duration, instructions, and follow-up data
+  - document template preview and print output use realistic sample data and the same prescription-sheet structure used for clinic review
 
 ### Implemented Against Requested Scope
 - Patient Management:
@@ -223,7 +227,8 @@
   - Email dispatch pipeline implemented via mailer/job for patient notifications
 - Clinic Configuration:
   - Services Available module implemented
-  - Prescription and dental certificate templates with digital signature metadata implemented
+  - Prescription and dental certificate templates implemented
+  - Prescription templates support logo/header/footer setup, patient information placeholders, Rx body layout, preview, and print output
 - Security:
   - Session login + role checks
   - API bearer token auth

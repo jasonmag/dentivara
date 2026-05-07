@@ -8,9 +8,10 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= yield :head %>
-    <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -26,9 +27,7 @@
         <aside class="app-sidebar">
           <div class="px-2 pb-8">
             <div class="flex items-center gap-3">
-              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8BA88E] text-white">
-                <span class="material-symbols-outlined">dentistry</span>
-              </div>
+              <%= image_tag "/icon.svg", alt: "Dentivara", class: "h-10 w-10 rounded-xl" %>
               <div>
                 <h2 class="app-brand-title">Dentivara</h2>
                 <p class="app-brand-subtitle">Premium Management</p>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_08_100000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_08_123000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -126,7 +126,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_100000) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "default_for_prescription", default: false, null: false
+    t.text "information_header_text"
     t.index ["kind", "active"], name: "index_document_templates_on_kind_and_active"
+    t.index ["kind", "default_for_prescription"], name: "idx_doc_templates_kind_default"
   end
 
   create_table "intake_form_submissions", force: :cascade do |t|
