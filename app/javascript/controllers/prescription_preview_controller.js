@@ -24,13 +24,14 @@ export default class extends Controller {
       <html>
         <head>
           <title></title>
+          <base href="${window.location.origin}">
           <style>
             body { font-family: "Times New Roman", serif; margin: 24px; color: #111; }
             .prescription-sheet { border: 1px solid #d1d5db; border-radius: 10px; overflow: hidden; background: #fff; }
             .prescription-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 28px 32px 22px; border-bottom: 2px solid #111; }
             .clinic-name { margin: 0; font-family: Arial, sans-serif; font-size: 28px; font-weight: 700; color: #111; }
             .clinic-details { margin-top: 6px; white-space: pre-line; font-family: Arial, sans-serif; font-size: 13px; line-height: 1.55; color: #333; }
-            .prescription-logo { width: 96px; height: 80px; display: flex; align-items: center; justify-content: center; border: 1px solid #d1d5db; border-radius: 4px; padding: 8px; }
+            .prescription-logo { width: 96px; height: 80px; display: flex; align-items: center; justify-content: center; padding: 8px; }
             .prescription-logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
             .prescription-info { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; padding: 22px 32px; border-bottom: 1px solid #d1d5db; font-family: Arial, sans-serif; font-size: 13px; }
             .prescription-field { display: flex; align-items: flex-end; gap: 8px; }
@@ -41,6 +42,7 @@ export default class extends Controller {
             .prescription-content { position: relative; z-index: 1; margin: 0 0 0 92px; white-space: pre-wrap; font-size: 15px; line-height: 1.65; color: #111; }
             .prescription-signature { display: flex; justify-content: flex-end; padding: 0 32px 24px; }
             .prescription-signature > div { width: 260px; text-align: center; }
+            .signature-image { max-height: 64px; max-width: 220px; object-fit: contain; display: block; margin: 0 auto; }
             .prescription-signature p { margin: 0; }
             .prescription-signature p:first-of-type { border-top: 1px solid #374151; padding-top: 5px; font-family: Arial, sans-serif; font-size: 13px; font-weight: 700; color: #111; }
             .prescription-signature p:last-of-type { margin-top: 2px; font-family: Arial, sans-serif; font-size: 11px; color: #333; }
@@ -69,8 +71,24 @@ export default class extends Controller {
       </html>
     `)
     printWindow.document.close()
-    printWindow.focus()
-    printWindow.print()
-    printWindow.close()
+    this.printAfterImagesLoad(printWindow)
+  }
+
+  printAfterImagesLoad(printWindow) {
+    const images = Array.from(printWindow.document.images)
+    const imagePromises = images.map((image) => {
+      if (image.complete) return Promise.resolve()
+
+      return new Promise((resolve) => {
+        image.addEventListener("load", resolve, { once: true })
+        image.addEventListener("error", resolve, { once: true })
+      })
+    })
+
+    Promise.all(imagePromises).then(() => {
+      printWindow.focus()
+      printWindow.print()
+      printWindow.close()
+    })
   }
 }
