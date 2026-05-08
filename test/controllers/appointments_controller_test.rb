@@ -27,7 +27,60 @@ class AppointmentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match "Appointment Details", response.body
-    assert_match "Save status", response.body
+    assert_match "Save", response.body
+  end
+
+  test "non-completed appointment details do not show invoice billing" do
+    get details_appointment_url(@appointment, week_date: @appointment.starts_at.to_date.iso8601)
+
+    assert_response :success
+    assert_no_match "Invoice Created Successfully", response.body
+    assert_no_match "View Invoice", response.body
+  end
+
+  test "completing an appointment generates an invoice and refreshes the weekly schedule" do
+    service = ClinicService.create!(
+      name: "Completion Procedure",
+      base_price: 1750,
+      duration_minutes: 45,
+      preparation_minutes: 10,
+      active: true
+    )
+    starts_at = Time.zone.local(2026, 5, 12, 10, 0)
+    appointment = Appointment.create!(
+      booking_type: "scheduled",
+      clinic_service_id: service.id,
+      ends_at: starts_at + 45.minutes,
+      notes: "Completed after treatment.",
+      patient: patients(:two),
+      source: "admin",
+      starts_at: starts_at,
+      status: "confirmed",
+      user: users(:one)
+    )
+
+    assert_difference("Invoice.count", 1) do
+      patch appointment_url(appointment, format: :turbo_stream), params: {
+        week_date: appointment.starts_at.to_date.iso8601,
+        appointment: {
+          booking_type: appointment.booking_type,
+          clinic_service_id: service.id,
+          ends_at: appointment.ends_at,
+          notes: "Completed after treatment.",
+          patient_id: appointment.patient_id,
+          source: appointment.source,
+          starts_at: appointment.starts_at,
+          status: "completed",
+          user_id: appointment.user_id
+        }
+      }
+    end
+
+    assert_response :success
+    assert_match "weekly_schedule", response.body
+    assert_match "Invoice Created Successfully", response.body
+    assert_match "INV-", response.body
+    assert_match "receipt_long", response.body
   end
 
   test "should get new" do

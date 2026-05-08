@@ -59,7 +59,7 @@
                            else 'bg-stone-100 text-stone-700'
                            end %>
           <tr>
-            <td class="font-semibold text-stone-800">#<%= invoice.id %></td>
+            <td class="font-semibold text-stone-800"><%= invoice_display_number(invoice) %></td>
             <td><%= invoice.patient.full_name %></td>
             <td><span class="rounded-full px-3 py-1 text-xs font-semibold <%= status_class %>"><%= invoice.status.humanize %></span></td>
             <td><%= number_to_currency(invoice.total_amount) %></td>

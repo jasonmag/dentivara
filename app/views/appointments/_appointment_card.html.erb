@@ -1,4 +1,5 @@
 <% details_url = details_appointment_path(appointment, week_date: week_date) %>
+<% billing_invoice = appointment.billing_invoice %>
 
 <button
   type="button"
@@ -21,6 +22,14 @@
       <p class="text-sm font-semibold text-stone-800"><%= l(appointment.starts_at, format: "%I:%M %p") %></p>
       <p class="text-xs text-stone-500"><%= l(appointment.ends_at, format: "%I:%M %p") %></p>
     </div>
-    <p class="text-xs text-stone-400 transition group-hover:text-stone-500"><%= appointment.clinic_service&.name || "Appointment" %></p>
+    <div class="text-right">
+      <p class="text-xs text-stone-400 transition group-hover:text-stone-500"><%= appointment.clinic_service&.name || "Appointment" %></p>
+      <% if billing_invoice.present? %>
+        <div class="mt-1 inline-flex items-center gap-1 rounded-full border border-[#8BA88E]/20 bg-[#E8F1E9] px-2 py-1 text-[11px] font-semibold text-[#35513a]">
+          <span class="material-symbols-outlined text-[13px]">receipt_long</span>
+          <span><%= invoice_display_number(billing_invoice) %></span>
+        </div>
+      <% end %>
+    </div>
   </div>
 </button>

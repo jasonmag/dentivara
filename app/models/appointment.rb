@@ -8,6 +8,7 @@ class Appointment < ApplicationRecord
   belongs_to :rescheduled_from_appointment, class_name: "Appointment", optional: true
   has_many :rescheduled_appointments, class_name: "Appointment", foreign_key: :rescheduled_from_appointment_id, dependent: :nullify
   has_many :treatment_records, dependent: :destroy
+  has_one :invoice, through: :treatment_records
 
   BOOKING_SOURCES = %w[online social_media phone sms walk_in admin].freeze
   BOOKING_TYPES = %w[scheduled walk_in emergency call_waiting follow_up].freeze
@@ -30,9 +31,16 @@ class Appointment < ApplicationRecord
   before_validation :apply_service_duration
   before_validation :assign_any_available_dentist
   before_validation :stamp_cancelled_at
+  after_commit :queue_invoice_sync, on: %i[create update]
   after_commit :queue_appointment_reminder, on: :create
 
   scope :occupying_schedule, -> { where(status: OCCUPYING_STATUSES) }
+
+  def billing_invoice
+    return nil unless status == "completed"
+
+    treatment_records.includes(:invoice).find { |record| record.invoice.present? }&.invoice
+  end
 
   private
 
@@ -118,5 +126,16 @@ class Appointment < ApplicationRecord
       message: "Reminder: You have an appointment on #{starts_at.strftime('%B %d, %Y at %I:%M %p')}.",
       source_record: self
     )
+  end
+
+  def queue_invoice_sync
+    return unless status == "completed"
+    return unless saved_change_to_status? || billing_relevant_changes?
+
+    AppointmentInvoiceSyncJob.perform_later(id)
+  end
+
+  def billing_relevant_changes?
+    (previous_changes.keys & %w[starts_at ends_at user_id clinic_service_id notes patient_id]).any?
   end
 end

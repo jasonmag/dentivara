@@ -53,6 +53,7 @@ class AppointmentsController < ApplicationController
   # GET /appointments/1/details
   def details
     @week_date = parse_selected_date(params[:week_date]) || @appointment.starts_at&.to_date || Time.zone.today
+    load_billing_context
     render partial: "details_modal", locals: { appointment: @appointment, week_date: @week_date }
   end
 
@@ -80,13 +81,14 @@ class AppointmentsController < ApplicationController
       if @appointment.update(appointment_params)
         @week_date = parse_selected_date(params[:week_date]) || @appointment.starts_at&.to_date || Time.zone.today
         load_weekly_dashboard(@week_date)
+        load_billing_context
         format.html { redirect_to @appointment, notice: "Appointment was successfully updated.", status: :see_other }
         format.turbo_stream
         format.json { render :show, status: :ok, location: @appointment }
       else
         set_available_slots
         format.html { render :edit, status: :unprocessable_entity }
-        format.turbo_stream { render :edit, formats: :html, status: :unprocessable_entity }
+        format.turbo_stream { render :update, status: :unprocessable_entity }
         format.json { render json: @appointment.errors, status: :unprocessable_entity }
       end
     end
@@ -137,15 +139,33 @@ class AppointmentsController < ApplicationController
     end
 
     def load_weekly_dashboard(base_day)
-      @appointments = Appointment.includes(:patient, :user).order(:starts_at)
+      @appointments = Appointment.includes(:patient, :user, :clinic_service, treatment_records: :invoice).order(:starts_at)
       @week_start = base_day.beginning_of_week(:monday)
       @week_end = @week_start + 4.days
       @previous_week_start = @week_start - 1.week
       @next_week_start = @week_start + 1.week
-      @weekly_appointments = Appointment.includes(:patient, :user)
+      @weekly_appointments = Appointment.includes(:patient, :user, :clinic_service, treatment_records: :invoice)
                                         .where(starts_at: @week_start.beginning_of_day..@week_end.end_of_day)
                                         .order(:starts_at)
       @available_slots = AppointmentScheduler.new(date: base_day).slots(limit: 8)
+    end
+
+    def load_billing_context
+      unless @appointment.status == "completed"
+        @invoice = nil
+        @invoice_notice = nil
+        return
+      end
+
+      result = Billing::AppointmentInvoiceSync.call(@appointment)
+      @invoice = result.invoice || @appointment.billing_invoice
+      @invoice_notice = if result.created?
+        "Invoice created successfully."
+      elsif result.updated?
+        "Invoice updated successfully."
+      elsif @invoice.present?
+        "Invoice ready."
+      end
     end
 
     def set_available_slots

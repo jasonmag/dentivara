@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_08_152000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_09_170830) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -226,8 +226,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_152000) do
     t.datetime "approved_by_admin_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "invoice_number"
+    t.index ["invoice_number"], name: "index_invoices_on_invoice_number", unique: true
     t.index ["patient_id"], name: "index_invoices_on_patient_id"
-    t.index ["treatment_record_id"], name: "index_invoices_on_treatment_record_id"
+    t.index ["treatment_record_id"], name: "index_invoices_on_treatment_record_id", unique: true
   end
 
   create_table "notifications", force: :cascade do |t|

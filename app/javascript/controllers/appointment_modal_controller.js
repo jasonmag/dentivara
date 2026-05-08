@@ -39,12 +39,6 @@ export default class extends Controller {
     if (event.target === this.dialogTarget) this.close()
   }
 
-  handleSubmitEnd(event) {
-    if (!event.detail.success) return
-
-    this.close()
-  }
-
   showLoadingState() {
     this.contentTarget.innerHTML = `
       <div class="flex min-h-64 items-center justify-center rounded-2xl border border-stone-100 bg-white p-8 text-stone-500">

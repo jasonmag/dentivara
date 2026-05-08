@@ -17,8 +17,18 @@ class InvoicesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create invoice" do
+    treatment_record = TreatmentRecord.create!(
+      appointment: appointments(:two),
+      clinical_notes: "Test billing record.",
+      cost: 500,
+      patient: patients(:two),
+      performed_on: Date.current,
+      service_type: "Test Billing",
+      user: users(:two)
+    )
+
     assert_difference("Invoice.count") do
-      post invoices_url, params: { invoice: { approved_by_admin_at: @invoice.approved_by_admin_at, approved_by_dentist_at: @invoice.approved_by_dentist_at, balance_amount: @invoice.balance_amount, issued_on: @invoice.issued_on, patient_id: @invoice.patient_id, status: @invoice.status, total_amount: @invoice.total_amount, treatment_record_id: @invoice.treatment_record_id } }
+      post invoices_url, params: { invoice: { approved_by_admin_at: @invoice.approved_by_admin_at, approved_by_dentist_at: @invoice.approved_by_dentist_at, balance_amount: 500, issued_on: @invoice.issued_on, patient_id: patients(:two).id, status: "approved", total_amount: 500, treatment_record_id: treatment_record.id } }
     end
 
     assert_redirected_to invoice_url(Invoice.last)

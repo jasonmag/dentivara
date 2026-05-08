@@ -1,3 +1,9 @@
-<%= turbo_stream.update "weekly_schedule" do %>
-  <%= render "appointments/weekly_schedule" %>
+<% if @appointment.errors.blank? %>
+  <%= turbo_stream.update "weekly_schedule" do %>
+    <%= render "appointments/weekly_schedule" %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.replace "appointment_modal_panel" do %>
+  <%= render "appointments/details_modal", appointment: @appointment, week_date: @week_date, invoice: @invoice, billing_notice: @invoice_notice %>
 <% end %>

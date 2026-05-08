@@ -1,5 +1,6 @@
 <div id="<%= dom_id invoice %>" class="kv-grid">
   <div class="kv-item"><p class="kv-label">Patient</p><p class="kv-value"><%= invoice.patient.full_name %></p></div>
+  <div class="kv-item"><p class="kv-label">Invoice Number</p><p class="kv-value"><%= invoice_display_number(invoice) %></p></div>
   <div class="kv-item"><p class="kv-label">Treatment Record</p><p class="kv-value">#<%= invoice.treatment_record_id %></p></div>
   <div class="kv-item"><p class="kv-label">Status</p><p class="kv-value"><%= invoice.status.humanize %></p></div>
   <div class="kv-item"><p class="kv-label">Issued On</p><p class="kv-value"><%= invoice.issued_on.present? ? l(invoice.issued_on, format: :long) : 'N/A' %></p></div>
