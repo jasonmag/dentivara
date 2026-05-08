@@ -1,0 +1,26 @@
+<% details_url = details_appointment_path(appointment, week_date: week_date) %>
+
+<button
+  type="button"
+  data-action="appointment-modal#open"
+  data-modal-url="<%= details_url %>"
+  class="<%= appointment_card_classes(appointment.status) %> px-3 py-3"
+  aria-label="Open appointment details for <%= appointment.patient.full_name %>"
+>
+  <div class="flex items-start justify-between gap-3">
+    <div class="min-w-0 text-left">
+      <p class="truncate text-sm font-semibold text-stone-800 transition group-hover:text-stone-900"><%= appointment.patient.full_name %></p>
+      <p class="truncate text-xs text-stone-500"><%= appointment.booking_type.humanize %> with <%= appointment.user.name %></p>
+    </div>
+
+    <span class="<%= appointment_status_badge_classes(appointment.status) %> shrink-0"><%= appointment.status.humanize %></span>
+  </div>
+
+  <div class="mt-3 flex items-center justify-between gap-3 border-t border-stone-100 pt-2 text-left">
+    <div>
+      <p class="text-sm font-semibold text-stone-800"><%= l(appointment.starts_at, format: "%I:%M %p") %></p>
+      <p class="text-xs text-stone-500"><%= l(appointment.ends_at, format: "%I:%M %p") %></p>
+    </div>
+    <p class="text-xs text-stone-400 transition group-hover:text-stone-500"><%= appointment.clinic_service&.name || "Appointment" %></p>
+  </div>
+</button>

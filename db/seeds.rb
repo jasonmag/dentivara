@@ -7,6 +7,8 @@ puts "Seeding Dentivara comprehensive workflow data..."
 
 SEED_PASSWORD = "dentivara123"
 
+ClinicSetting.current.update!(time_zone: "Asia/Manila")
+
 # 1x1 transparent PNG for attachment demo records.
 SAMPLE_PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7Zl5kAAAAASUVORK5CYII="
 
@@ -25,6 +27,7 @@ def find_or_create_service!(name, description, price, minutes)
     description: description,
     base_price: price,
     duration_minutes: minutes,
+    preparation_minutes: [ 5, (minutes * 0.2).round ].max,
     active: true
   )
   service.save!
@@ -54,6 +57,30 @@ users = {
 
 dentists = [users[:dentist_1], users[:dentist_2]]
 clinical_users = [users[:dentist_1], users[:dentist_2], users[:receptionist], users[:clinic_owner], users[:system_admin]]
+
+(1..5).each do |day_of_week|
+  schedule = ClinicSchedule.find_or_initialize_by(day_of_week: day_of_week)
+  schedule.assign_attributes(
+    opens_at: "08:00",
+    closes_at: "17:00",
+    closed: false,
+    emergency_only: false,
+    max_concurrent_appointments: 4
+  )
+  schedule.save!
+end
+
+[ 0, 6 ].each do |day_of_week|
+  schedule = ClinicSchedule.find_or_initialize_by(day_of_week: day_of_week)
+  schedule.assign_attributes(closed: true, emergency_only: true, max_concurrent_appointments: 1)
+  schedule.save!
+end
+
+dentists.each do |dentist|
+  (1..5).each do |day_of_week|
+    DentistSchedule.find_or_create_by!(user: dentist, day_of_week: day_of_week, starts_at: "08:30", ends_at: "16:30")
+  end
+end
 
 services = [
   find_or_create_service!("Routine Checkup", "General oral check and consultation", 1200, 30),
@@ -142,6 +169,9 @@ patients.each_with_index do |patient, i|
 
     appointment = Appointment.find_or_initialize_by(patient: patient, starts_at: start_at, user: dentist)
     appointment.assign_attributes(
+      clinic_service: services[(i + j) % services.size],
+      duration_minutes: (duration / 60).to_i,
+      buffer_minutes: 10,
       source: Appointment::BOOKING_SOURCES[(i + j) % Appointment::BOOKING_SOURCES.size],
       booking_type: Appointment::BOOKING_TYPES[(i + j) % Appointment::BOOKING_TYPES.size],
       ends_at: start_at + duration,

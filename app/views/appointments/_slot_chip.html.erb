@@ -1,0 +1,22 @@
+<% is_selected = slot[:starts_at].strftime("%Y-%m-%dT%H:%M") == appointment.starts_at&.strftime("%Y-%m-%dT%H:%M") && slot[:ends_at].strftime("%Y-%m-%dT%H:%M") == appointment.ends_at&.strftime("%Y-%m-%dT%H:%M") %>
+<% chip_classes = slot_chip_classes(slot) %>
+<% chip_classes += " ring-2 ring-[#6A8CF3] border-[#6A8CF3] bg-[#6A8CF3] text-white shadow-md" if is_selected %>
+
+<button
+  type="button"
+  data-slot-state="available"
+  data-starts-at="<%= slot[:starts_at].strftime("%Y-%m-%dT%H:%M") %>"
+  data-ends-at="<%= slot[:ends_at].strftime("%Y-%m-%dT%H:%M") %>"
+  data-dentist-name="<%= slot[:dentist_name].presence || "Any available dentist" %>"
+  data-date-label="<%= l(slot[:starts_at], format: "%a, %b %d") %>"
+  data-time-label="<%= "#{l(slot[:starts_at], format: "%I:%M %p")} - #{l(slot[:ends_at], format: "%I:%M %p")}" %>"
+  data-procedure-name="<%= selected_service&.name || "Service / Procedure" %>"
+  data-duration-label="<%= "#{total_minutes} minutes" %>"
+  data-room-chair-label="<%= appointment.operatory.presence || "To be assigned" %>"
+  data-state-label="<%= recommended ? "Recommended" : "Available" %>"
+  data-action="appointment-wizard#selectSlot"
+  aria-pressed="<%= is_selected.to_s %>"
+  class="<%= chip_classes %>"
+>
+  <span class="block leading-none tabular-nums"><%= l(slot[:starts_at], format: "%-I:%M %p") %></span>
+</button>

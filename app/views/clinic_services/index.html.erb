@@ -8,13 +8,14 @@
   </section>
   <section class="table-shell">
     <table class="data-table">
-      <thead><tr><th>Name</th><th>Price</th><th>Duration</th><th>Status</th><th class="text-right">Actions</th></tr></thead>
+      <thead><tr><th>Name</th><th>Price</th><th>Duration</th><th>Preparation</th><th>Status</th><th class="text-right">Actions</th></tr></thead>
       <tbody>
         <% @clinic_services.each do |service| %>
           <tr>
             <td class="font-semibold text-stone-800"><%= service.name %></td>
             <td><%= number_to_currency(service.base_price) %></td>
             <td><%= service.duration_minutes %> min</td>
+            <td><%= service.preparation_minutes %> min</td>
             <td><%= service.active? ? "Active" : "Inactive" %></td>
             <td class="text-right"><% if can_access_feature?(:clinic_services, :view) %><%= link_to "View", clinic_service_path(service), class: "btn btn-secondary px-3 py-1.5 text-xs" %><% end %></td>
           </tr>

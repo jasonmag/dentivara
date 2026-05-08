@@ -41,7 +41,24 @@ module Api
       end
 
       def appointment_params
-        params.require(:appointment).permit(:patient_id, :user_id, :source, :booking_type, :starts_at, :ends_at, :status, :notes)
+        params.require(:appointment).permit(
+          :patient_id,
+          :user_id,
+          :clinic_service_id,
+          :duration_minutes,
+          :buffer_minutes,
+          :preferred_user_id,
+          :time_preference,
+          :source,
+          :booking_type,
+          :starts_at,
+          :ends_at,
+          :status,
+          :operatory,
+          :cancellation_reason,
+          :rescheduled_from_appointment_id,
+          :notes
+        )
       end
     end
   end

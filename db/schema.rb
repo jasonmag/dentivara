@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_08_140000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_08_152000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -65,9 +65,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_140000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "operatory"
+    t.integer "clinic_service_id"
+    t.integer "duration_minutes"
+    t.integer "buffer_minutes", default: 10, null: false
+    t.integer "preferred_user_id"
+    t.string "time_preference"
+    t.string "cancellation_reason"
+    t.datetime "cancelled_at"
+    t.integer "rescheduled_from_appointment_id"
+    t.index ["cancelled_at"], name: "index_appointments_on_cancelled_at"
+    t.index ["clinic_service_id"], name: "index_appointments_on_clinic_service_id"
     t.index ["operatory", "starts_at"], name: "index_appointments_on_operatory_and_starts_at"
     t.index ["patient_id", "starts_at"], name: "index_appointments_on_patient_id_and_starts_at"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
+    t.index ["preferred_user_id"], name: "index_appointments_on_preferred_user_id"
+    t.index ["rescheduled_from_appointment_id"], name: "index_appointments_on_rescheduled_from_appointment_id"
     t.index ["user_id", "starts_at"], name: "index_appointments_on_user_id_and_starts_at"
     t.index ["user_id"], name: "index_appointments_on_user_id"
   end
@@ -88,6 +100,27 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_140000) do
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
   end
 
+  create_table "clinic_closures", force: :cascade do |t|
+    t.date "date", null: false
+    t.string "reason"
+    t.boolean "emergency_only", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["date"], name: "index_clinic_closures_on_date", unique: true
+  end
+
+  create_table "clinic_schedules", force: :cascade do |t|
+    t.integer "day_of_week", null: false
+    t.time "opens_at"
+    t.time "closes_at"
+    t.boolean "closed", default: false, null: false
+    t.boolean "emergency_only", default: false, null: false
+    t.integer "max_concurrent_appointments", default: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["day_of_week"], name: "index_clinic_schedules_on_day_of_week", unique: true
+  end
+
   create_table "clinic_services", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -96,7 +129,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_140000) do
     t.integer "duration_minutes", default: 30, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "preparation_minutes", default: 0, null: false
     t.index ["name"], name: "index_clinic_services_on_name", unique: true
+  end
+
+  create_table "clinic_settings", force: :cascade do |t|
+    t.string "time_zone", default: "Asia/Manila", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "dental_chart_entries", force: :cascade do |t|
@@ -113,6 +153,31 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_140000) do
     t.index ["patient_id", "recorded_on"], name: "index_dental_chart_entries_on_patient_id_and_recorded_on"
     t.index ["patient_id"], name: "index_dental_chart_entries_on_patient_id"
     t.index ["user_id"], name: "index_dental_chart_entries_on_user_id"
+  end
+
+  create_table "dentist_schedule_overrides", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.date "date", null: false
+    t.time "available_from"
+    t.time "available_until"
+    t.boolean "unavailable", default: false, null: false
+    t.string "reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "date"], name: "index_dentist_schedule_overrides_on_user_id_and_date", unique: true
+    t.index ["user_id"], name: "index_dentist_schedule_overrides_on_user_id"
+  end
+
+  create_table "dentist_schedules", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "day_of_week", null: false
+    t.time "starts_at", null: false
+    t.time "ends_at", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "day_of_week"], name: "index_dentist_schedules_on_user_id_and_day_of_week"
+    t.index ["user_id"], name: "index_dentist_schedules_on_user_id"
   end
 
   create_table "document_templates", force: :cascade do |t|
@@ -294,11 +359,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_08_140000) do
   add_foreign_key "access_logs", "users"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "appointments", "appointments", column: "rescheduled_from_appointment_id"
+  add_foreign_key "appointments", "clinic_services"
   add_foreign_key "appointments", "patients"
   add_foreign_key "appointments", "users"
+  add_foreign_key "appointments", "users", column: "preferred_user_id"
   add_foreign_key "audit_logs", "users"
   add_foreign_key "dental_chart_entries", "patients"
   add_foreign_key "dental_chart_entries", "users"
+  add_foreign_key "dentist_schedule_overrides", "users"
+  add_foreign_key "dentist_schedules", "users"
   add_foreign_key "intake_form_submissions", "patients"
   add_foreign_key "intake_form_submissions", "users", column: "submitted_by_user_id"
   add_foreign_key "invoices", "patients"

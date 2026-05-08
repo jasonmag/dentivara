@@ -1,0 +1,97 @@
+<% appointment ||= @appointment %>
+<% status_label = appointment.status.humanize %>
+
+<div class="space-y-5" data-action="turbo:submit-end->appointment-modal#handleSubmitEnd">
+  <div class="flex items-start justify-between gap-4 border-b border-stone-100 pb-4">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-stone-500">Appointment Details</p>
+      <h3 class="mt-1 font-serif text-2xl text-stone-900"><%= appointment.patient.full_name %></h3>
+      <p class="mt-1 text-sm text-stone-500">
+        <%= l(appointment.starts_at, format: "%A, %B %d, %Y") %> - <%= l(appointment.starts_at, format: "%I:%M %p") %> to <%= l(appointment.ends_at, format: "%I:%M %p") %>
+      </p>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="<%= appointment_status_badge_classes(appointment.status) %>"><%= status_label %></span>
+      <button type="button" class="rounded-full border border-stone-200 px-3 py-1.5 text-sm text-stone-500 transition hover:bg-stone-100" data-action="appointment-modal#close" aria-label="Close dialog">Close</button>
+    </div>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+    <section class="space-y-3 rounded-2xl border border-stone-100 bg-stone-50 p-4">
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div class="rounded-xl bg-white p-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-stone-500">Patient</p>
+          <p class="mt-1 text-sm font-semibold text-stone-800"><%= appointment.patient.full_name %></p>
+        </div>
+        <div class="rounded-xl bg-white p-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-stone-500">Dentist</p>
+          <p class="mt-1 text-sm font-semibold text-stone-800"><%= appointment.user.name %></p>
+        </div>
+        <div class="rounded-xl bg-white p-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-stone-500">Service / Procedure</p>
+          <p class="mt-1 text-sm font-semibold text-stone-800"><%= appointment.clinic_service&.name || "N/A" %></p>
+        </div>
+        <div class="rounded-xl bg-white p-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-stone-500">Duration</p>
+          <p class="mt-1 text-sm font-semibold text-stone-800">
+            <%= appointment.duration_minutes || ((appointment.ends_at - appointment.starts_at) / 60).to_i %> minutes
+          </p>
+        </div>
+        <div class="rounded-xl bg-white p-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-stone-500">Booking Type</p>
+          <p class="mt-1 text-sm font-semibold text-stone-800"><%= appointment.booking_type.humanize %></p>
+        </div>
+        <div class="rounded-xl bg-white p-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-stone-500">Source</p>
+          <p class="mt-1 text-sm font-semibold text-stone-800"><%= appointment.source.humanize %></p>
+        </div>
+        <div class="rounded-xl bg-white p-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-stone-500">Room / Chair</p>
+          <p class="mt-1 text-sm font-semibold text-stone-800"><%= appointment.operatory.presence || "N/A" %></p>
+        </div>
+        <div class="rounded-xl bg-white p-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-stone-500">Reference</p>
+          <p class="mt-1 text-sm font-semibold text-stone-800">#<%= appointment.id %></p>
+        </div>
+      </div>
+
+      <div class="rounded-xl bg-white p-3">
+        <p class="text-xs font-semibold uppercase tracking-wide text-stone-500">Notes</p>
+        <p class="mt-1 whitespace-pre-line text-sm text-stone-700"><%= appointment.notes.presence || "No notes recorded." %></p>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div class="rounded-xl bg-white p-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-stone-500">Created</p>
+          <p class="mt-1 text-sm font-semibold text-stone-800"><%= l(appointment.created_at, format: :long) %></p>
+        </div>
+        <div class="rounded-xl bg-white p-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-stone-500">Last Updated</p>
+          <p class="mt-1 text-sm font-semibold text-stone-800"><%= l(appointment.updated_at, format: :long) %></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="rounded-2xl border border-stone-100 bg-white p-4">
+      <%= form_with model: appointment, class: "space-y-4", data: { action: "turbo:submit-end->appointment-modal#handleSubmitEnd" } do |form| %>
+        <%= hidden_field_tag :week_date, week_date.iso8601 %>
+
+        <div>
+          <label class="text-xs font-semibold uppercase tracking-wide text-stone-500" for="appointment_status">Appointment Status</label>
+          <%= form.select :status, appointment_status_options, {}, class: "mt-1 w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm text-stone-700 focus:border-[#8BA88E] focus:outline-none focus:ring-2 focus:ring-[#8BA88E]/20" %>
+        </div>
+
+        <div class="rounded-2xl bg-[#F9F7EF] px-4 py-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-[#8B7A3C]">Quick Workflow</p>
+          <p class="mt-1 text-sm text-stone-700">Update the status here and keep the schedule board in sync without leaving the page.</p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 pt-2">
+          <%= link_to "Edit appointment", edit_appointment_path(appointment), class: "btn btn-secondary", data: { turbo_frame: "_top" } %>
+          <%= link_to "Reschedule", edit_appointment_path(appointment), class: "btn btn-secondary", data: { turbo_frame: "_top" } %>
+          <button type="submit" class="btn btn-primary">Save status</button>
+        </div>
+      <% end %>
+    </section>
+  </div>
+</div>

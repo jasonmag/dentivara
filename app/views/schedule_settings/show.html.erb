@@ -1,0 +1,195 @@
+<% content_for :title, "Schedule Rules" %>
+
+<div class="space-y-8">
+  <section class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div>
+      <h1 class="page-title">Schedule Rules</h1>
+      <p class="serene-subheading mt-1">Clinic hours, dentist availability, overrides, and chair capacity.</p>
+    </div>
+    <%= link_to "Back to Schedule", appointments_path, class: "btn btn-secondary" %>
+  </section>
+
+  <section class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <article class="serene-card p-6">
+      <h2 class="font-serif text-2xl text-stone-800">Clinic Availability</h2>
+      <%= form_with scope: :clinic_schedule, url: clinic_schedules_schedule_settings_path, class: "mt-4 grid grid-cols-1 gap-4 md:grid-cols-2" do |form| %>
+        <div>
+          <%= form.label :day_of_week, class: "input-label" %>
+          <%= form.select :day_of_week, Date::DAYNAMES.each_with_index.map { |name, index| [name, index] }, {}, class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :max_concurrent_appointments, "Chair / room capacity", class: "input-label" %>
+          <%= form.number_field :max_concurrent_appointments, value: 2, min: 1, class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :opens_at, class: "input-label" %>
+          <%= form.time_field :opens_at, value: "08:00", class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :closes_at, class: "input-label" %>
+          <%= form.time_field :closes_at, value: "17:00", class: "input-field" %>
+        </div>
+        <label class="flex items-center gap-2 text-sm font-semibold text-stone-700">
+          <%= form.check_box :closed, class: "h-4 w-4 rounded border-stone-300" %>
+          Closed
+        </label>
+        <label class="flex items-center gap-2 text-sm font-semibold text-stone-700">
+          <%= form.check_box :emergency_only, class: "h-4 w-4 rounded border-stone-300" %>
+          Emergency only
+        </label>
+        <div class="md:col-span-2">
+          <%= form.submit "Save Clinic Day", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+
+      <div class="mt-5 space-y-2">
+        <% @clinic_schedules.each do |schedule| %>
+          <div class="flex items-center justify-between gap-3 rounded-lg border border-stone-100 bg-stone-50 p-3">
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="font-semibold text-stone-800"><%= schedule.day_name %></p>
+                <p class="text-xs font-semibold uppercase tracking-wide text-stone-500"><%= schedule.max_concurrent_appointments %> concurrent</p>
+              </div>
+              <p class="text-xs text-stone-600">
+                <% if schedule.closed? %>
+                  Closed
+                <% else %>
+                  <%= l(schedule.opens_at, format: "%I:%M %p") %> to <%= l(schedule.closes_at, format: "%I:%M %p") %><%= " · emergency only" if schedule.emergency_only? %>
+                <% end %>
+              </p>
+            </div>
+            <%= button_to "Remove", clinic_schedule_schedule_settings_path(schedule), method: :delete, class: "btn btn-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </article>
+
+    <article class="serene-card p-6">
+      <h2 class="font-serif text-2xl text-stone-800">Clinic Closures</h2>
+      <%= form_with scope: :clinic_closure, url: clinic_closures_schedule_settings_path, class: "mt-4 grid grid-cols-1 gap-4 md:grid-cols-2" do |form| %>
+        <div>
+          <%= form.label :date, class: "input-label" %>
+          <%= form.date_field :date, class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :reason, class: "input-label" %>
+          <%= form.text_field :reason, class: "input-field", placeholder: "Holiday, maintenance, seminar" %>
+        </div>
+        <label class="flex items-center gap-2 text-sm font-semibold text-stone-700 md:col-span-2">
+          <%= form.check_box :emergency_only, class: "h-4 w-4 rounded border-stone-300" %>
+          Emergency appointments only
+        </label>
+        <div class="md:col-span-2">
+          <%= form.submit "Add Closure", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+
+      <div class="mt-5 space-y-2">
+        <% @clinic_closures.each do |closure| %>
+          <div class="flex items-center justify-between gap-3 rounded-lg border border-stone-100 bg-stone-50 p-3">
+            <div>
+              <p class="font-semibold text-stone-800"><%= closure.date.strftime("%b %d, %Y") %></p>
+              <p class="text-xs text-stone-500"><%= closure.reason.presence || "No reason" %><%= " · emergency only" if closure.emergency_only? %></p>
+            </div>
+            <%= button_to "Remove", clinic_closure_schedule_settings_path(closure), method: :delete, class: "btn btn-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </article>
+  </section>
+
+  <section class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <article class="serene-card p-6">
+      <h2 class="font-serif text-2xl text-stone-800">Dentist Working Hours</h2>
+      <%= form_with scope: :dentist_schedule, url: dentist_schedules_schedule_settings_path, class: "mt-4 grid grid-cols-1 gap-4 md:grid-cols-2" do |form| %>
+        <div>
+          <%= form.label :user_id, "Dentist", class: "input-label" %>
+          <%= form.collection_select :user_id, @dentists, :id, :name, { prompt: "Select dentist" }, class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :day_of_week, class: "input-label" %>
+          <%= form.select :day_of_week, Date::DAYNAMES.each_with_index.map { |name, index| [name, index] }, {}, class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :starts_at, class: "input-label" %>
+          <%= form.time_field :starts_at, value: "09:00", class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :ends_at, class: "input-label" %>
+          <%= form.time_field :ends_at, value: "16:00", class: "input-field" %>
+        </div>
+        <label class="flex items-center gap-2 text-sm font-semibold text-stone-700">
+          <%= form.check_box :active, { checked: true, class: "h-4 w-4 rounded border-stone-300" }, "1", "0" %>
+          Active
+        </label>
+        <div class="md:col-span-2">
+          <%= form.submit "Add Dentist Hours", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+
+      <div class="mt-5 space-y-2">
+        <% @dentist_schedules.each do |schedule| %>
+          <div class="flex items-center justify-between gap-3 rounded-lg border border-stone-100 bg-stone-50 p-3">
+            <div>
+              <p class="font-semibold text-stone-800"><%= schedule.user.name %></p>
+              <p class="text-xs text-stone-500"><%= schedule.day_name %>, <%= l(schedule.starts_at, format: "%I:%M %p") %> to <%= l(schedule.ends_at, format: "%I:%M %p") %></p>
+            </div>
+            <%= button_to "Remove", dentist_schedule_schedule_settings_path(schedule), method: :delete, class: "btn btn-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </article>
+
+    <article class="serene-card p-6">
+      <h2 class="font-serif text-2xl text-stone-800">Dentist Overrides</h2>
+      <%= form_with scope: :dentist_schedule_override, url: dentist_overrides_schedule_settings_path, class: "mt-4 grid grid-cols-1 gap-4 md:grid-cols-2" do |form| %>
+        <div>
+          <%= form.label :user_id, "Dentist", class: "input-label" %>
+          <%= form.collection_select :user_id, @dentists, :id, :name, { prompt: "Select dentist" }, class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :date, class: "input-label" %>
+          <%= form.date_field :date, class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :available_from, class: "input-label" %>
+          <%= form.time_field :available_from, class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :available_until, class: "input-label" %>
+          <%= form.time_field :available_until, class: "input-field" %>
+        </div>
+        <label class="flex items-center gap-2 text-sm font-semibold text-stone-700">
+          <%= form.check_box :unavailable, class: "h-4 w-4 rounded border-stone-300" %>
+          Unavailable all day
+        </label>
+        <div>
+          <%= form.label :reason, class: "input-label" %>
+          <%= form.text_field :reason, class: "input-field", placeholder: "Leave, seminar, late arrival" %>
+        </div>
+        <div class="md:col-span-2">
+          <%= form.submit "Save Override", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+
+      <div class="mt-5 space-y-2">
+        <% @dentist_overrides.each do |override| %>
+          <div class="flex items-center justify-between gap-3 rounded-lg border border-stone-100 bg-stone-50 p-3">
+            <div>
+              <p class="font-semibold text-stone-800"><%= override.user.name %> · <%= override.date.strftime("%b %d, %Y") %></p>
+              <p class="text-xs text-stone-500">
+                <% if override.unavailable? %>
+                  Unavailable all day
+                <% else %>
+                  <%= l(override.available_from, format: "%I:%M %p") %> to <%= l(override.available_until, format: "%I:%M %p") %>
+                <% end %>
+                <%= " · #{override.reason}" if override.reason.present? %>
+              </p>
+            </div>
+            <%= button_to "Remove", dentist_override_schedule_settings_path(override), method: :delete, class: "btn btn-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </article>
+  </section>
+</div>

@@ -3,10 +3,20 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_user
   helper_method :can_access_feature?
+  around_action :use_clinic_time_zone
   before_action :require_login
   before_action :set_current_user
 
   private
+
+  def use_clinic_time_zone(&block)
+    zone = ClinicSetting.current_time_zone
+    Current.time_zone = zone
+
+    Time.use_zone(zone, &block)
+  ensure
+    Current.time_zone = nil
+  end
 
   def set_current_user
     Current.user = current_user

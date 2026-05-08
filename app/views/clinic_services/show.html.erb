@@ -4,6 +4,7 @@
     <div class="kv-item"><p class="kv-label">Name</p><p class="kv-value"><%= @clinic_service.name %></p></div>
     <div class="kv-item"><p class="kv-label">Base Price</p><p class="kv-value"><%= number_to_currency(@clinic_service.base_price) %></p></div>
     <div class="kv-item"><p class="kv-label">Duration</p><p class="kv-value"><%= @clinic_service.duration_minutes %> minutes</p></div>
+    <div class="kv-item"><p class="kv-label">Preparation</p><p class="kv-value"><%= @clinic_service.preparation_minutes %> minutes</p></div>
     <div class="kv-item"><p class="kv-label">Status</p><p class="kv-value"><%= @clinic_service.active? ? "Active" : "Inactive" %></p></div>
     <div class="kv-item sm:col-span-2"><p class="kv-label">Description</p><p class="kv-value"><%= @clinic_service.description.presence || "N/A" %></p></div>
   </div>

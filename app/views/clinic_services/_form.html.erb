@@ -14,6 +14,10 @@
       <%= form.label :duration_minutes, class: "input-label" %>
       <%= form.number_field :duration_minutes, class: "input-field" %>
     </div>
+    <div>
+      <%= form.label :preparation_minutes, "Preparation time", class: "input-label" %>
+      <%= form.number_field :preparation_minutes, class: "input-field", min: 0 %>
+    </div>
     <div class="flex items-end gap-2">
       <%= form.check_box :active %>
       <%= form.label :active, class: "input-label mb-0" %>

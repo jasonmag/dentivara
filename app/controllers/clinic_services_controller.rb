@@ -63,6 +63,6 @@ class ClinicServicesController < ApplicationController
   end
 
   def clinic_service_params
-    params.expect(clinic_service: %i[name description base_price active duration_minutes])
+    params.expect(clinic_service: %i[name description base_price active duration_minutes preparation_minutes])
   end
 end

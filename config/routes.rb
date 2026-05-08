@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   get "dashboard", to: "home#dashboard"
 
   resources :users
+  resource :clinic_settings, only: %i[show update], controller: "clinic_settings"
   resource :role_permission, only: %i[new create]
   get "reports/dental_chart_surfaces", to: "reports#dental_chart_surfaces", as: :dental_chart_surfaces_report
   resources :patients do
@@ -24,7 +25,22 @@ Rails.application.routes.draw do
       end
     end
   end
-  resources :appointments
+  resources :appointments do
+    get :details, on: :member
+    collection do
+      get :available_slots
+    end
+  end
+  resource :schedule_settings, only: :show, controller: "schedule_settings" do
+    post :clinic_schedules, action: :create_clinic_schedule
+    delete "clinic_schedules/:id", action: :destroy_clinic_schedule, as: :clinic_schedule
+    post :clinic_closures, action: :create_clinic_closure
+    delete "clinic_closures/:id", action: :destroy_clinic_closure, as: :clinic_closure
+    post :dentist_schedules, action: :create_dentist_schedule
+    delete "dentist_schedules/:id", action: :destroy_dentist_schedule, as: :dentist_schedule
+    post :dentist_overrides, action: :create_dentist_override
+    delete "dentist_overrides/:id", action: :destroy_dentist_override, as: :dentist_override
+  end
   resources :treatment_records
   resources :invoices
   resources :payments

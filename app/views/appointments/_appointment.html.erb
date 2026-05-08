@@ -1,11 +1,16 @@
 <div id="<%= dom_id appointment %>" class="kv-grid">
   <div class="kv-item"><p class="kv-label">Patient</p><p class="kv-value"><%= appointment.patient.full_name %></p></div>
   <div class="kv-item"><p class="kv-label">Provider</p><p class="kv-value"><%= appointment.user.name %></p></div>
+  <div class="kv-item"><p class="kv-label">Preferred Dentist</p><p class="kv-value"><%= appointment.preferred_user&.name || "Any available dentist" %></p></div>
+  <div class="kv-item"><p class="kv-label">Service</p><p class="kv-value"><%= appointment.clinic_service&.name || "N/A" %></p></div>
   <div class="kv-item"><p class="kv-label">Source</p><p class="kv-value"><%= appointment.source.humanize %></p></div>
   <div class="kv-item"><p class="kv-label">Booking Type</p><p class="kv-value"><%= appointment.booking_type.humanize %></p></div>
   <div class="kv-item"><p class="kv-label">Starts At</p><p class="kv-value"><%= l(appointment.starts_at, format: :long) %></p></div>
   <div class="kv-item"><p class="kv-label">Ends At</p><p class="kv-value"><%= l(appointment.ends_at, format: :long) %></p></div>
+  <div class="kv-item"><p class="kv-label">Duration</p><p class="kv-value"><%= appointment.duration_minutes || ((appointment.ends_at - appointment.starts_at) / 60).to_i %> minutes</p></div>
+  <div class="kv-item"><p class="kv-label">Buffer</p><p class="kv-value"><%= appointment.buffer_minutes %> minutes</p></div>
   <div class="kv-item"><p class="kv-label">Status</p><p class="kv-value"><%= appointment.status.humanize %></p></div>
   <div class="kv-item"><p class="kv-label">Operatory</p><p class="kv-value"><%= appointment.operatory.presence || "N/A" %></p></div>
+  <div class="kv-item"><p class="kv-label">Cancellation Reason</p><p class="kv-value"><%= appointment.cancellation_reason.presence || "N/A" %></p></div>
   <div class="kv-item sm:col-span-2"><p class="kv-label">Notes</p><p class="kv-value"><%= appointment.notes.presence || 'N/A' %></p></div>
 </div>
