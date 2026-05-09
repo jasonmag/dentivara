@@ -46,12 +46,8 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
-# Build-only token used to satisfy production boot checks during assets precompile.
-ARG API_V1_TOKEN=dummy-build-token
-ENV API_V1_TOKEN=$API_V1_TOKEN
-
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+RUN SECRET_KEY_BASE_DUMMY=1 API_V1_TOKEN=dummy-build-token ./bin/rails assets:precompile
 
 
 
