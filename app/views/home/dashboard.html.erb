@@ -79,8 +79,8 @@
                 <tr>
                   <td><%= invoice.patient.full_name %></td>
                   <td><%= invoice.status.humanize %></td>
-                  <td><%= number_to_currency(invoice.total_amount) %></td>
-                  <td><%= number_to_currency(invoice.balance_amount) %></td>
+                  <td><%= clinic_number_to_currency(invoice.total_amount) %></td>
+                  <td><%= clinic_number_to_currency(invoice.balance_amount) %></td>
                 </tr>
               <% end %>
             </tbody>
@@ -135,7 +135,7 @@
                 <p class="text-sm font-semibold text-stone-800">Inv #<%= invoice.id %></p>
                 <p class="text-xs text-stone-500"><%= invoice.patient.full_name %></p>
               </div>
-              <p class="text-sm font-semibold text-stone-800"><%= number_to_currency(invoice.balance_amount) %></p>
+              <p class="text-sm font-semibold text-stone-800"><%= clinic_number_to_currency(invoice.balance_amount) %></p>
             </div>
           <% end %>
         </div>

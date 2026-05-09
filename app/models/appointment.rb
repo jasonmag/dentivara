@@ -8,6 +8,7 @@ class Appointment < ApplicationRecord
   belongs_to :rescheduled_from_appointment, class_name: "Appointment", optional: true
   has_many :rescheduled_appointments, class_name: "Appointment", foreign_key: :rescheduled_from_appointment_id, dependent: :nullify
   has_many :treatment_records, dependent: :destroy
+  has_many :queue_entries, dependent: :nullify
   has_one :invoice, through: :treatment_records
 
   BOOKING_SOURCES = %w[online social_media phone sms walk_in admin].freeze

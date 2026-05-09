@@ -3,7 +3,7 @@
   <div class="kv-item"><p class="kv-label">Provider</p><p class="kv-value"><%= treatment_record.user.name %></p></div>
   <div class="kv-item"><p class="kv-label">Appointment ID</p><p class="kv-value">#<%= treatment_record.appointment_id %></p></div>
   <div class="kv-item"><p class="kv-label">Service Type</p><p class="kv-value"><%= treatment_record.service_type %></p></div>
-  <div class="kv-item"><p class="kv-label">Cost</p><p class="kv-value"><%= number_to_currency(treatment_record.cost || 0) %></p></div>
+  <div class="kv-item"><p class="kv-label">Cost</p><p class="kv-value"><%= clinic_number_to_currency(treatment_record.cost || 0) %></p></div>
   <div class="kv-item"><p class="kv-label">Performed On</p><p class="kv-value"><%= l(treatment_record.performed_on, format: :long) %></p></div>
   <div class="kv-item sm:col-span-2"><p class="kv-label">Clinical Notes</p><p class="kv-value"><%= treatment_record.clinical_notes.presence || 'N/A' %></p></div>
   <div class="kv-item sm:col-span-2">

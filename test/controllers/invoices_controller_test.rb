@@ -39,6 +39,13 @@ class InvoicesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should download invoice pdf" do
+    get download_invoice_url(@invoice)
+
+    assert_response :success
+    assert_equal "application/pdf", response.media_type
+  end
+
   test "should get edit" do
     get edit_invoice_url(@invoice)
     assert_response :success
@@ -56,4 +63,4 @@ class InvoicesControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to invoices_url
   end
-  end
+end

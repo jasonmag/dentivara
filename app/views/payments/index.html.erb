@@ -40,11 +40,16 @@
             <td class="font-semibold text-stone-800">#<%= payment.id %></td>
             <td>#<%= payment.invoice_id %></td>
             <td><%= payment.invoice.patient.full_name %></td>
-            <td><%= number_to_currency(payment.amount) %></td>
-            <td><%= payment.method.presence || 'N/A' %></td>
+            <td><%= clinic_number_to_currency(payment.amount) %></td>
+            <td><%= payment.method.present? ? payment.method.humanize : "N/A" %></td>
             <td><%= payment.paid_on.present? ? l(payment.paid_on, format: :long) : 'N/A' %></td>
             <td><%= payment.reference_code.presence || 'N/A' %></td>
-            <td class="text-right"><% if can_access_feature?(:payments, :view) %><%= link_to "View", payment_path(payment), class: "btn btn-secondary px-3 py-1.5 text-xs" %><% end %></td>
+            <td class="text-right">
+              <% if can_access_feature?(:payments, :view) %>
+                <%= link_to "View", payment_path(payment), class: "btn btn-secondary px-3 py-1.5 text-xs" %>
+                <%= link_to "Receipt PDF", receipt_payment_path(payment), class: "btn btn-secondary px-3 py-1.5 text-xs", data: { turbo: false } %>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>

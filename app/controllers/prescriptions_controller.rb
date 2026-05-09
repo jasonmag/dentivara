@@ -130,11 +130,15 @@ class PrescriptionsController < ApplicationController
   end
 
   def require_prescription_writer!
-    true
+    return if current_user&.clinic_owner? || current_user&.system_admin? || current_user&.dentist? || current_user&.receptionist?
+
+    redirect_to patient_path(@patient), alert: "You are not authorized to draft or finalize prescriptions."
   end
 
   def require_dentist_signer!
-    true
+    return if current_user&.clinic_owner? || current_user&.system_admin? || current_user&.dentist?
+
+    redirect_to patient_path(@patient), alert: "Only dentists or authorized administrators can sign prescriptions."
   end
 
   def attach_signature_image(prescription, data_url)

@@ -9,6 +9,7 @@ class Patient < ApplicationRecord
   has_many :patient_consents, dependent: :destroy
   has_many :dental_chart_entries, dependent: :destroy
   has_many :prescriptions, dependent: :destroy
+  has_many :queue_entries, dependent: :destroy
 
   encrypts :medical_history, :emergency_contact_name, :emergency_contact_phone,
     :known_allergies, :current_medications, :medical_conditions,

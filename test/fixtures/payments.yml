@@ -11,5 +11,5 @@ two:
   invoice: two
   amount: 1000
   paid_on: 2026-05-02
-  method: card
+  method: credit_card
   reference_code: OR-1002

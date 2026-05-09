@@ -18,15 +18,22 @@ class PaymentsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create payment" do
     assert_difference("Payment.count") do
-      post payments_url, params: { payment: { amount: @payment.amount, invoice_id: @payment.invoice_id, method: @payment.method, paid_on: @payment.paid_on, reference_code: @payment.reference_code } }
+      post payments_url, params: { payment: { amount: 321.55, invoice_id: @payment.invoice_id, method: "cash", paid_on: @payment.paid_on, reference_code: "OR-NEW-#{SecureRandom.hex(3)}" } }
     end
 
-    assert_redirected_to payment_url(Payment.last)
+    assert_redirected_to invoice_url(@payment.invoice_id)
   end
 
   test "should show payment" do
     get payment_url(@payment)
     assert_response :success
+  end
+
+  test "should download receipt pdf" do
+    get receipt_payment_url(@payment)
+
+    assert_response :success
+    assert_equal "application/pdf", response.media_type
   end
 
   test "should get edit" do
@@ -36,7 +43,7 @@ class PaymentsControllerTest < ActionDispatch::IntegrationTest
 
   test "should update payment" do
     patch payment_url(@payment), params: { payment: { amount: @payment.amount, invoice_id: @payment.invoice_id, method: @payment.method, paid_on: @payment.paid_on, reference_code: @payment.reference_code } }
-    assert_redirected_to payment_url(@payment)
+    assert_redirected_to invoice_url(@payment.invoice)
   end
 
   test "should destroy payment" do
@@ -44,6 +51,6 @@ class PaymentsControllerTest < ActionDispatch::IntegrationTest
       delete payment_url(@payment)
     end
 
-    assert_redirected_to payments_url
+    assert_redirected_to invoice_url(invoices(:one))
   end
-  end
+end

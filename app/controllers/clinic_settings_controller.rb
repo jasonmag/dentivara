@@ -19,6 +19,14 @@ class ClinicSettingsController < ApplicationController
   private
 
   def clinic_setting_params
-    params.expect(clinic_setting: [ :time_zone ])
+    params.expect(clinic_setting: [
+      :time_zone,
+      :currency_code,
+      :queue_eta_minutes_default,
+      :queue_eta_minutes_scheduled,
+      :queue_eta_minutes_walk_in,
+      :queue_eta_minutes_emergency,
+      :queue_eta_minutes_priority
+    ])
   end
 end

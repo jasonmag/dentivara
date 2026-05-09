@@ -5,11 +5,19 @@ module Api
 
       def index
         invoices = Invoice.includes(:patient, :payments).order(updated_at: :desc)
-        render json: invoices.as_json(only: %i[id invoice_number patient_id treatment_record_id status total_amount balance_amount issued_on approved_by_dentist_at approved_by_admin_at], include: { patient: { only: %i[id first_name last_name] }, payments: { only: %i[id amount paid_on method reference_code] } })
+        render json: invoices.as_json(
+          only: %i[id invoice_number patient_id treatment_record_id status total_amount balance_amount issued_on approved_by_dentist_at approved_by_admin_at],
+          methods: %i[total_paid credit_amount payment_progress_percentage],
+          include: { patient: { only: %i[id first_name last_name] }, payments: { only: %i[id amount paid_on method reference_code notes recorded_by_user_id] } }
+        )
       end
 
       def show
-        render json: @invoice.as_json(only: %i[id invoice_number patient_id treatment_record_id status total_amount balance_amount issued_on approved_by_dentist_at approved_by_admin_at], include: :payments)
+        render json: @invoice.as_json(
+          only: %i[id invoice_number patient_id treatment_record_id status total_amount balance_amount issued_on approved_by_dentist_at approved_by_admin_at],
+          methods: %i[total_paid credit_amount payment_progress_percentage],
+          include: { payments: { only: %i[id amount paid_on method reference_code notes recorded_by_user_id] } }
+        )
       end
 
       def create

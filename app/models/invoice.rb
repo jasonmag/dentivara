@@ -6,7 +6,7 @@ class Invoice < ApplicationRecord
   has_many :payments, dependent: :destroy
   delegate :appointment, to: :treatment_record, allow_nil: true
 
-  STATUSES = ["draft", "for_approval", "approved", "partially_paid", "paid", "cancelled", "refunded"].freeze
+  STATUSES = ["draft", "for_approval", "approved", "partially_paid", "paid", "overpaid", "cancelled", "refunded"].freeze
 
   validates :status, inclusion: { in: STATUSES }
   validates :total_amount, :balance_amount, numericality: { greater_than_or_equal_to: 0 }
@@ -14,6 +14,20 @@ class Invoice < ApplicationRecord
 
   after_create :assign_invoice_number
   after_commit :queue_billing_notification, on: %i[create update]
+
+  def total_paid
+    payments.sum(:amount).to_d
+  end
+
+  def credit_amount
+    [total_paid - total_amount.to_d, 0.to_d].max
+  end
+
+  def payment_progress_percentage
+    return 0 if total_amount.to_d <= 0
+
+    [((total_paid / total_amount.to_d) * 100).to_f, 100.0].min
+  end
 
   private
 

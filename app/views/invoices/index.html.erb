@@ -25,11 +25,11 @@
   <section class="grid grid-cols-1 gap-6 md:grid-cols-3">
     <article class="serene-kpi">
       <p class="text-xs font-semibold uppercase tracking-wider text-stone-500">Revenue (This Month)</p>
-      <p class="mt-2 font-serif text-4xl text-stone-800"><%= number_to_currency(@monthly_revenue) %></p>
+      <p class="mt-2 font-serif text-4xl text-stone-800"><%= clinic_number_to_currency(@monthly_revenue) %></p>
     </article>
     <article class="serene-kpi">
       <p class="text-xs font-semibold uppercase tracking-wider text-stone-500">Outstanding Balance</p>
-      <p class="mt-2 font-serif text-4xl text-stone-800"><%= number_to_currency(@outstanding_balance) %></p>
+      <p class="mt-2 font-serif text-4xl text-stone-800"><%= clinic_number_to_currency(@outstanding_balance) %></p>
     </article>
     <article class="serene-kpi">
       <p class="text-xs font-semibold uppercase tracking-wider text-stone-500">Claim Success Rate</p>
@@ -55,15 +55,16 @@
           <% status_class = case invoice.status
                            when 'paid' then 'bg-[#E8F1E9] text-[#4a654e]'
                            when 'partially_paid' then 'bg-amber-50 text-amber-700'
+                           when 'overpaid' then 'bg-blue-50 text-blue-700'
                            when 'cancelled', 'refunded' then 'bg-red-50 text-red-700'
                            else 'bg-stone-100 text-stone-700'
                            end %>
           <tr>
             <td class="font-semibold text-stone-800"><%= invoice_display_number(invoice) %></td>
             <td><%= invoice.patient.full_name %></td>
-            <td><span class="rounded-full px-3 py-1 text-xs font-semibold <%= status_class %>"><%= invoice.status.humanize %></span></td>
-            <td><%= number_to_currency(invoice.total_amount) %></td>
-            <td><%= number_to_currency(invoice.balance_amount) %></td>
+            <td><span class="rounded-full px-3 py-1 text-xs font-semibold <%= status_class %>"><%= invoice_payment_status_label(invoice) %></span></td>
+            <td><%= clinic_number_to_currency(invoice.total_amount) %></td>
+            <td><%= clinic_number_to_currency(invoice.balance_amount) %></td>
             <td><%= invoice.issued_on.present? ? l(invoice.issued_on, format: :long) : 'N/A' %></td>
             <td class="text-right"><% if can_access_feature?(:invoices, :view) %><%= link_to "View", invoice_path(invoice), class: "btn btn-secondary px-3 py-1.5 text-xs" %><% end %></td>
           </tr>

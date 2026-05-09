@@ -73,10 +73,10 @@
               <p class="text-xs font-semibold uppercase tracking-wide text-[#6B8F73]">Invoice Created Successfully</p>
               <h4 class="mt-1 font-serif text-xl text-stone-900"><%= invoice_display_number(invoice) %></h4>
               <p class="mt-1 text-sm text-stone-600">
-                <%= invoice.patient.full_name %> • <%= appointment.clinic_service&.name || "Service" %> • <%= number_to_currency(invoice.total_amount) %>
+                <%= invoice.patient.full_name %> • <%= appointment.clinic_service&.name || "Service" %> • <%= clinic_number_to_currency(invoice.total_amount) %>
               </p>
             </div>
-            <span class="<%= invoice_status_badge_classes(invoice.status) %>"><%= invoice.status.humanize %></span>
+            <span class="<%= invoice_status_badge_classes(invoice.status) %>"><%= invoice_payment_status_label(invoice) %></span>
           </div>
 
           <div class="mt-4 flex flex-wrap gap-2">

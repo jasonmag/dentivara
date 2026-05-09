@@ -8,19 +8,27 @@
     </div>
     <div>
       <%= form.label :amount, class: "input-label" %>
-      <%= form.number_field :amount, step: 0.01, class: "input-field" %>
+      <%= form.number_field :amount, step: 0.01, class: "input-field", required: true %>
     </div>
     <div>
       <%= form.label :paid_on, class: "input-label" %>
-      <%= form.date_field :paid_on, class: "input-field" %>
+      <%= form.date_field :paid_on, class: "input-field", required: true %>
     </div>
     <div>
       <%= form.label :method, class: "input-label" %>
-      <%= form.text_field :method, class: "input-field" %>
+      <%= form.select :method, Payment::PAYMENT_METHODS.map { |method| [method.humanize, method] }, { prompt: "Select payment method" }, class: "input-field" %>
     </div>
     <div class="md:col-span-2">
       <%= form.label :reference_code, class: "input-label" %>
       <%= form.text_field :reference_code, class: "input-field" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :notes, class: "input-label" %>
+      <%= form.text_area :notes, rows: 3, class: "input-field" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :proof, "Payment Proof (JPG, PNG, PDF)", class: "input-label" %>
+      <%= form.file_field :proof, class: "input-field", direct_upload: true, accept: ".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" %>
     </div>
   </div>
 

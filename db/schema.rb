@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_09_170830) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_09_213000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -51,6 +51,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_09_170830) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "api_idempotency_keys", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "http_method", null: false
+    t.string "path", null: false
+    t.string "request_hash", null: false
+    t.integer "response_code", null: false
+    t.text "response_body", null: false
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_api_idempotency_keys_on_expires_at"
+    t.index ["key", "http_method", "path"], name: "idx_api_idempotency_unique_scope", unique: true
   end
 
   create_table "appointments", force: :cascade do |t|
@@ -137,6 +151,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_09_170830) do
     t.string "time_zone", default: "Asia/Manila", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "currency_code", default: "USD", null: false
+    t.string "currency_locale", default: "en-US", null: false
+    t.integer "queue_eta_minutes_default", default: 20, null: false
+    t.integer "queue_eta_minutes_scheduled", default: 20, null: false
+    t.integer "queue_eta_minutes_walk_in", default: 25, null: false
+    t.integer "queue_eta_minutes_emergency", default: 10, null: false
+    t.integer "queue_eta_minutes_priority", default: 15, null: false
   end
 
   create_table "dental_chart_entries", force: :cascade do |t|
@@ -301,7 +322,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_09_170830) do
     t.string "reference_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "notes"
+    t.integer "recorded_by_user_id"
+    t.index ["invoice_id", "amount", "paid_on", "method", "reference_code"], name: "index_payments_on_dedup_fields", unique: true
     t.index ["invoice_id"], name: "index_payments_on_invoice_id"
+    t.index ["recorded_by_user_id"], name: "index_payments_on_recorded_by_user_id"
   end
 
   create_table "prescriptions", force: :cascade do |t|
@@ -322,6 +347,25 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_09_170830) do
     t.index ["patient_id"], name: "index_prescriptions_on_patient_id"
     t.index ["signed_by_user_id"], name: "index_prescriptions_on_signed_by_user_id"
     t.index ["status"], name: "index_prescriptions_on_status"
+  end
+
+  create_table "queue_entries", force: :cascade do |t|
+    t.integer "appointment_id"
+    t.integer "patient_id", null: false
+    t.string "queue_type", default: "scheduled", null: false
+    t.integer "priority_level", default: 0, null: false
+    t.string "status", default: "waiting", null: false
+    t.datetime "arrived_at"
+    t.datetime "called_at"
+    t.datetime "served_at"
+    t.integer "position", default: 0, null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id", "status"], name: "idx_queue_entries_active_appointment", unique: true, where: "status IN ('waiting','called')"
+    t.index ["appointment_id"], name: "index_queue_entries_on_appointment_id"
+    t.index ["patient_id"], name: "index_queue_entries_on_patient_id"
+    t.index ["status", "priority_level", "arrived_at"], name: "idx_queue_entries_dispatch_order"
   end
 
   create_table "role_permissions", force: :cascade do |t|
@@ -384,6 +428,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_09_170830) do
   add_foreign_key "prescriptions", "patients"
   add_foreign_key "prescriptions", "users", column: "drafted_by_user_id"
   add_foreign_key "prescriptions", "users", column: "signed_by_user_id"
+  add_foreign_key "queue_entries", "appointments"
+  add_foreign_key "queue_entries", "patients"
   add_foreign_key "treatment_records", "appointments"
   add_foreign_key "treatment_records", "patients"
   add_foreign_key "treatment_records", "users"

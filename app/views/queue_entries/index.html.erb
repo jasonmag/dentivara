@@ -1,0 +1,18 @@
+<% content_for :title, "Queue Board" %>
+
+<div class="space-y-8">
+  <%= turbo_stream_from "queue_board" %>
+
+  <section class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div>
+      <h1 class="page-title">Reception Queue Board</h1>
+      <p class="serene-subheading mt-1">Manage waiting patients, priority, and live chair flow.</p>
+    </div>
+    <div class="flex gap-2">
+      <%= button_to "Call Next", call_next_queue_entries_path, method: :post, class: "btn btn-primary" %>
+      <%= link_to "Schedule", appointments_path, class: "btn btn-secondary" %>
+    </div>
+  </section>
+
+  <%= render "board", queue_entries: @queue_entries, upcoming_appointments: @upcoming_appointments %>
+</div>

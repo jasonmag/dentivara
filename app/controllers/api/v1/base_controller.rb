@@ -7,16 +7,24 @@ module Api
       private
 
       def authenticate_api!
-        expected_token = ENV.fetch("API_V1_TOKEN", "dev-token")
+        expected_token = expected_api_token
         provided = request.headers["Authorization"].to_s.delete_prefix("Bearer ")
 
-        return if ActiveSupport::SecurityUtils.secure_compare(provided, expected_token)
+        return if expected_token.present? && ActiveSupport::SecurityUtils.secure_compare(provided, expected_token)
 
         render json: { error: "Unauthorized" }, status: :unauthorized
       end
 
       def ensure_json_request
         request.format = :json
+      end
+
+      def expected_api_token
+        token = ENV["API_V1_TOKEN"].to_s
+        return token if token.present?
+        return "dev-token" if Rails.env.development? || Rails.env.test?
+
+        nil
       end
     end
   end

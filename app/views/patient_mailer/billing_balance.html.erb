@@ -1,3 +1,3 @@
 <h2>Dentivara Billing Update</h2>
 <p>Hello <%= @patient.full_name %>,</p>
-<p>Your invoice #<%= @invoice.id %> has an outstanding balance of <%= number_to_currency(@invoice.balance_amount) %>.</p>
+<p>Your invoice #<%= @invoice.id %> has an outstanding balance of <%= clinic_number_to_currency(@invoice.balance_amount) %>.</p>

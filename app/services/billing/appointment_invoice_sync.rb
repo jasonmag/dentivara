@@ -73,7 +73,9 @@ module Billing
       total_amount = (appointment.clinic_service&.base_price || 0).to_d
       paid_total = invoice.payments.sum(:amount).to_d
       balance_amount = [ total_amount - paid_total, 0.to_d ].max
-      next_status = if balance_amount.zero? && paid_total.positive?
+      next_status = if paid_total > total_amount
+        "overpaid"
+      elsif balance_amount.zero? && paid_total.positive?
         "paid"
       elsif paid_total.positive?
         "partially_paid"

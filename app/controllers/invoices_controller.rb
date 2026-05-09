@@ -1,8 +1,8 @@
 class InvoicesController < ApplicationController
   include AccessTrackable
 
-  before_action :set_invoice, only: %i[ show edit update destroy ]
-  before_action -> { require_permission!(:invoices, :view) }, only: %i[index show]
+  before_action :set_invoice, only: %i[ show edit update destroy download ]
+  before_action -> { require_permission!(:invoices, :view) }, only: %i[index show download]
   before_action -> { require_permission!(:invoices, :create) }, only: %i[new create]
   before_action -> { require_permission!(:invoices, :update) }, only: %i[edit update]
   before_action -> { require_permission!(:invoices, :destroy) }, only: :destroy
@@ -17,6 +17,8 @@ class InvoicesController < ApplicationController
 
   # GET /invoices/1 or /invoices/1.json
   def show
+    @payments = @invoice.payments.includes(:recorded_by).with_attached_proof.order(paid_on: :desc, created_at: :desc)
+    @payment = @invoice.payments.new(paid_on: Time.zone.today)
     track_access!(resource: @invoice, action: "view_invoice")
   end
 
@@ -72,6 +74,14 @@ class InvoicesController < ApplicationController
     end
   end
 
+  def download
+    pdf_data = Billing::InvoicePdfRenderer.new(@invoice).render
+    send_data pdf_data,
+              filename: "invoice-#{invoice_display_name(@invoice)}.pdf",
+              type: "application/pdf",
+              disposition: "attachment"
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_invoice
@@ -81,5 +91,9 @@ class InvoicesController < ApplicationController
     # Only allow a list of trusted parameters through.
     def invoice_params
       params.expect(invoice: [ :patient_id, :treatment_record_id, :status, :total_amount, :balance_amount, :issued_on, :approved_by_dentist_at, :approved_by_admin_at ])
+    end
+
+    def invoice_display_name(invoice)
+      invoice.invoice_number.presence || invoice.id
     end
 end

@@ -31,6 +31,16 @@ Rails.application.routes.draw do
       get :available_slots
     end
   end
+  resources :queue_entries, only: %i[index create] do
+    collection do
+      post :call_next
+    end
+    member do
+      patch :call
+      patch :serve
+      patch :cancel
+    end
+  end
   resource :schedule_settings, only: :show, controller: "schedule_settings" do
     post :clinic_schedules, action: :create_clinic_schedule
     delete "clinic_schedules/:id", action: :destroy_clinic_schedule, as: :clinic_schedule
@@ -42,8 +52,16 @@ Rails.application.routes.draw do
     delete "dentist_overrides/:id", action: :destroy_dentist_override, as: :dentist_override
   end
   resources :treatment_records
-  resources :invoices
-  resources :payments
+  resources :invoices do
+    member do
+      get :download
+    end
+  end
+  resources :payments do
+    member do
+      get :receipt
+    end
+  end
   resources :notifications
   resources :audit_logs, only: :index
   resource :compliance, only: :show, controller: "compliance"

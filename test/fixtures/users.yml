@@ -9,3 +9,13 @@ two:
   name: Ana Cruz
   email: ana@example.com
   role: 2
+
+three:
+  name: Ben Billing
+  email: ben@example.com
+  role: 3
+
+four:
+  name: Pat Portal
+  email: pat@example.com
+  role: 4
