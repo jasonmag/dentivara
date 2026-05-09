@@ -73,6 +73,26 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Updated Name", @user.name
   end
 
+  test "should ignore password reset from non system admin" do
+    editor = User.create!(name: "Clinic Owner", email: "owner@example.com", role: :clinic_owner, password: "password123", password_confirmation: "password123")
+    sign_in_as(editor)
+    @user.update!(password: "currentpassword123", password_confirmation: "currentpassword123")
+
+    patch user_url(@user), params: {
+      user: {
+        email: @user.email,
+        name: "Updated By Owner",
+        role: @user.role,
+        password: "newpassword123",
+        password_confirmation: "newpassword123"
+      }
+    }
+
+    assert_redirected_to user_url(@user)
+    assert @user.reload.authenticate("currentpassword123")
+    assert_equal "Updated By Owner", @user.name
+  end
+
   test "should destroy user" do
     assert_difference("User.count", -1) do
       delete user_url(@user)
