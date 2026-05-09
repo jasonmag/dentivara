@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+# Load env vars
+set -a
+source .env
+set +a
+
+# Forward everything to kamal
+exec bin/kamal "$@"

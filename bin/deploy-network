@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  bin/deploy-network --host <server> [options]
+
+Options:
+  --host <server>         SSH host (or set HOME_DEV_HOST)
+  --user <user>           SSH user (default: HOME_DEV_USER or current user)
+  --port <port>           SSH port (default: HOME_DEV_PORT or 22)
+  --app-port <port>       Host app port (default: HOME_DEV_APP_PORT or 3000)
+  --image <name>          Docker image name (default: HOME_DEV_IMAGE or orion-vault:dev)
+  --container <name>      Container name (default: HOME_DEV_CONTAINER or orion-vault-dev)
+  --db-volume <name>      Docker volume for SQLite (default: HOME_DEV_DB_VOLUME or <container>-sqlite)
+  --no-build              Skip local docker image rebuild
+  -h, --help              Show this help
+
+Environment variable defaults:
+  HOME_DEV_HOST
+  HOME_DEV_USER
+  HOME_DEV_PORT
+  HOME_DEV_APP_PORT
+  HOME_DEV_IMAGE
+  HOME_DEV_CONTAINER
+  HOME_DEV_DB_VOLUME
+
+Example:
+  HOME_DEV_HOST=192.168.1.50 HOME_DEV_USER=jason bin/deploy-network
+EOF
+}
+
+HOST="${HOME_DEV_HOST:-}"
+USER_NAME="${HOME_DEV_USER:-${USER:-}}"
+PORT="${HOME_DEV_PORT:-22}"
+APP_PORT="${HOME_DEV_APP_PORT:-3000}"
+IMAGE_NAME="${HOME_DEV_IMAGE:-orion-vault:dev}"
+CONTAINER_NAME="${HOME_DEV_CONTAINER:-orion-vault-dev}"
+DB_VOLUME_NAME="${HOME_DEV_DB_VOLUME:-${CONTAINER_NAME}-sqlite}"
+DO_BUILD=1
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --host)
+      HOST="${2:-}"
+      shift 2
+      ;;
+    --user)
+      USER_NAME="${2:-}"
+      shift 2
+      ;;
+    --port)
+      PORT="${2:-}"
+      shift 2
+      ;;
+    --app-port)
+      APP_PORT="${2:-}"
+      shift 2
+      ;;
+    --image)
+      IMAGE_NAME="${2:-}"
+      shift 2
+      ;;
+    --container)
+      CONTAINER_NAME="${2:-}"
+      shift 2
+      ;;
+    --db-volume)
+      DB_VOLUME_NAME="${2:-}"
+      shift 2
+      ;;
+    --no-build)
+      DO_BUILD=0
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if [[ -z "${HOST}" ]]; then
+  echo "Missing host. Pass --host or set HOME_DEV_HOST." >&2
+  exit 1
+fi
+
+if ! command -v docker >/dev/null 2>&1; then
+  echo "docker is required locally." >&2
+  exit 1
+fi
+
+if ! command -v ssh >/dev/null 2>&1; then
+  echo "ssh is required locally." >&2
+  exit 1
+fi
+
+SSH_TARGET="${USER_NAME}@${HOST}"
+SSH_OPTS=(-p "${PORT}")
+
+if [[ "${DO_BUILD}" -eq 1 ]]; then
+  echo "Building local image ${IMAGE_NAME} ..."
+  docker build -t "${IMAGE_NAME}" .
+fi
+
+if ! docker image inspect "${IMAGE_NAME}" >/dev/null 2>&1; then
+  echo "Local image not found: ${IMAGE_NAME}" >&2
+  echo "Build it first or remove --no-build." >&2
+  exit 1
+fi
+
+echo "Pushing image to ${SSH_TARGET} ..."
+docker save "${IMAGE_NAME}" | ssh "${SSH_OPTS[@]}" "${SSH_TARGET}" "docker load"
+
+echo "Restarting container ${CONTAINER_NAME} on remote (db volume: ${DB_VOLUME_NAME}) ..."
+ssh "${SSH_OPTS[@]}" "${SSH_TARGET}" \
+  "docker volume create '${DB_VOLUME_NAME}' >/dev/null && docker run --rm -v '${DB_VOLUME_NAME}:/vol' alpine sh -lc 'chown -R 1000:1000 /vol' >/dev/null && if docker ps -a --format '{{.Names}}' | grep -qx '${CONTAINER_NAME}'; then docker rm -f '${CONTAINER_NAME}'; fi && docker run -d --name '${CONTAINER_NAME}' -p ${APP_PORT}:${APP_PORT} -v '${DB_VOLUME_NAME}:/rails/db-data' -e DEVELOPMENT_DB_NAME=db-data/development.sqlite3 -e RAILS_ENV=development -e PORT=${APP_PORT} -e APP_PORT=${APP_PORT} '${IMAGE_NAME}' ./bin/thrust ./bin/rails server -b 0.0.0.0 -p ${APP_PORT}"
+
+echo "Done."
+echo "Open: http://${HOST}:${APP_PORT}"
