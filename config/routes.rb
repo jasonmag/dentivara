@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   resources :patients do
     resources :patient_consents, only: :create
     resources :dental_chart_entries, only: :create
+    resources :intraoral_scans, only: %i[show create destroy]
     resources :prescriptions, only: %i[index show new create] do
       collection do
         get :render_template

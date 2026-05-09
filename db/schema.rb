@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_09_213000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_09_220000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -236,6 +236,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_09_213000) do
     t.index ["submitted_by_user_id"], name: "index_intake_form_submissions_on_submitted_by_user_id"
   end
 
+  create_table "intraoral_scans", force: :cascade do |t|
+    t.integer "patient_id", null: false
+    t.integer "user_id", null: false
+    t.date "captured_on", null: false
+    t.string "scan_type", default: "intraoral_scan", null: false
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["patient_id", "captured_on"], name: "index_intraoral_scans_on_patient_id_and_captured_on"
+    t.index ["patient_id"], name: "index_intraoral_scans_on_patient_id"
+    t.index ["user_id"], name: "index_intraoral_scans_on_user_id"
+  end
+
   create_table "invoices", force: :cascade do |t|
     t.integer "patient_id", null: false
     t.integer "treatment_record_id", null: false
@@ -417,6 +430,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_09_213000) do
   add_foreign_key "dentist_schedules", "users"
   add_foreign_key "intake_form_submissions", "patients"
   add_foreign_key "intake_form_submissions", "users", column: "submitted_by_user_id"
+  add_foreign_key "intraoral_scans", "patients"
+  add_foreign_key "intraoral_scans", "users"
   add_foreign_key "invoices", "patients"
   add_foreign_key "invoices", "treatment_records"
   add_foreign_key "notifications", "patients"
