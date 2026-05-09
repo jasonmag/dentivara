@@ -6,6 +6,7 @@
 # Logs and runtime files
 /log/*
 !/log/.keep
+/log/test.log
 /tmp/*
 !/tmp/.keep
 !/tmp/pids/
