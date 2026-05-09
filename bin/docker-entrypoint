@@ -6,9 +6,10 @@ if [ -z "${LD_PRELOAD+x}" ]; then
     export LD_PRELOAD
 fi
 
-# If running the rails server then create or migrate existing database
+# If running the Rails server, migrate the database and bootstrap the admin.
+# Do not use db:prepare here: on a new production database it can run db:seed.
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+  ./bin/rails db:migrate
   ./bin/rails admin:bootstrap
 fi
 
