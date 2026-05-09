@@ -55,6 +55,11 @@ users = {
   patient_portal: create_or_update_user!(name: "Patient Portal User", email: "patientportal@dentivara.local", role: :patient)
 }
 
+if (bootstrap_admin = SystemAdminBootstrap.from_env!)
+  users[:system_admin] = bootstrap_admin
+  puts "System admin bootstrapped from env: #{bootstrap_admin.email}"
+end
+
 dentists = [users[:dentist_1], users[:dentist_2]]
 clinical_users = [users[:dentist_1], users[:dentist_2], users[:receptionist], users[:clinic_owner], users[:system_admin]]
 
