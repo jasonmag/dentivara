@@ -3,6 +3,18 @@
 require "securerandom"
 require "stringio"
 
+if Rails.env.in?(%w[production staging])
+  user = SystemAdminBootstrap.from_env!
+
+  if user.present?
+    puts "System admin bootstrapped from env: #{user.email}"
+  else
+    puts "Skipped admin bootstrap (set ADMIN_EMAIL and ADMIN_PASSWORD with at least 8 chars)."
+  end
+
+  return
+end
+
 puts "Seeding Dentivara comprehensive workflow data..."
 
 SEED_PASSWORD = "dentivara123"
