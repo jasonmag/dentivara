@@ -16,6 +16,16 @@
       <%= form.label :role, class: "input-label" %>
       <%= form.select :role, User.roles.keys.map { |role| [role.humanize, role] }, {}, class: "input-field" %>
     </div>
+
+    <div>
+      <%= form.label :password, user.persisted? ? "New password" : "Password", class: "input-label" %>
+      <%= form.password_field :password, autocomplete: "new-password", placeholder: user.persisted? ? "Leave blank to keep current password" : "Minimum 8 characters", class: "input-field" %>
+    </div>
+
+    <div>
+      <%= form.label :password_confirmation, class: "input-label" %>
+      <%= form.password_field :password_confirmation, autocomplete: "new-password", placeholder: user.persisted? ? "Confirm only when changing password" : "Confirm password", class: "input-field" %>
+    </div>
   </div>
 
   <div class="mt-4">

@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 set -e
 
-# Load env vars
-set -a
-source .env
-set +a
-
-# Forward everything to kamal
+# Kept for compatibility. bin/kamal loads .env directly.
 exec bin/kamal "$@"

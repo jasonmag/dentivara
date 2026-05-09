@@ -72,15 +72,16 @@ Update these fields in [`config/deploy.yml`](../config/deploy.yml):
 Create/edit `.kamal/secrets`:
 
 ```bash
-KAMAL_REGISTRY_PASSWORD=...
-RAILS_MASTER_KEY=...
-API_V1_TOKEN=...
-ADMIN_EMAIL=admin@yourclinic.com
-ADMIN_PASSWORD=YourStrongPass123!
-ADMIN_NAME=System Admin
+KAMAL_REGISTRY_PASSWORD=$DOCKERHUB_TOKEN
+RAILS_MASTER_KEY=$RAILS_MASTER_KEY
+API_V1_TOKEN=$API_V1_TOKEN
+ADMIN_EMAIL=$ADMIN_EMAIL
+ADMIN_PASSWORD=$ADMIN_PASSWORD
+ADMIN_NAME=$ADMIN_NAME
 ```
 
 Notes:
+- `bin/kamal` loads `.env` before running Kamal, so keep these values in `.env` locally and reference them from `.kamal/secrets`.
 - `API_V1_TOKEN` is required for `/api/v1` auth in production.
 - `ADMIN_EMAIL` + `ADMIN_PASSWORD` bootstrap the system admin via `admin:bootstrap`.
 

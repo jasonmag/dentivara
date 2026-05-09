@@ -29,8 +29,16 @@ Environment variable defaults:
 
 Example:
   HOME_DEV_HOST=192.168.1.50 HOME_DEV_USER=jason bin/deploy-network
+
+Values can also be stored in .env.
 EOF
 }
+
+if [[ -f .env ]]; then
+  set -a
+  source .env
+  set +a
+fi
 
 DEFAULT_APP_NAME="$(basename "$(pwd)" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9_.-' '-')"
 DEFAULT_APP_NAME="${HOME_DEV_APP_NAME:-${DEFAULT_APP_NAME%-}}"
