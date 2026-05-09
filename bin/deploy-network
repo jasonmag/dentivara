@@ -11,13 +11,14 @@ Options:
   --user <user>           SSH user (default: HOME_DEV_USER or current user)
   --port <port>           SSH port (default: HOME_DEV_PORT or 22)
   --app-port <port>       Host app port (default: HOME_DEV_APP_PORT or 3000)
-  --image <name>          Docker image name (default: HOME_DEV_IMAGE or orion-vault:dev)
-  --container <name>      Container name (default: HOME_DEV_CONTAINER or orion-vault-dev)
+  --image <name>          Docker image name (default: HOME_DEV_IMAGE or <app-name>:dev)
+  --container <name>      Container name (default: HOME_DEV_CONTAINER or <app-name>-dev)
   --db-volume <name>      Docker volume for SQLite (default: HOME_DEV_DB_VOLUME or <container>-sqlite)
   --no-build              Skip local docker image rebuild
   -h, --help              Show this help
 
 Environment variable defaults:
+  HOME_DEV_APP_NAME
   HOME_DEV_HOST
   HOME_DEV_USER
   HOME_DEV_PORT
@@ -31,12 +32,14 @@ Example:
 EOF
 }
 
+DEFAULT_APP_NAME="$(basename "$(pwd)" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9_.-' '-')"
+DEFAULT_APP_NAME="${HOME_DEV_APP_NAME:-${DEFAULT_APP_NAME%-}}"
 HOST="${HOME_DEV_HOST:-}"
 USER_NAME="${HOME_DEV_USER:-${USER:-}}"
 PORT="${HOME_DEV_PORT:-22}"
 APP_PORT="${HOME_DEV_APP_PORT:-3000}"
-IMAGE_NAME="${HOME_DEV_IMAGE:-orion-vault:dev}"
-CONTAINER_NAME="${HOME_DEV_CONTAINER:-orion-vault-dev}"
+IMAGE_NAME="${HOME_DEV_IMAGE:-${DEFAULT_APP_NAME}:dev}"
+CONTAINER_NAME="${HOME_DEV_CONTAINER:-${DEFAULT_APP_NAME}-dev}"
 DB_VOLUME_NAME="${HOME_DEV_DB_VOLUME:-${CONTAINER_NAME}-sqlite}"
 DO_BUILD=1
 
