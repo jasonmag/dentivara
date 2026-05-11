@@ -20,4 +20,9 @@ class ActionDispatch::IntegrationTest
     post login_url, params: { email: user.email, password: password }
     follow_redirect! if response.redirect?
   end
+
+  def api_headers_for(user, token_name: "Test client")
+    _access_token, raw_token = ApiAccessToken.generate!(user: user, name: token_name)
+    { "Authorization" => "Bearer #{raw_token}" }
+  end
 end

@@ -7,7 +7,7 @@ class AppointmentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get appointments_url
+    get appointments_url(date: @appointment.starts_at.to_date.iso8601)
     assert_response :success
     assert_select "div[data-controller='appointment-modal']"
     assert_select "button[data-action='appointment-modal#open']", minimum: 1

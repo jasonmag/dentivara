@@ -20,6 +20,7 @@ class User < ApplicationRecord
   }.freeze
 
   has_many :appointments, dependent: :destroy
+  has_many :api_access_tokens, dependent: :destroy
   has_many :dentist_schedules, dependent: :destroy
   has_many :dentist_schedule_overrides, dependent: :destroy
   has_many :treatment_records, dependent: :destroy

@@ -74,14 +74,14 @@ Create/edit `.kamal/secrets`:
 ```bash
 KAMAL_REGISTRY_PASSWORD=$DOCKERHUB_TOKEN
 RAILS_MASTER_KEY=$RAILS_MASTER_KEY
-API_V1_TOKEN=$API_V1_TOKEN
 ADMIN_EMAIL=$ADMIN_EMAIL
 ADMIN_PASSWORD=$ADMIN_PASSWORD
 ```
 
 Notes:
 - `bin/kamal` loads `.env` before running Kamal, so keep these values in `.env` locally and reference them from `.kamal/secrets`.
-- `API_V1_TOKEN` is required for `/api/v1` auth in production.
+- `/api/v1` uses user-scoped database-backed bearer tokens. Create tokens through `POST /api/v1/session` with a valid user email/password.
+- `API_V1_TOKEN` is a legacy shared-token fallback. It is ignored in staging/production unless `API_V1_LEGACY_TOKEN_ENABLED=true`; avoid it for production clients unless a temporary server-to-server integration needs it.
 - `ADMIN_EMAIL` + `ADMIN_PASSWORD` bootstrap the system admin via `admin:bootstrap`.
 
 ## 6. First Deploy
@@ -111,12 +111,16 @@ curl -I https://<your-domain>/up
 
 ```bash
 curl -i https://<your-domain>/api/v1/patients
-curl -i -H "Authorization: Bearer <API_V1_TOKEN>" https://<your-domain>/api/v1/patients
+curl -i -X POST https://<your-domain>/api/v1/session \
+  -H "Content-Type: application/json" \
+  -d '{"session":{"email":"<admin-email>","password":"<admin-password>","device_name":"Deploy smoke test"}}'
+curl -i -H "Authorization: Bearer <api_access_token>" https://<your-domain>/api/v1/patients
 ```
 
 Expected:
 - first call: `401 Unauthorized`
-- second call: `200 OK`
+- session call: `201 Created`
+- authenticated patients call: `200 OK`
 
 3. Confirm admin bootstrap:
 
@@ -152,9 +156,9 @@ bin/kamal app exec --reuse "bin/rails db:migrate"
 
 ## 9. Common Issues
 
-1. `API_V1_TOKEN must be set in production`
-- ensure `API_V1_TOKEN` exists in `.kamal/secrets`
-- redeploy
+1. API login returns `401 Unauthorized`
+- confirm the admin user exists by running `bin/rails admin:bootstrap`
+- confirm the email/password sent to `POST /api/v1/session`
 
 2. Docker build permission errors for `bin/rails`
 - ensure executable bit:
@@ -171,7 +175,7 @@ chmod +x bin/rails bin/rake bin/dev
 1. Move Active Storage from local volume to S3.
 2. Add automated backups for DB and uploads.
 3. Add monitoring/alerts (CPU, memory, container restarts, app errors).
-4. Rotate `API_V1_TOKEN` and registry credentials periodically.
+4. Rotate registry credentials periodically and revoke stale API access tokens.
 
 ## 11. Initial Resources and Estimated Spend
 

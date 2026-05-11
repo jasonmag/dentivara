@@ -2,8 +2,14 @@ require "test_helper"
 
 class ApiV1PaymentsTest < ActionDispatch::IntegrationTest
   setup do
-    @headers = { "Authorization" => "Bearer dev-token" }
+    @previous_token = ENV["API_V1_TOKEN"]
+    ENV["API_V1_TOKEN"] = nil
+    @headers = api_headers_for(users(:three))
     @invoice = invoices(:one)
+  end
+
+  teardown do
+    ENV["API_V1_TOKEN"] = @previous_token
   end
 
   test "creates payment with idempotency key and replays same response" do
@@ -28,7 +34,8 @@ class ApiV1PaymentsTest < ActionDispatch::IntegrationTest
     end
     assert_response :created
     replay_body = JSON.parse(response.body)
-    assert_equal first_body["id"], replay_body["id"]
+    assert_equal first_body.dig("data", "id"), replay_body.dig("data", "id")
+    assert_equal users(:three).id, first_body.dig("data", "recorded_by_user_id")
   end
 
   test "rejects idempotency key reuse for different payload" do
@@ -57,5 +64,15 @@ class ApiV1PaymentsTest < ActionDispatch::IntegrationTest
 
     post api_v1_payments_url, params: second_payload, headers: @headers.merge("Idempotency-Key" => "payment-create-2"), as: :json
     assert_response :conflict
+    assert_equal "idempotency_conflict", JSON.parse(response.body).dig("error", "code")
+  end
+
+  test "lists payments with filter and pagination metadata" do
+    get api_v1_payments_url, headers: @headers, params: { invoice_id: @invoice.id, per_page: 1 }, as: :json
+    assert_response :success
+
+    body = JSON.parse(response.body)
+    assert body["data"].all? { |payment| payment["invoice_id"] == @invoice.id }
+    assert_equal 1, body.dig("meta", "pagination", "per_page")
   end
 end

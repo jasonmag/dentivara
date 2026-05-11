@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_09_220000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_12_120000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -51,6 +51,24 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_09_220000) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "api_access_tokens", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "name", null: false
+    t.string "token_digest", null: false
+    t.json "scopes", default: [], null: false
+    t.datetime "expires_at"
+    t.datetime "revoked_at"
+    t.datetime "last_used_at"
+    t.string "last_used_ip"
+    t.string "last_used_user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_api_access_tokens_on_expires_at"
+    t.index ["token_digest"], name: "index_api_access_tokens_on_token_digest", unique: true
+    t.index ["user_id", "revoked_at"], name: "index_api_access_tokens_on_user_id_and_revoked_at"
+    t.index ["user_id"], name: "index_api_access_tokens_on_user_id"
   end
 
   create_table "api_idempotency_keys", force: :cascade do |t|
@@ -418,6 +436,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_09_220000) do
   add_foreign_key "access_logs", "users"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "api_access_tokens", "users"
   add_foreign_key "appointments", "appointments", column: "rescheduled_from_appointment_id"
   add_foreign_key "appointments", "clinic_services"
   add_foreign_key "appointments", "patients"

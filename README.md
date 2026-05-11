@@ -100,5 +100,14 @@
 ## Multiplatform API Access
 
 - Base path: `/api/v1`
-- Auth header: `Authorization: Bearer <API_V1_TOKEN>`
-- CORS origins: `API_CORS_ORIGINS` (default `*`)
+- Create session/token: `POST /api/v1/session`
+  - body: `{ "session": { "email": "user@example.com", "password": "password", "device_name": "Next.js server" } }`
+  - response includes a one-time bearer token, expiry, and user permissions.
+- Revoke current token: `DELETE /api/v1/session`
+- Auth header for protected endpoints: `Authorization: Bearer <api_access_token>`
+- Legacy shared-token auth via `API_V1_TOKEN` is accepted in development/test. In staging/production it requires `API_V1_LEGACY_TOKEN_ENABLED=true`; user-scoped `ApiAccessToken` records are preferred.
+- List responses use `{ "data": [...], "meta": { "pagination": ... } }`.
+- Resource responses use `{ "data": { ... } }`.
+- Error responses use `{ "error": { "code": "...", "message": "...", "details": ... } }`.
+- Common list params: `page`, `per_page` (max 100), plus resource filters such as `search`, `patient_id`, `status`, date ranges, and invoice/payment filters.
+- CORS origins: `API_CORS_ORIGINS` (default `*`; set explicit Next.js/mobile gateway origins in staging/production).

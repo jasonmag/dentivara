@@ -1,31 +1,39 @@
 module Api
   module V1
     class AppointmentsController < BaseController
+      before_action -> { authorize_api!(:appointments) }
       before_action :set_appointment, only: %i[show update destroy]
 
       def index
         appointments = Appointment.includes(:patient, :user).order(starts_at: :asc)
-        render json: appointments.as_json(include: { patient: { only: %i[id first_name last_name] }, user: { only: %i[id name role] } })
+        appointments = appointments.where(patient_id: params[:patient_id]) if params[:patient_id].present?
+        appointments = appointments.where(user_id: params[:user_id]) if params[:user_id].present?
+        appointments = appointments.where(status: params[:status]) if params[:status].present?
+        appointments = appointments.where(starts_at: Date.parse(params[:date]).all_day) if params[:date].present?
+        appointments = appointments.where("starts_at >= ?", Time.zone.parse(params[:starts_from])) if params[:starts_from].present?
+        appointments = appointments.where("starts_at <= ?", Time.zone.parse(params[:starts_to])) if params[:starts_to].present?
+
+        render_collection(appointments, serializer: AppointmentSerializer)
       end
 
       def show
-        render json: @appointment
+        render_resource(@appointment, serializer: AppointmentSerializer)
       end
 
       def create
         appointment = Appointment.new(appointment_params)
         if appointment.save
-          render json: appointment, status: :created
+          render_resource(appointment, serializer: AppointmentSerializer, status: :created)
         else
-          render json: { errors: appointment.errors.full_messages }, status: :unprocessable_entity
+          render_validation_errors(appointment)
         end
       end
 
       def update
         if @appointment.update(appointment_params)
-          render json: @appointment
+          render_resource(@appointment, serializer: AppointmentSerializer)
         else
-          render json: { errors: @appointment.errors.full_messages }, status: :unprocessable_entity
+          render_validation_errors(@appointment)
         end
       end
 
@@ -37,7 +45,7 @@ module Api
       private
 
       def set_appointment
-        @appointment = Appointment.find(params[:id])
+        @appointment = Appointment.includes(:patient, :user).find(params[:id])
       end
 
       def appointment_params

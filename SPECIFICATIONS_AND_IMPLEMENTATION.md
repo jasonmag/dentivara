@@ -250,4 +250,5 @@
 - Run app: `bin/dev` or `bin/rails server`
   - `bin/dev` now runs `bin/rails assets:clobber` and `bin/rails assets:precompile` before starting Foreman.
 - Run tests: `bin/rails test`
-- API auth header: `Authorization: Bearer <API_V1_TOKEN>`
+- API clients create revocable user-scoped bearer tokens with `POST /api/v1/session`.
+- API auth header: `Authorization: Bearer <api_access_token>`

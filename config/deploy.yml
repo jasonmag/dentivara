@@ -35,7 +35,6 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
-    - API_V1_TOKEN
     - ADMIN_EMAIL
     - ADMIN_PASSWORD
   clear:
