@@ -1,0 +1,52 @@
+<% content_for :title, "Prescriptions" %>
+
+<div class="space-y-6">
+  <section class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+    <div>
+      <h1 class="page-title">Prescriptions for <%= @patient.full_name %></h1>
+      <p class="serene-subheading mt-1">Draft, finalize, and digitally sign prescriptions.</p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to "Back to Patient", patient_path(@patient), class: "btn btn-secondary" %>
+      <% if can_access_feature?(:prescriptions, :create) %>
+        <%= link_to "New Prescription", new_patient_prescription_path(@patient), class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="table-shell">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Issued On</th>
+          <th>Status</th>
+          <th>Drafted By</th>
+          <th>Signed By</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @prescriptions.any? %>
+          <% @prescriptions.each do |prescription| %>
+            <tr>
+              <td><%= l(prescription.issued_on, format: :long) %></td>
+              <td><%= prescription.status.humanize %></td>
+              <td><%= prescription.drafted_by_user.name %></td>
+              <td><%= prescription.signed_by_user&.name || "N/A" %></td>
+              <td class="text-right">
+                <div class="flex justify-end gap-2">
+                  <% if can_access_feature?(:prescriptions, :view) %>
+                    <%= link_to "Open", patient_prescription_path(@patient, prescription), class: "btn btn-secondary px-3 py-1.5 text-xs" %>
+                    <%= render "preview_dialog", patient: @patient, prescription: prescription %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr><td colspan="5" class="py-10 text-center text-sm text-stone-500">No prescriptions yet.</td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </section>
+</div>

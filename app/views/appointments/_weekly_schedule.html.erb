@@ -1,0 +1,93 @@
+<section class="serene-card p-6">
+  <div class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-stone-500">Weekly Schedule</p>
+      <p class="serene-subheading mt-1"><%= @week_start.strftime('%B %d') %> — <%= @week_end.strftime('%B %d, %Y') %></p>
+    </div>
+
+    <% if can_access_feature?(:appointments, :create) %>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to appointments_path(date: @previous_week_start.iso8601), class: "btn btn-secondary gap-2 px-5 py-3", data: { turbo_frame: "weekly_schedule", turbo_action: "advance" } do %>
+          <span class="material-symbols-outlined">chevron_left</span>
+          <span>Previous Week</span>
+        <% end %>
+        <%= link_to appointments_path(date: @next_week_start.iso8601), class: "btn btn-secondary gap-2 px-5 py-3", data: { turbo_frame: "weekly_schedule", turbo_action: "advance" } do %>
+          <span class="material-symbols-outlined">chevron_right</span>
+          <span>Next Week</span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+    <article class="xl:col-span-2">
+      <div class="mb-5 flex items-center justify-between">
+        <h2 class="font-serif text-2xl text-stone-800">Appointments by Day</h2>
+        <span class="text-xs font-semibold uppercase tracking-wider text-stone-500"><%= @weekly_appointments.count %> this week</span>
+      </div>
+
+      <div class="space-y-4">
+        <% (@week_start..@week_end).each do |day| %>
+          <% day_items = @weekly_appointments.select { |appointment| appointment.starts_at.to_date == day } %>
+          <div class="rounded-xl border border-stone-100 p-4">
+            <div class="mb-3 flex items-center justify-between">
+              <h3 class="font-serif text-xl text-stone-800"><%= day.strftime('%A') %></h3>
+              <span class="text-xs text-stone-500"><%= day.strftime('%b %d') %></span>
+            </div>
+            <div class="space-y-2">
+              <% if day_items.any? %>
+                <% day_items.each do |appointment| %>
+                  <%= render "appointments/appointment_card", appointment: appointment, week_date: @week_start.iso8601 %>
+                <% end %>
+              <% else %>
+                <p class="text-sm text-stone-400">No appointments</p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </article>
+
+    <aside class="space-y-6">
+      <article class="serene-card p-6">
+        <h3 class="mb-3 font-serif text-xl text-stone-800">Status Summary</h3>
+        <% grouped = @appointments.group_by(&:status) %>
+        <div class="space-y-2">
+          <% Appointment::STATUSES.each do |status| %>
+            <div class="flex items-center justify-between rounded-lg bg-stone-50 px-3 py-2">
+              <span class="text-sm text-stone-700"><%= status.humanize %></span>
+              <span class="text-sm font-semibold text-stone-800"><%= grouped.fetch(status, []).size %></span>
+            </div>
+          <% end %>
+        </div>
+      </article>
+
+      <article class="serene-card p-6">
+        <h3 class="mb-3 font-serif text-xl text-stone-800">Upcoming Queue</h3>
+        <div class="space-y-2">
+          <% @appointments.where('starts_at >= ?', Time.current).first(6).each do |appointment| %>
+            <div class="rounded-lg border border-stone-100 p-3">
+              <p class="text-sm font-semibold text-stone-800"><%= appointment.patient.full_name %></p>
+              <p class="text-xs text-stone-500"><%= l(appointment.starts_at, format: :short) %></p>
+            </div>
+          <% end %>
+        </div>
+      </article>
+
+      <article class="serene-card p-6">
+        <h3 class="mb-3 font-serif text-xl text-stone-800">Open Slots</h3>
+        <div class="space-y-2">
+          <% @available_slots.each do |slot| %>
+            <div class="rounded-lg border border-stone-100 p-3">
+              <p class="text-sm font-semibold text-stone-800"><%= l(slot[:starts_at], format: "%a %I:%M %p") %></p>
+              <p class="text-xs text-stone-500"><%= slot[:dentists].map(&:name).to_sentence %></p>
+            </div>
+          <% end %>
+          <% if @available_slots.blank? %>
+            <p class="text-sm text-stone-500">No open slots found for the selected day.</p>
+          <% end %>
+        </div>
+      </article>
+    </aside>
+  </div>
+</section>

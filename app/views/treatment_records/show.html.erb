@@ -1,0 +1,17 @@
+<% content_for :title, "Treatment Record" %>
+
+<div class="space-y-4">
+  <div class="app-card">
+    <%= render @treatment_record %>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <% if can_access_feature?(:treatment_records, :update) %>
+      <%= link_to "Edit", edit_treatment_record_path(@treatment_record), class: "btn btn-primary" %>
+    <% end %>
+    <%= link_to "Back", treatment_records_path, class: "btn btn-secondary" %>
+    <% if can_access_feature?(:treatment_records, :destroy) %>
+      <%= button_to "Destroy", @treatment_record, method: :delete, class: "btn btn-danger" %>
+    <% end %>
+  </div>
+</div>

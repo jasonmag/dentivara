@@ -1,0 +1,23 @@
+<section class="login-page">
+  <div class="login-card">
+    <p class="login-kicker">Welcome Back</p>
+    <h1>Dentivara Login</h1>
+    <p class="login-description">Sign in to continue to your clinic dashboard.</p>
+
+    <%= form_with url: login_path, method: :post, class: "space-y-4" do |form| %>
+      <div>
+        <%= form.label :email, class: "input-label" %>
+        <%= form.email_field :email, class: "input-field", required: true, autofocus: true, placeholder: "you@clinic.com" %>
+      </div>
+      <div>
+        <%= form.label :password, class: "input-label" %>
+        <%= form.password_field :password, class: "input-field", required: true, placeholder: "Enter your password" %>
+      </div>
+      <%= form.submit "Sign in", class: "btn btn-primary w-full justify-center" %>
+    <% end %>
+
+    <div class="mt-4 text-center text-sm text-stone-600">
+      <%= link_to "Back to Home", root_path, class: "font-semibold text-[#4a654e] hover:underline" %>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,92 @@
+<% content_for :title, "Invoice" %>
+
+<div class="space-y-4">
+  <div class="app-card">
+    <%= render @invoice %>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-2">
+    <section class="app-card">
+      <h2 class="mb-3 font-serif text-xl text-stone-800">Record Payment</h2>
+      <%= form_with model: @payment, url: payments_path(invoice_id: @invoice.id), class: "space-y-3" do |form| %>
+        <%= render "shared/form_errors", model: @payment %>
+        <%= form.hidden_field :invoice_id, value: @invoice.id %>
+        <div class="grid gap-3 md:grid-cols-2">
+          <div>
+            <%= form.label :amount, class: "input-label" %>
+            <%= form.number_field :amount, step: 0.01, class: "input-field", required: true %>
+          </div>
+          <div>
+            <%= form.label :paid_on, class: "input-label" %>
+            <%= form.date_field :paid_on, class: "input-field", required: true %>
+          </div>
+          <div>
+            <%= form.label :method, class: "input-label" %>
+            <%= form.select :method, Payment::PAYMENT_METHODS.map { |m| [m.humanize, m] }, { prompt: "Select method" }, class: "input-field" %>
+          </div>
+          <div>
+            <%= form.label :reference_code, "Reference / Notes ID", class: "input-label" %>
+            <%= form.text_field :reference_code, class: "input-field" %>
+          </div>
+          <div class="md:col-span-2">
+            <%= form.label :notes, class: "input-label" %>
+            <%= form.text_area :notes, rows: 3, class: "input-field" %>
+          </div>
+          <div class="md:col-span-2">
+            <%= form.label :proof, "Payment Proof (JPG, PNG, PDF)", class: "input-label" %>
+            <%= form.file_field :proof, class: "input-field", direct_upload: true, accept: ".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" %>
+          </div>
+        </div>
+        <%= form.submit "Record Payment", class: "btn btn-primary" %>
+      <% end %>
+    </section>
+
+    <section class="app-card">
+      <h2 class="mb-3 font-serif text-xl text-stone-800">Payment History</h2>
+      <div class="space-y-3">
+        <% @payments.each do |payment| %>
+          <article class="rounded-xl border border-stone-100 bg-stone-50 p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="font-semibold text-stone-900"><%= clinic_number_to_currency(payment.amount) %></p>
+                <p class="text-sm text-stone-600"><%= l(payment.paid_on, format: :long) %> • <%= payment.method.present? ? payment.method.humanize : "N/A" %></p>
+                <p class="text-xs text-stone-500">Reference: <%= payment.reference_code.presence || "N/A" %></p>
+                <p class="text-xs text-stone-500">Recorded by: <%= payment.recorded_by&.name || "N/A" %></p>
+                <% if payment.notes.present? %><p class="mt-1 text-xs text-stone-600"><%= payment.notes %></p><% end %>
+              </div>
+              <div class="flex flex-col items-end gap-1">
+                <% if payment.proof.attached? %>
+                  <%= link_to "View Screenshot", rails_blob_path(payment.proof, disposition: "inline"), target: "_blank", class: "btn btn-secondary px-2 py-1 text-xs" %>
+                <% end %>
+                <% if can_access_feature?(:payments, :update) %>
+                  <%= link_to "Edit", edit_payment_path(payment, invoice_id: @invoice.id), class: "btn btn-secondary px-2 py-1 text-xs" %>
+                <% end %>
+                <% if can_access_feature?(:payments, :view) %>
+                  <%= link_to "Receipt PDF", receipt_payment_path(payment), class: "btn btn-secondary px-2 py-1 text-xs", data: { turbo: false } %>
+                <% end %>
+                <% if can_access_feature?(:payments, :destroy) %>
+                  <%= button_to "Void", payment_path(payment), method: :delete, class: "btn btn-danger px-2 py-1 text-xs", form: { data: { turbo_confirm: "Void this payment record?" } } %>
+                <% end %>
+              </div>
+            </div>
+          </article>
+        <% end %>
+        <% if @payments.empty? %>
+          <p class="text-sm text-stone-500">No payments recorded yet.</p>
+        <% end %>
+      </div>
+    </section>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <% if can_access_feature?(:invoices, :update) %>
+      <%= link_to "Edit", edit_invoice_path(@invoice), class: "btn btn-primary" %>
+    <% end %>
+    <%= link_to "Print Invoice", invoice_path(@invoice), class: "btn btn-secondary", target: "_blank", data: { turbo: false } %>
+    <%= link_to "Download PDF", download_invoice_path(@invoice), class: "btn btn-secondary", data: { turbo: false } %>
+    <%= link_to "Back", invoices_path, class: "btn btn-secondary" %>
+    <% if can_access_feature?(:invoices, :destroy) %>
+      <%= button_to "Destroy", @invoice, method: :delete, class: "btn btn-danger" %>
+    <% end %>
+  </div>
+</div>

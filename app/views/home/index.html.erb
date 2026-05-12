@@ -1,0 +1,21 @@
+<section class="landing-page">
+  <div class="landing-hero">
+    <p class="landing-eyebrow">Dental Clinic OS</p>
+    <h1 class="landing-title">Dentivara</h1>
+    <p class="landing-subtitle">
+      One place to manage patients, schedules, billing, and compliance for modern dental teams.
+    </p>
+    <div class="mt-8">
+      <%= link_to "Login to Dentivara", login_path, class: "btn btn-primary" %>
+    </div>
+  </div>
+
+  <div class="landing-news-grid">
+    <% @news_items.each do |item| %>
+      <article class="landing-news-card">
+        <h2><%= item[:title] %></h2>
+        <p><%= item[:detail] %></p>
+      </article>
+    <% end %>
+  </div>
+</section>

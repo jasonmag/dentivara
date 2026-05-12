@@ -1,0 +1,36 @@
+<% content_for :title, "New Prescription" %>
+
+<div class="space-y-6">
+  <section class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+    <div>
+      <h1 class="page-title">New Prescription for <%= @patient.full_name %></h1>
+      <p class="serene-subheading mt-1">Assistants can draft. Dentists can finalize and digitally sign.</p>
+    </div>
+    <%= link_to "Back", patient_prescriptions_path(@patient), class: "btn btn-secondary" %>
+  </section>
+
+  <section class="app-card">
+    <%= form_with model: [@patient, @prescription], data: { controller: "prescription-template", prescription_template_endpoint_value: render_template_patient_prescriptions_path(@patient) } do |form| %>
+      <%= render "shared/form_errors", model: @prescription %>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+          <%= form.label :issued_on, class: "input-label" %>
+          <%= form.date_field :issued_on, class: "input-field" %>
+        </div>
+        <div>
+          <%= form.label :document_template_id, "Template", class: "input-label" %>
+          <%= form.select :document_template_id, @templates.map { |t| [t.name, t.id] }, { include_blank: "No template" }, class: "input-field", data: { prescription_template_target: "select", action: "change->prescription-template#updateBody" } %>
+        </div>
+        <div class="md:col-span-2">
+          <%= form.label :body, "Prescription Content", class: "input-label" %>
+          <%= form.text_area :body, class: "input-field", rows: 14, placeholder: "Medication, dosage, frequency, route, and duration...", data: { prescription_template_target: "body" } %>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <%= form.submit "Save Draft", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </section>
+</div>

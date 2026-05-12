@@ -1,0 +1,36 @@
+<%= form_with(model: user) do |form| %>
+  <%= render "shared/form_errors", model: user %>
+
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div>
+      <%= form.label :name, class: "input-label" %>
+      <%= form.text_field :name, class: "input-field" %>
+    </div>
+
+    <div>
+      <%= form.label :email, class: "input-label" %>
+      <%= form.email_field :email, class: "input-field" %>
+    </div>
+
+    <div>
+      <%= form.label :role, class: "input-label" %>
+      <%= form.select :role, User.roles.keys.map { |role| [role.humanize, role] }, {}, class: "input-field" %>
+    </div>
+
+    <% if current_user&.system_admin? %>
+      <div>
+        <%= form.label :password, user.persisted? ? "Reset password" : "Password", class: "input-label" %>
+        <%= form.password_field :password, autocomplete: "new-password", placeholder: user.persisted? ? "Leave blank to keep current password" : "Minimum 8 characters", class: "input-field" %>
+      </div>
+
+      <div>
+        <%= form.label :password_confirmation, class: "input-label" %>
+        <%= form.password_field :password_confirmation, autocomplete: "new-password", placeholder: user.persisted? ? "Confirm only when resetting password" : "Confirm password", class: "input-field" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-4">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

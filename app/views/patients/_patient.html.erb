@@ -1,0 +1,19 @@
+<div id="<%= dom_id patient %>" class="kv-grid">
+  <div class="kv-item"><p class="kv-label">Full Name</p><p class="kv-value"><%= patient.full_name %></p></div>
+  <div class="kv-item"><p class="kv-label">Birth Date</p><p class="kv-value"><%= patient.birth_date.present? ? l(patient.birth_date, format: :long) : 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Phone</p><p class="kv-value"><%= patient.phone %></p></div>
+  <div class="kv-item"><p class="kv-label">Email</p><p class="kv-value"><%= patient.email.presence || 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Preferred Contact</p><p class="kv-value"><%= patient.preferred_contact_method.present? ? patient.preferred_contact_method.upcase : 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Last Dental Visit</p><p class="kv-value"><%= patient.last_dental_visit_on.present? ? l(patient.last_dental_visit_on, format: :long) : 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Emergency Contact</p><p class="kv-value"><%= patient.emergency_contact_name.presence || 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Emergency Phone</p><p class="kv-value"><%= patient.emergency_contact_phone.presence || 'N/A' %></p></div>
+  <div class="kv-item sm:col-span-2"><p class="kv-label">Address</p><p class="kv-value"><%= [patient.address_line1, patient.address_line2, patient.city, patient.state, patient.postal_code, patient.country].reject(&:blank?).join(', ').presence || 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Insurance Provider</p><p class="kv-value"><%= patient.insurance_provider.presence || 'N/A' %></p></div>
+  <div class="kv-item"><p class="kv-label">Policy Number</p><p class="kv-value"><%= patient.insurance_policy_number.presence || 'N/A' %></p></div>
+  <div class="kv-item sm:col-span-2"><p class="kv-label">Medical History</p><p class="kv-value"><%= patient.medical_history.presence || 'N/A' %></p></div>
+  <div class="kv-item sm:col-span-2"><p class="kv-label">Chief Complaint</p><p class="kv-value"><%= patient.chief_complaint.presence || 'N/A' %></p></div>
+  <div class="kv-item sm:col-span-2"><p class="kv-label">Known Allergies</p><p class="kv-value"><%= patient.known_allergies.presence || 'N/A' %></p></div>
+  <div class="kv-item sm:col-span-2"><p class="kv-label">Current Medications</p><p class="kv-value"><%= patient.current_medications.presence || 'N/A' %></p></div>
+  <div class="kv-item sm:col-span-2"><p class="kv-label">Medical Conditions</p><p class="kv-value"><%= patient.medical_conditions.presence || 'N/A' %></p></div>
+  <div class="kv-item sm:col-span-2"><p class="kv-label">Dental Charting Notes</p><p class="kv-value whitespace-pre-line"><%= patient.dental_chart.presence || 'N/A' %></p></div>
+</div>

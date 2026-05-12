@@ -1,0 +1,19 @@
+<% content_for :title, "Payment" %>
+
+<div class="space-y-4">
+  <div class="app-card">
+    <%= render @payment %>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <% if can_access_feature?(:payments, :update) %>
+      <%= link_to "Edit", edit_payment_path(@payment), class: "btn btn-primary" %>
+    <% end %>
+    <%= link_to "Download Receipt PDF", receipt_payment_path(@payment), class: "btn btn-secondary", data: { turbo: false } %>
+    <%= link_to "Open Invoice", invoice_path(@payment.invoice), class: "btn btn-secondary" %>
+    <%= link_to "Back", payments_path, class: "btn btn-secondary" %>
+    <% if can_access_feature?(:payments, :destroy) %>
+      <%= button_to "Destroy", @payment, method: :delete, class: "btn btn-danger" %>
+    <% end %>
+  </div>
+</div>

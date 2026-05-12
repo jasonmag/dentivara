@@ -1,0 +1,18 @@
+<%= form_with model: role_permission, url: role_permission_path, method: :post do |form| %>
+  <%= render "shared/form_errors", model: role_permission %>
+
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div>
+      <%= form.label :role, class: "input-label" %>
+      <%= form.select :role, User.roles.keys.map { |role| [role.humanize, role] }, { selected: @selected_role }, class: "input-field" %>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <%= render "permissions_matrix", role_permission: role_permission %>
+  </div>
+
+  <div class="mt-4">
+    <%= form.submit "Save Role Permissions", class: "btn btn-primary" %>
+  </div>
+<% end %>

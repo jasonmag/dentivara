@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#b9c8d8",
+                        "on-primary-fixed-variant": "#334d38",
+                        "surface-container": "#efeeec",
+                        "secondary": "#625e57",
+                        "primary-fixed": "#cceace",
+                        "inverse-on-surface": "#f1f1ef",
+                        "outline-variant": "#c2c8c0",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b0ceb2",
+                        "surface-variant": "#e3e2e0",
+                        "surface-container-highest": "#e3e2e0",
+                        "surface-container-low": "#f4f3f1",
+                        "on-background": "#1a1c1b",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#e9e1d9",
+                        "background": "#faf9f7",
+                        "tertiary-container": "#94a2b1",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#233d29",
+                        "on-tertiary-fixed": "#0f1d28",
+                        "inverse-primary": "#b0ceb2",
+                        "primary": "#4a654e",
+                        "surface-dim": "#dadad8",
+                        "on-primary-fixed": "#07200f",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#ccc5be",
+                        "surface-tint": "#4a654e",
+                        "on-tertiary-container": "#2b3945",
+                        "surface": "#faf9f7",
+                        "primary-container": "#8ba88e",
+                        "secondary-container": "#e6ded6",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#424842",
+                        "outline": "#737972",
+                        "on-secondary-fixed": "#1e1b16",
+                        "on-tertiary-fixed-variant": "#3a4855",
+                        "surface-container-high": "#e9e8e6",
+                        "on-surface": "#1a1c1b",
+                        "surface-bright": "#faf9f7",
+                        "tertiary": "#52606d",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#4a4640",
+                        "inverse-surface": "#2f3130",
+                        "on-secondary-container": "#67625b",
+                        "tertiary-fixed": "#d5e4f4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Noto Serif"],
+                        "body-lg": ["Manrope"],
+                        "label-md": ["Manrope"],
+                        "headline-lg": ["Noto Serif"],
+                        "headline-md": ["Noto Serif"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface flex overflow-hidden">
+<!-- SideNavBar -->
+<aside class="h-screen w-72 flex flex-col fixed left-0 top-0 z-50 bg-[#F8F7F2] border-r border-stone-200 p-6 space-y-8 font-serif antialiased shadow-none">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dentistry</span>
+</div>
+<div>
+<h2 class="text-xl font-serif font-semibold text-stone-800 tracking-tight">Wellness Portal</h2>
+<p class="text-[10px] uppercase tracking-widest text-stone-500 font-sans">Premium Management</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<div class="flex items-center gap-3 px-4 py-3 text-stone-500 hover:bg-stone-100/50 transition-all cursor-pointer rounded-xl active:scale-[0.98]">
+<span class="material-symbols-outlined">dashboard_customize</span>
+<span class="font-medium">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 text-stone-500 hover:bg-stone-100/50 transition-all cursor-pointer rounded-xl active:scale-[0.98]">
+<span class="material-symbols-outlined">group</span>
+<span class="font-medium">Patients</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 text-stone-500 hover:bg-stone-100/50 transition-all cursor-pointer rounded-xl active:scale-[0.98]">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-medium">Schedule</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 bg-white text-[#8BA88E] rounded-xl shadow-sm font-semibold scale-100 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-medium">Billing</span>
+</div>
+</nav>
+<button class="w-full bg-primary-container text-white py-4 px-6 rounded-xl font-semibold shadow-md hover:bg-primary transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+            New Appointment
+        </button>
+<div class="pt-6 border-t border-stone-200 space-y-2">
+<div class="flex items-center gap-3 px-4 py-2 text-stone-500 hover:bg-stone-100/50 transition-all cursor-pointer rounded-xl">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm">Settings</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-2 text-stone-500 hover:bg-stone-100/50 transition-all cursor-pointer rounded-xl">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="text-sm">Support</span>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-72 flex-1 h-screen overflow-y-auto relative">
+<!-- TopAppBar -->
+<header class="sticky top-0 z-40 w-full flex justify-between items-center h-16 px-8 backdrop-blur-md bg-[#FDFCFB]/90 border-b border-stone-100 shadow-[0_4px_20px_-4px_rgba(139,168,142,0.08)]">
+<div class="flex items-center gap-8">
+<span class="text-lg font-bold text-stone-900 tracking-tight font-serif">SereneDental</span>
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-stone-400">search</span>
+<input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-1.5 text-sm w-64 focus:ring-1 focus:ring-primary-container" placeholder="Search patients or invoices..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4 text-stone-500">
+<span class="material-symbols-outlined cursor-pointer hover:bg-stone-50 p-2 rounded-full transition-colors">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-stone-50 p-2 rounded-full transition-colors">help_outline</span>
+</div>
+<div class="h-8 w-[1px] bg-stone-200 mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold text-stone-800">Clinic Admin</p>
+<p class="text-[10px] text-stone-500">Practice Manager</p>
+</div>
+<img alt="Clinic Administrator" class="w-10 h-10 rounded-full object-cover border-2 border-primary-container/20" data-alt="A high-quality professional portrait of a confident woman in business casual attire, set against a soft, out-of-focus wellness clinic background. The lighting is bright and natural, reflecting a clean, serene, and modern light-mode environment. The overall aesthetic is professional, approachable, and sophisticated, consistent with a premium medical brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAn8xOK01yEoyEyMm_rJ72W0ZmAYs-MeB_-FVwh4Tx4pTjvn7799RXvE6-Lop5Q7EFVx7Q5Sb3_DASRmxl6W8tmuEHfQpkgLTVIojxnJmQ3D3XAbj8MjfdxI-lF6Nkj-VujjYI-lSPfmnSMNQz5BZJvH92wmEVjQKhMsLsVkpjKYhdxH4MBbxqfqy6wEB8AloMYCbGaXPFeDu1VdzxufB30YKKqX3y7ombmqn-8GGw1RvS-9IESrXMjMcQ8bHMW7R0bOMOt183pEBc"/>
+</div>
+</div>
+</header>
+<!-- Content Body -->
+<div class="p-10 space-y-10 max-w-[1400px] mx-auto">
+<!-- Header Section -->
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-headline-lg text-stone-800">Financial Overview</h1>
+<p class="text-stone-500 font-body-md mt-1">Managing revenue and insurance claims for October 2023</p>
+</div>
+<div class="flex gap-3">
+<button class="px-5 py-2.5 rounded-xl border border-stone-200 text-stone-600 font-medium hover:bg-stone-50 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-xl">download</span> Export Report
+                    </button>
+<button class="px-5 py-2.5 rounded-xl bg-primary text-white font-medium hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-xl">receipt_long</span> Create Invoice
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Metrics -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-white p-8 rounded-xl shadow-sm border border-stone-100 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<span class="text-stone-500 font-label-md">TOTAL REVENUE (MTD)</span>
+<span class="bg-primary-container/10 text-primary-container px-2 py-1 rounded text-xs font-bold">+12.5%</span>
+</div>
+<h2 class="text-4xl font-headline-md text-stone-800 mt-4">$142,850.00</h2>
+</div>
+<div class="mt-8 h-2 w-full bg-stone-100 rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[78%]"></div>
+</div>
+<p class="text-stone-400 text-sm mt-3">Target: $185,000.00</p>
+</div>
+<div class="bg-white p-8 rounded-xl shadow-sm border border-stone-100 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<span class="text-stone-500 font-label-md">OUTSTANDING BALANCE</span>
+<span class="material-symbols-outlined text-stone-300">account_balance</span>
+</div>
+<h2 class="text-4xl font-headline-md text-stone-800 mt-4">$24,190.50</h2>
+</div>
+<div class="mt-8 flex items-center gap-4">
+<div class="flex -space-x-3">
+<div class="w-8 h-8 rounded-full border-2 border-white bg-stone-200 flex items-center justify-center text-[10px] font-bold">JD</div>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-stone-300 flex items-center justify-center text-[10px] font-bold">AS</div>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-stone-400 flex items-center justify-center text-[10px] font-bold">MK</div>
+</div>
+<p class="text-stone-500 text-sm">42 Overdue Accounts</p>
+</div>
+</div>
+<div class="bg-white p-8 rounded-xl shadow-sm border border-stone-100 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<span class="text-stone-500 font-label-md">CLAIM SUCCESS RATE</span>
+<span class="material-symbols-outlined text-primary-container">verified</span>
+</div>
+<h2 class="text-4xl font-headline-md text-stone-800 mt-4">98.2%</h2>
+</div>
+<div class="mt-8 flex items-center gap-2 text-primary-container text-sm font-semibold">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>0.5% higher than last month</span>
+</div>
+</div>
+</div>
+<!-- Content Row 2: Charts and Support -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Chart Section -->
+<div class="lg:col-span-8 bg-white p-8 rounded-xl shadow-sm border border-stone-100">
+<div class="flex justify-between items-center mb-10">
+<h3 class="font-headline-md text-stone-800">Patient Payment Distribution</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary-container"></span>
+<span class="text-sm text-stone-500">Insurance</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-secondary-container"></span>
+<span class="text-sm text-stone-500">Self-Pay</span>
+</div>
+</div>
+</div>
+<!-- Abstract Chart Representation -->
+<div class="relative h-64 flex items-end justify-between px-4 gap-6">
+<div class="w-full bg-stone-50 rounded-t-lg relative flex flex-col justify-end overflow-hidden group">
+<div class="bg-secondary-container w-full h-[30%] absolute bottom-0 transition-all group-hover:opacity-80"></div>
+<div class="bg-primary-container w-full h-[60%] absolute bottom-[30%] transition-all group-hover:opacity-80"></div>
+<div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-stone-400">MON</div>
+</div>
+<div class="w-full bg-stone-50 rounded-t-lg relative flex flex-col justify-end overflow-hidden group">
+<div class="bg-secondary-container w-full h-[25%] absolute bottom-0 transition-all group-hover:opacity-80"></div>
+<div class="bg-primary-container w-full h-[55%] absolute bottom-[25%] transition-all group-hover:opacity-80"></div>
+<div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-stone-400">TUE</div>
+</div>
+<div class="w-full bg-stone-50 rounded-t-lg relative flex flex-col justify-end overflow-hidden group">
+<div class="bg-secondary-container w-full h-[40%] absolute bottom-0 transition-all group-hover:opacity-80"></div>
+<div class="bg-primary-container w-full h-[45%] absolute bottom-[40%] transition-all group-hover:opacity-80"></div>
+<div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-stone-400">WED</div>
+</div>
+<div class="w-full bg-stone-50 rounded-t-lg relative flex flex-col justify-end overflow-hidden group">
+<div class="bg-secondary-container w-full h-[20%] absolute bottom-0 transition-all group-hover:opacity-80"></div>
+<div class="bg-primary-container w-full h-[70%] absolute bottom-[20%] transition-all group-hover:opacity-80"></div>
+<div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-stone-400">THU</div>
+</div>
+<div class="w-full bg-stone-50 rounded-t-lg relative flex flex-col justify-end overflow-hidden group">
+<div class="bg-secondary-container w-full h-[35%] absolute bottom-0 transition-all group-hover:opacity-80"></div>
+<div class="bg-primary-container w-full h-[50%] absolute bottom-[35%] transition-all group-hover:opacity-80"></div>
+<div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-stone-400">FRI</div>
+</div>
+<div class="w-full bg-stone-50 rounded-t-lg relative flex flex-col justify-end overflow-hidden group">
+<div class="bg-secondary-container w-full h-[15%] absolute bottom-0 transition-all group-hover:opacity-80"></div>
+<div class="bg-primary-container w-full h-[20%] absolute bottom-[15%] transition-all group-hover:opacity-80"></div>
+<div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-stone-400">SAT</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Support Section -->
+<div class="lg:col-span-4 space-y-6">
+<div class="bg-[#F8F7F2] p-8 rounded-xl border border-stone-200">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm">
+<span class="material-symbols-outlined text-primary">support_agent</span>
+</div>
+<h3 class="font-headline-md text-stone-800">Billing Support</h3>
+<p class="text-stone-500 text-sm mt-2 mb-6">Need assistance with claim rejections or reconciliation? Our dedicated team is here to help.</p>
+<div class="space-y-3">
+<a class="flex items-center gap-3 p-3 bg-white rounded-lg border border-stone-100 hover:border-primary-container transition-colors group" href="#">
+<span class="material-symbols-outlined text-stone-400 group-hover:text-primary-container">mail</span>
+<span class="text-sm font-medium text-stone-700">billing@serenedental.com</span>
+</a>
+<a class="flex items-center gap-3 p-3 bg-white rounded-lg border border-stone-100 hover:border-primary-container transition-colors group" href="#">
+<span class="material-symbols-outlined text-stone-400 group-hover:text-primary-container">call</span>
+<span class="text-sm font-medium text-stone-700">+1 (555) 902-1244</span>
+</a>
+</div>
+<button class="w-full mt-6 py-3 border-2 border-primary-container text-primary-container font-semibold rounded-lg hover:bg-primary-container hover:text-white transition-all">
+                            Live Chat Now
+                        </button>
+</div>
+<div class="bg-white p-6 rounded-xl border border-stone-100 flex items-center gap-4">
+<div class="p-3 bg-tertiary-fixed rounded-lg">
+<span class="material-symbols-outlined text-tertiary">info</span>
+</div>
+<div>
+<p class="text-sm font-bold text-stone-800">Review Required</p>
+<p class="text-xs text-stone-500">3 insurance claims need additional patient documentation.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Invoices Table -->
+<div class="bg-white rounded-xl shadow-sm border border-stone-100 overflow-hidden">
+<div class="px-8 py-6 border-b border-stone-50 flex justify-between items-center">
+<h3 class="font-headline-md text-stone-800">Recent Invoices</h3>
+<div class="flex items-center gap-2 text-primary-container cursor-pointer hover:underline text-sm font-semibold">
+                        View All History <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-stone-50/50">
+<th class="px-8 py-4 text-[10px] uppercase tracking-widest text-stone-500 font-bold">ID</th>
+<th class="px-8 py-4 text-[10px] uppercase tracking-widest text-stone-500 font-bold">Patient Name</th>
+<th class="px-8 py-4 text-[10px] uppercase tracking-widest text-stone-500 font-bold">Treatment</th>
+<th class="px-8 py-4 text-[10px] uppercase tracking-widest text-stone-500 font-bold">Date</th>
+<th class="px-8 py-4 text-[10px] uppercase tracking-widest text-stone-500 font-bold">Amount</th>
+<th class="px-8 py-4 text-[10px] uppercase tracking-widest text-stone-500 font-bold">Status</th>
+<th class="px-8 py-4 text-[10px] uppercase tracking-widest text-stone-500 font-bold">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-stone-50">
+<tr class="hover:bg-stone-50/30 transition-colors">
+<td class="px-8 py-5 text-sm font-mono text-stone-400">#INV-8821</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-[10px] font-bold">EH</div>
+<span class="font-medium text-stone-800">Eleanor Houston</span>
+</div>
+</td>
+<td class="px-8 py-5 text-sm text-stone-600">Complex Root Canal</td>
+<td class="px-8 py-5 text-sm text-stone-500">Oct 24, 2023</td>
+<td class="px-8 py-5 font-bold text-stone-800">$1,250.00</td>
+<td class="px-8 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Paid
+                                    </span>
+</td>
+<td class="px-8 py-5">
+<span class="material-symbols-outlined text-stone-400 cursor-pointer hover:text-stone-800">more_horiz</span>
+</td>
+</tr>
+<tr class="hover:bg-stone-50/30 transition-colors">
+<td class="px-8 py-5 text-sm font-mono text-stone-400">#INV-8819</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-[10px] font-bold">MW</div>
+<span class="font-medium text-stone-800">Marcus Wright</span>
+</div>
+</td>
+<td class="px-8 py-5 text-sm text-stone-600">Porcelain Veneers (4)</td>
+<td class="px-8 py-5 text-sm text-stone-500">Oct 23, 2023</td>
+<td class="px-8 py-5 font-bold text-stone-800">$4,800.00</td>
+<td class="px-8 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Pending
+                                    </span>
+</td>
+<td class="px-8 py-5">
+<span class="material-symbols-outlined text-stone-400 cursor-pointer hover:text-stone-800">more_horiz</span>
+</td>
+</tr>
+<tr class="hover:bg-stone-50/30 transition-colors">
+<td class="px-8 py-5 text-sm font-mono text-stone-400">#INV-8814</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-[10px] font-bold">SL</div>
+<span class="font-medium text-stone-800">Sarah Lund</span>
+</div>
+</td>
+<td class="px-8 py-5 text-sm text-stone-600">Standard Hygiene Cleansing</td>
+<td class="px-8 py-5 text-sm text-stone-500">Oct 22, 2023</td>
+<td class="px-8 py-5 font-bold text-stone-800">$185.00</td>
+<td class="px-8 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Overdue
+                                    </span>
+</td>
+<td class="px-8 py-5">
+<span class="material-symbols-outlined text-stone-400 cursor-pointer hover:text-stone-800">more_horiz</span>
+</td>
+</tr>
+<tr class="hover:bg-stone-50/30 transition-colors">
+<td class="px-8 py-5 text-sm font-mono text-stone-400">#INV-8810</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-[10px] font-bold">BB</div>
+<span class="font-medium text-stone-800">Benjamin Blair</span>
+</div>
+</td>
+<td class="px-8 py-5 text-sm text-stone-600">Dental Implant Consultation</td>
+<td class="px-8 py-5 text-sm text-stone-500">Oct 22, 2023</td>
+<td class="px-8 py-5 font-bold text-stone-800">$250.00</td>
+<td class="px-8 py-5">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Paid
+                                    </span>
+</td>
+<td class="px-8 py-5">
+<span class="material-symbols-outlined text-stone-400 cursor-pointer hover:text-stone-800">more_horiz</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-8 py-4 bg-stone-50/30 flex justify-between items-center text-xs text-stone-500 font-medium">
+<span>Showing 4 of 124 invoices</span>
+<div class="flex gap-4">
+<button class="flex items-center gap-1 hover:text-stone-800 disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span> Previous
+                        </button>
+<button class="flex items-center gap-1 hover:text-stone-800">
+                            Next <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

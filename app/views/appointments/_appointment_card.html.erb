@@ -1,0 +1,35 @@
+<% details_url = details_appointment_path(appointment, week_date: week_date) %>
+<% billing_invoice = appointment.billing_invoice %>
+
+<button
+  type="button"
+  data-action="appointment-modal#open"
+  data-modal-url="<%= details_url %>"
+  class="<%= appointment_card_classes(appointment.status) %> px-3 py-3"
+  aria-label="Open appointment details for <%= appointment.patient.full_name %>"
+>
+  <div class="flex items-start justify-between gap-3">
+    <div class="min-w-0 text-left">
+      <p class="truncate text-sm font-semibold text-stone-800 transition group-hover:text-stone-900"><%= appointment.patient.full_name %></p>
+      <p class="truncate text-xs text-stone-500"><%= appointment.booking_type.humanize %> with <%= appointment.user.name %></p>
+    </div>
+
+    <span class="<%= appointment_status_badge_classes(appointment.status) %> shrink-0"><%= appointment.status.humanize %></span>
+  </div>
+
+  <div class="mt-3 flex items-center justify-between gap-3 border-t border-stone-100 pt-2 text-left">
+    <div>
+      <p class="text-sm font-semibold text-stone-800"><%= l(appointment.starts_at, format: "%I:%M %p") %></p>
+      <p class="text-xs text-stone-500"><%= l(appointment.ends_at, format: "%I:%M %p") %></p>
+    </div>
+    <div class="text-right">
+      <p class="text-xs text-stone-400 transition group-hover:text-stone-500"><%= appointment.clinic_service&.name || "Appointment" %></p>
+      <% if billing_invoice.present? %>
+        <div class="mt-1 inline-flex items-center gap-1 rounded-full border border-[#8BA88E]/20 bg-[#E8F1E9] px-2 py-1 text-[11px] font-semibold text-[#35513a]">
+          <span class="material-symbols-outlined text-[13px]">receipt_long</span>
+          <span><%= invoice_display_number(billing_invoice) %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</button>

@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  patient: one
+  treatment_record: one
+  status: approved
+  total_amount: 1500
+  balance_amount: 1500
+  issued_on: 2026-05-02
+  approved_by_dentist_at: 2026-05-02 23:58:03
+  approved_by_admin_at: 2026-05-02 23:58:03
+
+two:
+  patient: two
+  treatment_record: two
+  status: partially_paid
+  total_amount: 2000
+  balance_amount: 1000
+  issued_on: 2026-05-02
+  approved_by_dentist_at: 2026-05-02 23:58:03
+  approved_by_admin_at: 2026-05-02 23:58:03

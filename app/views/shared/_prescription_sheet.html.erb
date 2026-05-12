@@ -1,0 +1,54 @@
+<% information_rows = rendered[:information_header].to_s.lines.map(&:strip).reject(&:blank?).map { |line| line.split(":", 2).map(&:strip) } %>
+<% header_lines = rendered[:header].to_s.lines.map(&:strip).reject(&:blank?) %>
+<% footer_lines = rendered[:footer].to_s.lines.map(&:strip).reject(&:blank?) %>
+
+<article class="prescription-sheet overflow-hidden rounded-xl border border-stone-300 bg-white text-left shadow-sm">
+  <header class="prescription-header flex items-start justify-between gap-4 border-b-2 border-stone-900 px-7 py-6">
+    <div class="min-w-0">
+      <h1 class="clinic-name text-2xl font-bold tracking-tight text-stone-900"><%= header_lines.first.presence || "Dentivara Dental Clinic" %></h1>
+      <% if header_lines.drop(1).any? %>
+        <div class="clinic-details mt-1 whitespace-pre-line text-sm leading-relaxed text-stone-700"><%= header_lines.drop(1).join("\n") %></div>
+      <% end %>
+    </div>
+
+    <div class="prescription-logo flex h-20 w-24 shrink-0 items-center justify-center bg-white p-2">
+      <% if template&.logo&.attached? %>
+        <%= image_tag template.logo, class: "max-h-full max-w-full object-contain grayscale" %>
+      <% else %>
+        <%= image_tag "/icon.svg", alt: "Dentivara", class: "max-h-full max-w-full object-contain grayscale" %>
+      <% end %>
+    </div>
+  </header>
+
+  <section class="prescription-info grid grid-cols-1 gap-x-5 gap-y-3 border-b border-stone-300 px-7 py-5 text-sm md:grid-cols-2">
+    <% information_rows.each do |label, value| %>
+      <div class="prescription-field flex items-end gap-2">
+        <span class="shrink-0 font-semibold text-stone-900"><%= label %>:</span>
+        <span class="field-line min-h-6 flex-1 border-b border-stone-500 px-2 text-stone-800"><%= value %></span>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="prescription-body relative min-h-[360px] px-7 py-7">
+    <div class="rx-watermark pointer-events-none absolute left-8 top-8 text-[120px] font-bold leading-none text-stone-100">Rx</div>
+    <pre class="prescription-content relative z-10 ml-20 whitespace-pre-wrap text-left text-[15px] leading-relaxed text-stone-900"><%= rendered[:body] %></pre>
+  </section>
+
+  <section class="prescription-signature flex justify-end px-7 pb-6">
+    <div class="w-64 text-center">
+      <% if local_assigns[:signature_image]&.attached? %>
+        <%= image_tag signature_image, class: "signature-image mx-auto h-16 max-w-[220px] object-contain grayscale" %>
+      <% else %>
+        <div class="h-12"></div>
+      <% end %>
+      <p class="border-t border-stone-700 pt-1 text-sm font-semibold text-stone-800"><%= local_assigns[:signature_name].presence || rendered[:signature_name].presence || "Assigned Doctor" %></p>
+      <p class="text-xs text-stone-600"><%= local_assigns[:signature_title].presence || rendered[:signature_title].presence || "Licensed Dentist" %></p>
+    </div>
+  </section>
+
+  <footer class="prescription-footer grid grid-cols-1 gap-3 border-t border-stone-300 px-7 py-4 text-sm text-stone-900 md:grid-cols-3">
+    <p class="font-semibold"><%= footer_lines.first.presence || "Dentivara Dental Clinic" %></p>
+    <p><%= footer_lines.second.presence || "Clinic address" %></p>
+    <p><%= footer_lines.third.presence || "Clinic contact number" %></p>
+  </footer>
+</article>

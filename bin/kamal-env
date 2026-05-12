@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+
+# Kept for compatibility. bin/kamal loads .env directly.
+exec bin/kamal "$@"

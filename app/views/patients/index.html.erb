@@ -1,0 +1,95 @@
+<% content_for :title, "Patients" %>
+
+<div class="space-y-8">
+  <section class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div>
+      <h1 class="page-title">Patient Directory</h1>
+      <p class="serene-subheading mt-1">Manage and monitor patient care cycles with serene precision.</p>
+    </div>
+    <% if can_access_feature?(:patients, :create) %>
+      <%= link_to new_patient_path, class: "btn btn-primary gap-2 px-6 py-3" do %>
+        <span class="material-symbols-outlined">person_add</span>
+        <span>Register New Patient</span>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+    <article class="serene-kpi">
+      <p class="text-xs font-semibold uppercase tracking-wider text-stone-500">Total Patients</p>
+      <p class="mt-2 font-serif text-4xl text-stone-800"><%= @patients.count %></p>
+    </article>
+    <article class="serene-kpi">
+      <p class="text-xs font-semibold uppercase tracking-wider text-stone-500">Active Treatment</p>
+      <p class="mt-2 font-serif text-4xl text-stone-800"><%= @active_treatment_count %></p>
+    </article>
+    <article class="serene-kpi">
+      <p class="text-xs font-semibold uppercase tracking-wider text-stone-500">Urgent Cases</p>
+      <p class="mt-2 font-serif text-4xl text-stone-800"><%= @urgent_cases_count %></p>
+    </article>
+    <article class="serene-kpi">
+      <p class="text-xs font-semibold uppercase tracking-wider text-stone-500">Attendance Rate</p>
+      <p class="mt-2 font-serif text-4xl text-stone-800"><%= @attendance_rate %>%</p>
+    </article>
+  </section>
+
+  <section class="rounded-3xl border border-sky-100 bg-white/90 p-5 shadow-sm">
+    <%= form_with url: patients_path, method: :get, data: { controller: "patient-search", turbo_frame: "patients_results" }, class: "flex flex-col gap-3 md:flex-row md:items-end" do %>
+      <div class="w-full md:max-w-xl">
+        <label for="patients_search" class="text-xs font-semibold uppercase tracking-wider text-stone-500">Search Patients</label>
+        <%= text_field_tag :search, @search_query, id: "patients_search", placeholder: "Search by name, email, or phone", data: { action: "input->patient-search#scheduleSubmit", patient_search_target: "input" }, class: "mt-2 w-full rounded-xl border border-stone-200 px-4 py-2.5 text-sm text-stone-700 shadow-sm focus:border-[#2B6CB0] focus:outline-none focus:ring-2 focus:ring-[#2B6CB0]/20" %>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= submit_tag "Search", class: "btn btn-primary px-5 py-2.5" %>
+        <% if @search_query.present? %>
+          <%= link_to "Clear", patients_path, data: { turbo_frame: "patients_results" }, class: "btn btn-secondary px-5 py-2.5" %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+  <%= turbo_frame_tag "patients_results", data: { search_query: @search_query.to_s } do %>
+    <section class="table-shell">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Contact</th>
+            <th>Emergency Contact</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @patients.any? %>
+            <% @patients.each do |patient| %>
+              <tr>
+                <td>
+                  <div class="font-semibold text-stone-800"><%= patient.full_name %></div>
+                  <div class="text-xs text-stone-500"><%= patient.email.presence || "No email" %></div>
+                </td>
+                <td>
+                  <div><%= patient.phone %></div>
+                </td>
+                <td>
+                  <div><%= patient.emergency_contact_name.presence || "N/A" %></div>
+                  <div class="text-xs text-stone-500"><%= patient.emergency_contact_phone.presence || "N/A" %></div>
+                </td>
+                <td class="text-right">
+                  <% if can_access_feature?(:patients, :view) %>
+                    <%= link_to "View", patient_path(patient), data: { turbo_frame: "_top" }, class: "btn btn-secondary px-3 py-1.5 text-xs" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="4" class="py-10 text-center text-sm text-stone-500">
+                No patients found<%= @search_query.present? ? " for \"#{@search_query}\"" : "" %>.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+  <% end %>
+</div>

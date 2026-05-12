@@ -1,0 +1,66 @@
+<% content_for :title, "Users" %>
+
+<div class="space-y-8">
+  <section class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div>
+      <h1 class="page-title">Users</h1>
+      <p class="serene-subheading mt-1">Manage clinic team roles and access.</p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to "New User", new_user_path, class: "btn btn-primary" %>
+      <% if current_user&.system_admin? %>
+        <%= link_to "Role", new_role_permission_path, class: "btn btn-secondary" %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="rounded-3xl border border-sky-100 bg-white/90 p-5 shadow-sm">
+    <%= form_with url: users_path, method: :get, data: { controller: "users-search", turbo_frame: "users_results" }, class: "flex flex-col gap-3 md:flex-row md:items-end" do %>
+      <div class="w-full md:max-w-xl">
+        <label for="users_search" class="text-xs font-semibold uppercase tracking-wider text-stone-500">Search Users</label>
+        <%= text_field_tag :search, @search_query, id: "users_search", placeholder: "Search by name, email, or role", data: { action: "input->users-search#scheduleSubmit", users_search_target: "input" }, class: "mt-2 w-full rounded-xl border border-stone-200 px-4 py-2.5 text-sm text-stone-700 shadow-sm focus:border-[#2B6CB0] focus:outline-none focus:ring-2 focus:ring-[#2B6CB0]/20" %>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= submit_tag "Search", class: "btn btn-primary px-5 py-2.5" %>
+        <% if @search_query.present? %>
+          <%= link_to "Clear", users_path, data: { turbo_frame: "users_results" }, class: "btn btn-secondary px-5 py-2.5" %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+  <%= turbo_frame_tag "users_results", data: { search_query: @search_query.to_s } do %>
+    <section class="table-shell">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Updated</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @users.any? %>
+            <% @users.each do |user| %>
+              <tr>
+                <td class="font-semibold text-stone-800"><%= user.name %></td>
+                <td><%= user.email %></td>
+                <td><%= user.role.humanize %></td>
+                <td><%= l(user.updated_at, format: :short) %></td>
+                <td class="text-right"><%= link_to "View", user_path(user), data: { turbo_frame: "_top" }, class: "btn btn-secondary px-3 py-1.5 text-xs" %></td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="5" class="py-10 text-center text-sm text-stone-500">
+                No users found<%= @search_query.present? ? " for \"#{@search_query}\"" : "" %>.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+  <% end %>
+</div>

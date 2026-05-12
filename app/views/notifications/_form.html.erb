@@ -1,0 +1,38 @@
+<%= form_with(model: notification) do |form| %>
+  <%= render "shared/form_errors", model: notification %>
+
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div>
+      <%= form.label :patient_id, class: "input-label" %>
+      <%= form.collection_select :patient_id, Patient.order(:first_name), :id, :full_name, { prompt: "Select patient" }, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :channel, class: "input-label" %>
+      <%= form.text_field :channel, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :category, class: "input-label" %>
+      <%= form.text_field :category, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :status, class: "input-label" %>
+      <%= form.text_field :status, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :scheduled_for, class: "input-label" %>
+      <%= form.datetime_field :scheduled_for, class: "input-field" %>
+    </div>
+    <div>
+      <%= form.label :sent_at, class: "input-label" %>
+      <%= form.datetime_field :sent_at, class: "input-field" %>
+    </div>
+    <div class="md:col-span-2">
+      <%= form.label :message, class: "input-label" %>
+      <%= form.textarea :message, class: "input-field" %>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

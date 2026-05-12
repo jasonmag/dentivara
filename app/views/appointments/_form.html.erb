@@ -1,0 +1,172 @@
+<%= form_with(model: appointment, data: { controller: "appointment-wizard", appointment_wizard_slots_url_value: available_slots_appointments_path }) do |form| %>
+  <%= render "shared/form_errors", model: appointment %>
+
+  <div class="mb-6 grid grid-cols-2 gap-2 md:grid-cols-4">
+    <% [
+      ["Patient", "Who is visiting"],
+      ["Schedule", "When and with whom"],
+      ["Visit Details", "Status and room"],
+      ["Notes", "Final details"]
+    ].each do |title, subtitle| %>
+      <div data-appointment-wizard-target="indicator" class="rounded-xl border border-stone-200 bg-white p-3 text-stone-500">
+        <p class="text-sm font-semibold"><%= title %></p>
+        <p class="text-xs"><%= subtitle %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <section data-appointment-wizard-target="step">
+    <div class="mb-5">
+      <h2 class="font-serif text-2xl text-stone-800">Patient and Service</h2>
+      <p class="serene-subheading mt-1">Start with the patient, procedure, and booking source.</p>
+    </div>
+
+    <div data-appointment-wizard-target="stepError" class="hidden mb-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"></div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div>
+        <%= form.label :patient_id, class: "input-label" %>
+        <%= form.collection_select :patient_id, Patient.order(:first_name), :id, :full_name, { prompt: "Select patient" }, class: "input-field", data: { appointment_wizard_target: "patient", action: "change->appointment-wizard#refreshSlots change->appointment-wizard#clearStepError" } %>
+      </div>
+      <div>
+        <%= form.label :clinic_service_id, "Service / Procedure", class: "input-label" %>
+        <%= form.collection_select :clinic_service_id, ClinicService.active.order(:name), :id, :name, { prompt: "Select service" }, class: "input-field", data: { appointment_wizard_target: "clinicService", action: "change->appointment-wizard#refreshSlots" } %>
+      </div>
+      <div>
+        <%= form.label :source, class: "input-label" %>
+        <%= form.select :source, Appointment::BOOKING_SOURCES.map { |value| [value.humanize, value] }, {}, class: "input-field" %>
+      </div>
+      <div>
+        <%= form.label :booking_type, class: "input-label" %>
+        <%= form.select :booking_type, Appointment::BOOKING_TYPES.map { |value| [value.humanize, value] }, {}, class: "input-field" %>
+      </div>
+    </div>
+  </section>
+
+  <section data-appointment-wizard-target="step" hidden>
+    <div class="mb-5">
+      <h2 class="font-serif text-2xl text-stone-800">Schedule</h2>
+      <p class="serene-subheading mt-1">Pick a dentist, then choose a suggested time.</p>
+    </div>
+
+    <%= form.hidden_field :time_preference, value: appointment.time_preference.presence || "", data: { appointment_wizard_target: "timePreference" } %>
+    <%= form.hidden_field :starts_at, data: { appointment_wizard_target: "startsAt" } %>
+    <%= form.hidden_field :ends_at, data: { appointment_wizard_target: "endsAt" } %>
+
+    <div class="mb-4 flex flex-wrap gap-2">
+      <% [
+        ["Recommended", ""],
+        ["Morning", "morning"],
+        ["Afternoon", "afternoon"]
+      ].each do |label, value| %>
+        <button
+          type="button"
+          data-action="appointment-wizard#setTimePreference"
+          data-time-preference-value="<%= value %>"
+          data-appointment-wizard-target="timePreferencePill"
+          class="rounded-full border px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-[#8BA88E]"
+        >
+          <%= label %>
+        </button>
+      <% end %>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div>
+        <%= form.label :user_id, "Assigned dentist", class: "input-label" %>
+        <%= form.collection_select :user_id, User.dentist.order(:name), :id, :name, { prompt: "Any available dentist" }, class: "input-field", data: { appointment_wizard_target: "assignedUser", action: "change->appointment-wizard#refreshSlots" } %>
+        <p class="mt-1 text-xs text-stone-500">Leave blank to show every available dentist.</p>
+      </div>
+    </div>
+
+    <div data-appointment-wizard-target="selectedSlot" class="mt-4 hidden rounded-2xl border border-[#8BA88E]/30 bg-white p-4 shadow-sm">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#6B8F73]">Selected Appointment</p>
+          <h3 class="font-serif text-xl text-stone-800">Review the chosen slot</h3>
+        </div>
+        <span data-appointment-wizard-target="selectedSlotState" class="rounded-full bg-[#E8F1E9] px-3 py-1 text-xs font-semibold text-[#3D6A42]"></span>
+      </div>
+
+      <p data-appointment-wizard-target="selectedSlotEmpty" class="mt-3 text-sm text-stone-500">Select a slot to review the booking details.</p>
+
+      <dl data-appointment-wizard-target="selectedSlotDetails" class="mt-4 hidden grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div class="rounded-xl bg-stone-50 p-3">
+          <dt class="text-[11px] font-semibold uppercase tracking-wide text-stone-500">Dentist</dt>
+          <dd data-appointment-wizard-target="selectedSlotDentist" class="mt-1 text-sm font-medium text-stone-800"></dd>
+        </div>
+        <div class="rounded-xl bg-stone-50 p-3">
+          <dt class="text-[11px] font-semibold uppercase tracking-wide text-stone-500">Date</dt>
+          <dd data-appointment-wizard-target="selectedSlotDate" class="mt-1 text-sm font-medium text-stone-800"></dd>
+        </div>
+        <div class="rounded-xl bg-stone-50 p-3">
+          <dt class="text-[11px] font-semibold uppercase tracking-wide text-stone-500">Time</dt>
+          <dd data-appointment-wizard-target="selectedSlotTime" class="mt-1 text-sm font-medium text-stone-800"></dd>
+        </div>
+        <div class="rounded-xl bg-stone-50 p-3">
+          <dt class="text-[11px] font-semibold uppercase tracking-wide text-stone-500">Procedure</dt>
+          <dd data-appointment-wizard-target="selectedSlotProcedure" class="mt-1 text-sm font-medium text-stone-800"></dd>
+        </div>
+        <div class="rounded-xl bg-stone-50 p-3">
+          <dt class="text-[11px] font-semibold uppercase tracking-wide text-stone-500">Estimated Duration</dt>
+          <dd data-appointment-wizard-target="selectedSlotDuration" class="mt-1 text-sm font-medium text-stone-800"></dd>
+        </div>
+        <div class="rounded-xl bg-stone-50 p-3">
+          <dt class="text-[11px] font-semibold uppercase tracking-wide text-stone-500">Room / Chair</dt>
+          <dd data-appointment-wizard-target="selectedSlotRoomChair" class="mt-1 text-sm font-medium text-stone-800"></dd>
+        </div>
+      </dl>
+    </div>
+
+    <div data-appointment-wizard-target="calendar" data-slot-view="<%= @slot_view %>" data-slot-date="<%= @slot_date&.iso8601 %>">
+      <%= render "available_slots_calendar" %>
+    </div>
+  </section>
+
+  <section data-appointment-wizard-target="step" hidden>
+    <div class="mb-5">
+      <h2 class="font-serif text-2xl text-stone-800">Visit Details</h2>
+      <p class="serene-subheading mt-1">Set the current status and room or chair.</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div>
+        <%= form.label :status, class: "input-label" %>
+        <%= form.select :status, Appointment::STATUSES.map { |value| [value.humanize, value] }, {}, class: "input-field" %>
+      </div>
+      <div>
+        <%= form.label :operatory, class: "input-label" %>
+        <%= form.text_field :operatory, class: "input-field", placeholder: "e.g., Room A / Chair 1" %>
+      </div>
+      <div class="md:col-span-2">
+        <%= form.label :cancellation_reason, class: "input-label" %>
+        <%= form.text_field :cancellation_reason, class: "input-field", placeholder: "Required notes for cancelled or rescheduled visits" %>
+      </div>
+    </div>
+  </section>
+
+  <section data-appointment-wizard-target="step" hidden>
+    <div class="mb-5">
+      <h2 class="font-serif text-2xl text-stone-800">Notes</h2>
+      <p class="serene-subheading mt-1">Add any final instructions before saving.</p>
+    </div>
+
+    <div>
+      <%= form.label :notes, class: "input-label" %>
+      <%= form.textarea :notes, class: "input-field", rows: 5 %>
+    </div>
+  </section>
+
+  <div class="mt-6 flex flex-col-reverse gap-3 border-t border-stone-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
+    <button type="button" data-appointment-wizard-target="previousButton" data-action="appointment-wizard#previous" class="btn btn-secondary">
+      Back
+    </button>
+
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <button type="button" data-appointment-wizard-target="nextButton" data-action="appointment-wizard#next" class="btn btn-primary">
+        Next
+      </button>
+      <%= form.submit class: "btn btn-primary", data: { appointment_wizard_target: "submitButton" } %>
+    </div>
+  </div>
+<% end %>
