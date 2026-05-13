@@ -5,6 +5,7 @@ class ClinicService < ApplicationRecord
   validates :base_price, numericality: { greater_than_or_equal_to: 0 }
   validates :duration_minutes, numericality: { greater_than: 0 }
   validates :preparation_minutes, numericality: { greater_than_or_equal_to: 0 }
+  validates :color, presence: true, format: { with: /\A#[0-9A-Fa-f]{6}\z/ }
 
   scope :active, -> { where(active: true) }
 

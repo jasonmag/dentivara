@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_12_143000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -163,6 +163,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_12_143000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "preparation_minutes", default: 0, null: false
+    t.string "color", default: "#2a9d8f", null: false
     t.index ["name"], name: "index_clinic_services_on_name", unique: true
   end
 

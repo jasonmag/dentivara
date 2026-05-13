@@ -86,6 +86,7 @@ Rails.application.routes.draw do
       resources :invoices
       resources :payments
       resources :notifications
+      resources :clinic_services
     end
   end
 end

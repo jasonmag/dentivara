@@ -33,13 +33,14 @@ def create_or_update_user!(name:, email:, role:)
   user
 end
 
-def find_or_create_service!(name, description, price, minutes)
+def find_or_create_service!(name, description, price, minutes, color)
   service = ClinicService.find_or_initialize_by(name: name)
   service.assign_attributes(
     description: description,
     base_price: price,
     duration_minutes: minutes,
     preparation_minutes: [ 5, (minutes * 0.2).round ].max,
+    color: color,
     active: true
   )
   service.save!
@@ -100,13 +101,13 @@ dentists.each do |dentist|
 end
 
 services = [
-  find_or_create_service!("Routine Checkup", "General oral check and consultation", 1200, 30),
-  find_or_create_service!("Teeth Cleaning", "Full prophylaxis cleaning service", 2500, 45),
-  find_or_create_service!("Root Canal", "Root canal therapy procedure", 12000, 90),
-  find_or_create_service!("Braces Adjustment", "Orthodontic maintenance adjustment", 1800, 30),
-  find_or_create_service!("Teeth Whitening", "In-clinic whitening treatment", 8500, 60),
-  find_or_create_service!("Tooth Extraction", "Simple tooth extraction", 3000, 45),
-  find_or_create_service!("Composite Filling", "Direct composite restoration", 3500, 40)
+  find_or_create_service!("Routine Checkup", "General oral check and consultation", 1200, 30, "#2a9d8f"),
+  find_or_create_service!("Teeth Cleaning", "Full prophylaxis cleaning service", 2500, 45, "#0ea5e9"),
+  find_or_create_service!("Root Canal", "Root canal therapy procedure", 12000, 90, "#ef4444"),
+  find_or_create_service!("Braces Adjustment", "Orthodontic maintenance adjustment", 1800, 30, "#8b5cf6"),
+  find_or_create_service!("Teeth Whitening", "In-clinic whitening treatment", 8500, 60, "#f59e0b"),
+  find_or_create_service!("Tooth Extraction", "Simple tooth extraction", 3000, 45, "#64748b"),
+  find_or_create_service!("Composite Filling", "Direct composite restoration", 3500, 40, "#22c55e")
 ]
 
 prescription_template = DocumentTemplate.find_or_initialize_by(name: "Standard Prescription")
