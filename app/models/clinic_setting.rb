@@ -1,4 +1,6 @@
 class ClinicSetting < ApplicationRecord
+  include TenantScoped
+
   DEFAULT_TIME_ZONE = "Asia/Manila"
   DEFAULT_CURRENCY = "USD"
   DEFAULT_CURRENCY_LOCALE = "en-US"
@@ -20,6 +22,15 @@ class ClinicSetting < ApplicationRecord
   before_validation :apply_currency_locale
 
   def self.current
+    clinic = Current.clinic || Clinic.default
+    find_or_create_by!(clinic: clinic) do |setting|
+      setting.time_zone = DEFAULT_TIME_ZONE
+      setting.currency_code = DEFAULT_CURRENCY
+      setting.currency_locale = DEFAULT_CURRENCY_LOCALE
+    end
+  end
+
+  def self.platform_default
     first_or_create!(
       time_zone: DEFAULT_TIME_ZONE,
       currency_code: DEFAULT_CURRENCY,

@@ -4,6 +4,7 @@ class PrescriptionsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @patient = patients(:one)
     @template = DocumentTemplate.create!(
+      clinic: @patient.clinic,
       name: "Rx Template",
       kind: "prescription",
       body_template: "Take medicine",
@@ -11,6 +12,7 @@ class PrescriptionsControllerTest < ActionDispatch::IntegrationTest
       default_for_prescription: true
     )
     @prescription = Prescription.create!(
+      clinic: @patient.clinic,
       patient: @patient,
       document_template: @template,
       drafted_by_user: users(:one),

@@ -1,4 +1,6 @@
 class Prescription < ApplicationRecord
+  include TenantScoped
+
   STATUSES = %w[draft finalized signed].freeze
 
   belongs_to :patient

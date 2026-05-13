@@ -1,0 +1,23 @@
+one:
+  clinic: one
+  user: one
+  role: dentist
+  accepted_at: 2026-05-02 23:57:35
+
+two:
+  clinic: one
+  user: two
+  role: receptionist
+  accepted_at: 2026-05-02 23:57:35
+
+three:
+  clinic: one
+  user: three
+  role: billing_staff
+  accepted_at: 2026-05-02 23:57:35
+
+four:
+  clinic: one
+  user: four
+  role: patient
+  accepted_at: 2026-05-02 23:57:35

@@ -5,7 +5,7 @@ module Api
       before_action :set_patient, only: %i[show update destroy]
 
       def index
-        patients = Patient.order(:last_name, :first_name)
+        patients = tenant_scope(Patient).order(:last_name, :first_name)
         patients = patients.where("first_name LIKE :q OR last_name LIKE :q OR email LIKE :q OR phone LIKE :q", q: "%#{params[:search]}%") if params[:search].present?
 
         render_collection(patients, serializer: PatientSerializer)
@@ -16,7 +16,7 @@ module Api
       end
 
       def create
-        patient = Patient.new(patient_params)
+        patient = tenant_scope(Patient).new(patient_params)
         if patient.save
           render_resource(patient, serializer: PatientSerializer, status: :created)
         else
@@ -40,7 +40,7 @@ module Api
       private
 
       def set_patient
-        @patient = Patient.find(params[:id])
+        @patient = tenant_scope(Patient).find(params[:id])
       end
 
       def patient_params

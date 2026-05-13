@@ -1,4 +1,6 @@
 class DocumentTemplate < ApplicationRecord
+  include TenantScoped
+
   KINDS = %w[prescription dental_certificate other].freeze
   DEFAULT_PRESCRIPTION_HEADER = "{{clinic_name}}\n{{clinic_address}}\n{{clinic_contact_number}}".freeze
   DEFAULT_PRESCRIPTION_INFORMATION_HEADER = <<~TEXT.freeze

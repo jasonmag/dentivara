@@ -19,6 +19,9 @@ puts "Seeding Dentivara comprehensive workflow data..."
 
 SEED_PASSWORD = "dentivara123"
 
+demo_clinic = Clinic.default
+Current.clinic = demo_clinic
+
 ClinicSetting.current.update!(time_zone: "Asia/Manila")
 
 # 1x1 transparent PNG for attachment demo records.
@@ -26,7 +29,7 @@ SAMPLE_PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP
 
 def create_or_update_user!(name:, email:, role:)
   user = User.find_or_initialize_by(email: email)
-  user.assign_attributes(name: name, role: role)
+  user.assign_attributes(name: name, role: role, clinic: Current.clinic)
   user.password = SEED_PASSWORD
   user.password_confirmation = SEED_PASSWORD
   user.save!

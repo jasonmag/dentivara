@@ -5,7 +5,7 @@ module Api
       before_action :set_appointment, only: %i[show update destroy]
 
       def index
-        appointments = Appointment.includes(:patient, :user).order(starts_at: :asc)
+        appointments = tenant_scope(Appointment).includes(:patient, :user).order(starts_at: :asc)
         appointments = appointments.where(patient_id: params[:patient_id]) if params[:patient_id].present?
         appointments = appointments.where(user_id: params[:user_id]) if params[:user_id].present?
         appointments = appointments.where(status: params[:status]) if params[:status].present?
@@ -21,7 +21,7 @@ module Api
       end
 
       def create
-        appointment = Appointment.new(appointment_params)
+        appointment = tenant_scope(Appointment).new(appointment_params)
         if appointment.save
           render_resource(appointment, serializer: AppointmentSerializer, status: :created)
         else
@@ -45,7 +45,7 @@ module Api
       private
 
       def set_appointment
-        @appointment = Appointment.includes(:patient, :user).find(params[:id])
+        @appointment = tenant_scope(Appointment).includes(:patient, :user).find(params[:id])
       end
 
       def appointment_params

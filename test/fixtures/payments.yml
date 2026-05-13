@@ -1,6 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  clinic: one
   invoice: one
   amount: 500
   paid_on: 2026-05-02
@@ -8,6 +9,7 @@ one:
   reference_code: OR-1001
 
 two:
+  clinic: one
   invoice: two
   amount: 1000
   paid_on: 2026-05-02

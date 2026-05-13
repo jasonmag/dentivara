@@ -1,4 +1,5 @@
 class IntraoralScan < ApplicationRecord
+  include TenantScoped
   include Auditable
 
   SCAN_TYPES = %w[intraoral_scan upper_arch lower_arch bite_scan occlusion_scan restoration_scan orthodontic_scan].freeze

@@ -79,7 +79,9 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resource :session, only: %i[create destroy]
+      resource :clinic_onboarding, only: :create, controller: "clinic_onboarding"
       resource :dashboard, only: :show, controller: "dashboard"
+      resources :clinics, only: %i[index show create update destroy]
       resources :patients
       resources :appointments
       resources :treatment_records

@@ -1,7 +1,9 @@
 class DentistScheduleOverride < ApplicationRecord
+  include TenantScoped
+
   belongs_to :user
 
-  validates :date, presence: true, uniqueness: { scope: :user_id }
+  validates :date, presence: true, uniqueness: { scope: %i[clinic_id user_id] }
   validates :available_from, :available_until, presence: true, unless: :unavailable?
   validate :user_is_dentist
   validate :available_until_after_available_from

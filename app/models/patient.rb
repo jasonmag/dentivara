@@ -1,4 +1,5 @@
 class Patient < ApplicationRecord
+  include TenantScoped
   include Auditable
 
   belongs_to :user, optional: true

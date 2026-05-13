@@ -1,4 +1,5 @@
 class Payment < ApplicationRecord
+  include TenantScoped
   include Auditable
 
   belongs_to :invoice

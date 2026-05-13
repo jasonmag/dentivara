@@ -4,6 +4,7 @@ class ApiV1ClinicServicesTest < ActionDispatch::IntegrationTest
   setup do
     @headers = api_headers_for(users(:one))
     @service = ClinicService.create!(
+      clinic: users(:one).clinic,
       name: "Whitening Consultation",
       base_price: 1500,
       duration_minutes: 30,

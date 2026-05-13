@@ -1,4 +1,6 @@
 class DentistSchedule < ApplicationRecord
+  include TenantScoped
+
   belongs_to :user
 
   validates :day_of_week, presence: true, inclusion: { in: 0..6 }

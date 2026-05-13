@@ -1,4 +1,6 @@
 class DentalChartEntry < ApplicationRecord
+  include TenantScoped
+
   ENTRY_TYPES = %w[exam diagnosis procedure periodontal restorative notes].freeze
   SURFACE_STATUSES = %w[caries filling missing crown root_canal watch].freeze
 

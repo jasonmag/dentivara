@@ -13,6 +13,7 @@ module Auditable
     return if changeset.blank?
 
     AuditLog.create!(
+      clinic: respond_to?(:clinic) ? clinic : (Current.clinic || Clinic.default),
       user: Current.user,
       action: action,
       auditable_type: self.class.name,

@@ -22,6 +22,8 @@ module Api
         if @current_api_token.present?
           @current_user = @current_api_token.user
           Current.user = @current_user
+          Current.clinic = clinic_for_request(@current_user)
+          return render_error("clinic_suspended", "This clinic account is suspended.", status: :payment_required) if Current.clinic&.suspended?
           return
         end
 
@@ -51,6 +53,7 @@ module Api
         return false if @current_user.blank?
 
         Current.user = @current_user
+        Current.clinic = clinic_for_request(@current_user)
         true
       end
 
@@ -70,6 +73,21 @@ module Api
 
       def current_user
         @current_user
+      end
+
+      def current_clinic
+        Current.clinic || current_user&.clinic
+      end
+
+      def tenant_scope(model_class)
+        model_class.where(clinic_id: current_clinic.id)
+      end
+
+      def clinic_for_request(user)
+        requested_id = request.headers["X-Clinic-ID"].presence || params[:clinic_id].presence
+        return user.clinic if requested_id.blank?
+
+        user.accessible_clinics.find_by(id: requested_id) || user.clinic
       end
 
       def authorize_api!(feature, action = action_name)

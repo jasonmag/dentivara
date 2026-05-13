@@ -19,6 +19,8 @@ class ActionDispatch::IntegrationTest
     user.update!(password: password, password_confirmation: password)
     post login_url, params: { email: user.email, password: password }
     follow_redirect! if response.redirect?
+    Current.user = user
+    Current.clinic = user.clinic
   end
 
   def api_headers_for(user, token_name: "Test client")

@@ -20,12 +20,21 @@ class ApplicationController < ActionController::Base
 
   def set_current_user
     Current.user = current_user
+    Current.clinic = current_clinic
   end
 
   def current_user
     return @current_user if defined?(@current_user)
 
     @current_user = User.find_by(id: session[:user_id]) if session[:user_id].present?
+  end
+
+  def current_clinic
+    return Clinic.default if current_user.blank?
+    return current_user.clinic if session[:clinic_id].blank?
+
+    clinic = current_user.accessible_clinics.find_by(id: session[:clinic_id])
+    clinic || current_user.clinic
   end
 
   def require_login

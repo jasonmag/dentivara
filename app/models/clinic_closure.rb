@@ -1,3 +1,5 @@
 class ClinicClosure < ApplicationRecord
-  validates :date, presence: true, uniqueness: true
+  include TenantScoped
+
+  validates :date, presence: true, uniqueness: { scope: :clinic_id }
 end

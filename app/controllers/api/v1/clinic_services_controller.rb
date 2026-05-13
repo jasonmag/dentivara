@@ -5,7 +5,7 @@ module Api
       before_action :set_clinic_service, only: %i[show update destroy]
 
       def index
-        clinic_services = ClinicService.order(:name)
+        clinic_services = tenant_scope(ClinicService).order(:name)
         clinic_services = clinic_services.where("name LIKE :q OR description LIKE :q", q: "%#{params[:search]}%") if params[:search].present?
 
         render_collection(clinic_services, serializer: ClinicServiceSerializer)
@@ -16,7 +16,7 @@ module Api
       end
 
       def create
-        clinic_service = ClinicService.new(clinic_service_params)
+        clinic_service = tenant_scope(ClinicService).new(clinic_service_params)
 
         if clinic_service.save
           render_resource(clinic_service, serializer: ClinicServiceSerializer, status: :created)
@@ -41,7 +41,7 @@ module Api
       private
 
       def set_clinic_service
-        @clinic_service = ClinicService.find(params[:id])
+        @clinic_service = tenant_scope(ClinicService).find(params[:id])
       end
 
       def clinic_service_params

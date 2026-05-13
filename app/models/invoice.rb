@@ -1,4 +1,5 @@
 class Invoice < ApplicationRecord
+  include TenantScoped
   include Auditable
 
   belongs_to :patient

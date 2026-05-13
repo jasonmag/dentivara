@@ -26,7 +26,7 @@ class ClinicSettingsControllerTest < ActionDispatch::IntegrationTest
     }
 
     assert_redirected_to clinic_settings_url
-    setting = ClinicSetting.current.reload
+    setting = ClinicSetting.find_by!(clinic: users(:one).clinic)
     assert_equal "America/New_York", setting.time_zone
     assert_equal "PHP", setting.currency_code
     assert_equal 22, setting.queue_eta_minutes_default

@@ -1,4 +1,5 @@
 class QueueEntry < ApplicationRecord
+  include TenantScoped
   include Auditable
 
   QUEUE_TYPES = %w[scheduled walk_in emergency priority].freeze

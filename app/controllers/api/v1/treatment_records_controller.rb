@@ -5,7 +5,7 @@ module Api
       before_action :set_treatment_record, only: %i[show update destroy]
 
       def index
-        records = TreatmentRecord.includes(:patient, :user, :appointment).order(performed_on: :desc)
+        records = tenant_scope(TreatmentRecord).includes(:patient, :user, :appointment).order(performed_on: :desc)
         records = records.where(patient_id: params[:patient_id]) if params[:patient_id].present?
         records = records.where(user_id: params[:user_id]) if params[:user_id].present?
         records = records.where(appointment_id: params[:appointment_id]) if params[:appointment_id].present?
@@ -19,7 +19,7 @@ module Api
       end
 
       def create
-        record = TreatmentRecord.new(treatment_record_params)
+        record = tenant_scope(TreatmentRecord).new(treatment_record_params)
         record.user ||= current_user if current_user&.dentist?
 
         if record.save
@@ -45,7 +45,7 @@ module Api
       private
 
       def set_treatment_record
-        @treatment_record = TreatmentRecord.includes(:patient, :user, :appointment).find(params[:id])
+        @treatment_record = tenant_scope(TreatmentRecord).includes(:patient, :user, :appointment).find(params[:id])
       end
 
       def treatment_record_params

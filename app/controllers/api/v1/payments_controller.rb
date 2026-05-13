@@ -7,7 +7,7 @@ module Api
       before_action :set_payment, only: %i[show update destroy]
 
       def index
-        payments = Payment.includes(:invoice, :recorded_by).order(paid_on: :desc, id: :desc)
+        payments = tenant_scope(Payment).includes(:invoice, :recorded_by).order(paid_on: :desc, id: :desc)
         payments = payments.where(invoice_id: params[:invoice_id]) if params[:invoice_id].present?
         payments = payments.where(method: params[:method]) if params[:method].present?
         payments = payments.where("paid_on >= ?", params[:paid_from]) if params[:paid_from].present?
@@ -45,7 +45,7 @@ module Api
       private
 
       def create_without_idempotency
-        payment = Payment.new(payment_params)
+        payment = tenant_scope(Payment).new(payment_params)
         payment.recorded_by ||= current_user
 
         if payment.save
@@ -56,7 +56,7 @@ module Api
       end
 
       def create_with_idempotency
-        payment = Payment.new(payment_params)
+        payment = tenant_scope(Payment).new(payment_params)
         payment.recorded_by ||= current_user
         saved = payment.save
         status = saved ? :created : :unprocessable_entity
@@ -120,7 +120,7 @@ module Api
       end
 
       def set_payment
-        @payment = Payment.includes(:invoice, :recorded_by).find(params[:id])
+        @payment = tenant_scope(Payment).includes(:invoice, :recorded_by).find(params[:id])
       end
 
       def payment_params

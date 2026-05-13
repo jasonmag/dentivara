@@ -1,4 +1,5 @@
 class PatientConsent < ApplicationRecord
+  include TenantScoped
   include Auditable
 
   CONSENT_TYPES = %w[data_privacy treatment financial communication].freeze

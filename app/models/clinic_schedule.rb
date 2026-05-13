@@ -1,7 +1,9 @@
 class ClinicSchedule < ApplicationRecord
+  include TenantScoped
+
   DAYS = Date::DAYNAMES.each_with_index.to_h.freeze
 
-  validates :day_of_week, presence: true, inclusion: { in: 0..6 }, uniqueness: true
+  validates :day_of_week, presence: true, inclusion: { in: 0..6 }, uniqueness: { scope: :clinic_id }
   validates :max_concurrent_appointments, numericality: { greater_than: 0 }
   validates :opens_at, :closes_at, presence: true, unless: :closed?
   validate :closes_after_opening

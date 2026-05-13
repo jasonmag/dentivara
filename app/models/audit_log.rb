@@ -1,6 +1,8 @@
 class AuditLog < ApplicationRecord
   require "digest"
 
+  include TenantScoped
+
   belongs_to :user, optional: true
 
   validates :action, :auditable_type, :auditable_id, presence: true

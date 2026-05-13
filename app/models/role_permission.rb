@@ -1,10 +1,12 @@
 class RolePermission < ApplicationRecord
+  include TenantScoped
+
   PERMISSION_ACTIONS = User::PERMISSION_ACTIONS
   PERMISSION_FEATURES = User::PERMISSION_FEATURES
 
   enum :role, User.roles, prefix: true
 
-  validates :role, presence: true, uniqueness: true
+  validates :role, presence: true, uniqueness: { scope: :clinic_id }
   before_validation :normalize_permissions_matrix
 
   def permission_matrix

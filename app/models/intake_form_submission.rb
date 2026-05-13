@@ -1,4 +1,6 @@
 class IntakeFormSubmission < ApplicationRecord
+  include TenantScoped
+
   belongs_to :patient, optional: true
   belongs_to :submitted_by_user, class_name: "User", optional: true
 

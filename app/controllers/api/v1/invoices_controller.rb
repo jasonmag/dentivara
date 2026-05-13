@@ -5,7 +5,7 @@ module Api
       before_action :set_invoice, only: %i[show update destroy]
 
       def index
-        invoices = Invoice.includes(:patient, :payments).order(updated_at: :desc)
+        invoices = tenant_scope(Invoice).includes(:patient, :payments).order(updated_at: :desc)
         invoices = invoices.where(patient_id: params[:patient_id]) if params[:patient_id].present?
         invoices = invoices.where(status: params[:status]) if params[:status].present?
         invoices = invoices.where("issued_on >= ?", params[:issued_from]) if params[:issued_from].present?
@@ -19,7 +19,7 @@ module Api
       end
 
       def create
-        invoice = Invoice.new(invoice_params)
+        invoice = tenant_scope(Invoice).new(invoice_params)
         if invoice.save
           render_resource(invoice, serializer: InvoiceSerializer, status: :created)
         else
@@ -43,7 +43,7 @@ module Api
       private
 
       def set_invoice
-        @invoice = Invoice.includes(:patient, :payments).find(params[:id])
+        @invoice = tenant_scope(Invoice).includes(:patient, :payments).find(params[:id])
       end
 
       def invoice_params

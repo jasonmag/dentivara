@@ -5,7 +5,7 @@ module Api
       before_action :set_notification, only: %i[show update destroy]
 
       def index
-        notifications = Notification.includes(:patient).order(scheduled_for: :asc)
+        notifications = tenant_scope(Notification).includes(:patient).order(scheduled_for: :asc)
         notifications = notifications.where(patient_id: params[:patient_id]) if params[:patient_id].present?
         notifications = notifications.where(status: params[:status]) if params[:status].present?
         notifications = notifications.where(category: params[:category]) if params[:category].present?
@@ -19,7 +19,7 @@ module Api
       end
 
       def create
-        notification = Notification.new(notification_params)
+        notification = tenant_scope(Notification).new(notification_params)
         if notification.save
           render_resource(notification, serializer: NotificationSerializer, status: :created)
         else
@@ -43,7 +43,7 @@ module Api
       private
 
       def set_notification
-        @notification = Notification.includes(:patient).find(params[:id])
+        @notification = tenant_scope(Notification).includes(:patient).find(params[:id])
       end
 
       def notification_params

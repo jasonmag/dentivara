@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_13_150000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -20,7 +20,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.string "user_agent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "clinic_id", null: false
     t.index ["action"], name: "index_access_logs_on_action"
+    t.index ["clinic_id"], name: "index_access_logs_on_clinic_id"
     t.index ["resource_type", "resource_id", "created_at"], name: "idx_access_logs_resource"
     t.index ["user_id"], name: "index_access_logs_on_user_id"
   end
@@ -105,7 +107,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.string "cancellation_reason"
     t.datetime "cancelled_at"
     t.integer "rescheduled_from_appointment_id"
+    t.integer "clinic_id", null: false
     t.index ["cancelled_at"], name: "index_appointments_on_cancelled_at"
+    t.index ["clinic_id"], name: "index_appointments_on_clinic_id"
     t.index ["clinic_service_id"], name: "index_appointments_on_clinic_service_id"
     t.index ["operatory", "starts_at"], name: "index_appointments_on_operatory_and_starts_at"
     t.index ["patient_id", "starts_at"], name: "index_appointments_on_patient_id_and_starts_at"
@@ -127,8 +131,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.datetime "updated_at", null: false
     t.string "event_hash"
     t.string "previous_hash"
+    t.integer "clinic_id", null: false
     t.index ["action"], name: "index_audit_logs_on_action"
     t.index ["auditable_type", "auditable_id"], name: "index_audit_logs_on_auditable_type_and_auditable_id"
+    t.index ["clinic_id"], name: "index_audit_logs_on_clinic_id"
     t.index ["event_hash"], name: "index_audit_logs_on_event_hash"
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
   end
@@ -139,7 +145,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.boolean "emergency_only", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["date"], name: "index_clinic_closures_on_date", unique: true
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id", "date"], name: "index_clinic_closures_on_clinic_id_and_date", unique: true
+    t.index ["clinic_id"], name: "index_clinic_closures_on_clinic_id"
+  end
+
+  create_table "clinic_memberships", force: :cascade do |t|
+    t.integer "clinic_id", null: false
+    t.integer "user_id", null: false
+    t.string "role", null: false
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["clinic_id", "user_id"], name: "index_clinic_memberships_on_clinic_id_and_user_id", unique: true
+    t.index ["clinic_id"], name: "index_clinic_memberships_on_clinic_id"
+    t.index ["role"], name: "index_clinic_memberships_on_role"
+    t.index ["user_id"], name: "index_clinic_memberships_on_user_id"
   end
 
   create_table "clinic_schedules", force: :cascade do |t|
@@ -151,7 +172,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.integer "max_concurrent_appointments", default: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["day_of_week"], name: "index_clinic_schedules_on_day_of_week", unique: true
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id", "day_of_week"], name: "index_clinic_schedules_on_clinic_id_and_day_of_week", unique: true
+    t.index ["clinic_id"], name: "index_clinic_schedules_on_clinic_id"
   end
 
   create_table "clinic_services", force: :cascade do |t|
@@ -164,7 +187,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.datetime "updated_at", null: false
     t.integer "preparation_minutes", default: 0, null: false
     t.string "color", default: "#2a9d8f", null: false
-    t.index ["name"], name: "index_clinic_services_on_name", unique: true
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id", "name"], name: "index_clinic_services_on_clinic_id_and_name", unique: true
+    t.index ["clinic_id"], name: "index_clinic_services_on_clinic_id"
   end
 
   create_table "clinic_settings", force: :cascade do |t|
@@ -178,6 +203,26 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.integer "queue_eta_minutes_walk_in", default: 25, null: false
     t.integer "queue_eta_minutes_emergency", default: 10, null: false
     t.integer "queue_eta_minutes_priority", default: 15, null: false
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_clinic_settings_on_clinic_id", unique: true
+  end
+
+  create_table "clinics", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.string "contact_email"
+    t.string "phone"
+    t.string "subscription_plan", default: "starter", null: false
+    t.string "subscription_status", default: "trialing", null: false
+    t.date "trial_ends_on"
+    t.datetime "suspended_at"
+    t.json "plan_limits", default: {}, null: false
+    t.json "feature_flags", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_clinics_on_slug", unique: true
+    t.index ["subscription_plan"], name: "index_clinics_on_subscription_plan"
+    t.index ["subscription_status"], name: "index_clinics_on_subscription_status"
   end
 
   create_table "dental_chart_entries", force: :cascade do |t|
@@ -190,6 +235,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.json "surface_marks", default: [], null: false
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_dental_chart_entries_on_clinic_id"
     t.index ["entry_type"], name: "index_dental_chart_entries_on_entry_type"
     t.index ["patient_id", "recorded_on"], name: "index_dental_chart_entries_on_patient_id_and_recorded_on"
     t.index ["patient_id"], name: "index_dental_chart_entries_on_patient_id"
@@ -205,7 +252,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.string "reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id", "date"], name: "index_dentist_schedule_overrides_on_user_id_and_date", unique: true
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id", "user_id", "date"], name: "idx_dentist_overrides_clinic_user_date", unique: true
+    t.index ["clinic_id"], name: "index_dentist_schedule_overrides_on_clinic_id"
     t.index ["user_id"], name: "index_dentist_schedule_overrides_on_user_id"
   end
 
@@ -217,6 +266,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_dentist_schedules_on_clinic_id"
     t.index ["user_id", "day_of_week"], name: "index_dentist_schedules_on_user_id_and_day_of_week"
     t.index ["user_id"], name: "index_dentist_schedules_on_user_id"
   end
@@ -235,6 +286,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.boolean "default_for_prescription", default: false, null: false
     t.text "information_header_text"
     t.datetime "deleted_at"
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_document_templates_on_clinic_id"
     t.index ["deleted_at"], name: "index_document_templates_on_deleted_at"
     t.index ["kind", "active", "deleted_at"], name: "idx_doc_templates_kind_active_deleted_at"
     t.index ["kind", "active"], name: "index_document_templates_on_kind_and_active"
@@ -250,6 +303,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.datetime "reviewed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_intake_form_submissions_on_clinic_id"
     t.index ["patient_id"], name: "index_intake_form_submissions_on_patient_id"
     t.index ["source"], name: "index_intake_form_submissions_on_source"
     t.index ["status"], name: "index_intake_form_submissions_on_status"
@@ -264,6 +319,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_intraoral_scans_on_clinic_id"
     t.index ["patient_id", "captured_on"], name: "index_intraoral_scans_on_patient_id_and_captured_on"
     t.index ["patient_id"], name: "index_intraoral_scans_on_patient_id"
     t.index ["user_id"], name: "index_intraoral_scans_on_user_id"
@@ -281,6 +338,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "invoice_number"
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_invoices_on_clinic_id"
     t.index ["invoice_number"], name: "index_invoices_on_invoice_number", unique: true
     t.index ["issued_on"], name: "index_invoices_on_issued_on"
     t.index ["patient_id"], name: "index_invoices_on_patient_id"
@@ -300,6 +359,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.datetime "updated_at", null: false
     t.string "source_record_type"
     t.integer "source_record_id"
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_notifications_on_clinic_id"
     t.index ["patient_id"], name: "index_notifications_on_patient_id"
     t.index ["source_record_type", "source_record_id"], name: "index_notifications_on_source_record_type_and_source_record_id"
   end
@@ -313,6 +374,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.json "metadata", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_patient_consents_on_clinic_id"
     t.index ["patient_id", "consent_type", "consented_at"], name: "idx_patient_consents_lookup"
     t.index ["patient_id"], name: "index_patient_consents_on_patient_id"
     t.index ["user_id"], name: "index_patient_consents_on_user_id"
@@ -346,6 +409,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.string "insurance_provider"
     t.string "insurance_policy_number"
     t.string "country"
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_patients_on_clinic_id"
     t.index ["last_name", "first_name"], name: "index_patients_on_last_name_and_first_name"
     t.index ["user_id"], name: "index_patients_on_user_id", unique: true
   end
@@ -360,6 +425,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.datetime "updated_at", null: false
     t.text "notes"
     t.integer "recorded_by_user_id"
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_payments_on_clinic_id"
     t.index ["invoice_id", "amount", "paid_on", "method", "reference_code"], name: "index_payments_on_dedup_fields", unique: true
     t.index ["invoice_id"], name: "index_payments_on_invoice_id"
     t.index ["recorded_by_user_id"], name: "index_payments_on_recorded_by_user_id"
@@ -377,6 +444,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.text "signature_snapshot"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_prescriptions_on_clinic_id"
     t.index ["document_template_id"], name: "index_prescriptions_on_document_template_id"
     t.index ["drafted_by_user_id"], name: "index_prescriptions_on_drafted_by_user_id"
     t.index ["patient_id", "issued_on"], name: "index_prescriptions_on_patient_id_and_issued_on"
@@ -398,8 +467,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "clinic_id", null: false
     t.index ["appointment_id", "status"], name: "idx_queue_entries_active_appointment", unique: true, where: "status IN ('waiting','called')"
     t.index ["appointment_id"], name: "index_queue_entries_on_appointment_id"
+    t.index ["clinic_id"], name: "index_queue_entries_on_clinic_id"
     t.index ["patient_id"], name: "index_queue_entries_on_patient_id"
     t.index ["status", "priority_level", "arrived_at"], name: "idx_queue_entries_dispatch_order"
   end
@@ -409,7 +480,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.json "permissions", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["role"], name: "index_role_permissions_on_role", unique: true
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id", "role"], name: "index_role_permissions_on_clinic_id_and_role", unique: true
+    t.index ["clinic_id"], name: "index_role_permissions_on_clinic_id"
   end
 
   create_table "treatment_records", force: :cascade do |t|
@@ -422,7 +495,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.date "performed_on"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "clinic_id", null: false
     t.index ["appointment_id"], name: "index_treatment_records_on_appointment_id"
+    t.index ["clinic_id"], name: "index_treatment_records_on_clinic_id"
     t.index ["patient_id"], name: "index_treatment_records_on_patient_id"
     t.index ["user_id"], name: "index_treatment_records_on_user_id"
   end
@@ -435,41 +510,68 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_130000) do
     t.datetime "updated_at", null: false
     t.string "password_digest"
     t.json "permissions", default: {}, null: false
+    t.integer "clinic_id", null: false
+    t.index ["clinic_id"], name: "index_users_on_clinic_id"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "access_logs", "clinics"
   add_foreign_key "access_logs", "users"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_access_tokens", "users"
   add_foreign_key "appointments", "appointments", column: "rescheduled_from_appointment_id"
   add_foreign_key "appointments", "clinic_services"
+  add_foreign_key "appointments", "clinics"
   add_foreign_key "appointments", "patients"
   add_foreign_key "appointments", "users"
   add_foreign_key "appointments", "users", column: "preferred_user_id"
+  add_foreign_key "audit_logs", "clinics"
   add_foreign_key "audit_logs", "users"
+  add_foreign_key "clinic_closures", "clinics"
+  add_foreign_key "clinic_memberships", "clinics"
+  add_foreign_key "clinic_memberships", "users"
+  add_foreign_key "clinic_schedules", "clinics"
+  add_foreign_key "clinic_services", "clinics"
+  add_foreign_key "clinic_settings", "clinics"
+  add_foreign_key "dental_chart_entries", "clinics"
   add_foreign_key "dental_chart_entries", "patients"
   add_foreign_key "dental_chart_entries", "users"
+  add_foreign_key "dentist_schedule_overrides", "clinics"
   add_foreign_key "dentist_schedule_overrides", "users"
+  add_foreign_key "dentist_schedules", "clinics"
   add_foreign_key "dentist_schedules", "users"
+  add_foreign_key "document_templates", "clinics"
+  add_foreign_key "intake_form_submissions", "clinics"
   add_foreign_key "intake_form_submissions", "patients"
   add_foreign_key "intake_form_submissions", "users", column: "submitted_by_user_id"
+  add_foreign_key "intraoral_scans", "clinics"
   add_foreign_key "intraoral_scans", "patients"
   add_foreign_key "intraoral_scans", "users"
+  add_foreign_key "invoices", "clinics"
   add_foreign_key "invoices", "patients"
   add_foreign_key "invoices", "treatment_records"
+  add_foreign_key "notifications", "clinics"
   add_foreign_key "notifications", "patients"
+  add_foreign_key "patient_consents", "clinics"
   add_foreign_key "patient_consents", "patients"
   add_foreign_key "patient_consents", "users"
+  add_foreign_key "patients", "clinics"
   add_foreign_key "patients", "users"
+  add_foreign_key "payments", "clinics"
   add_foreign_key "payments", "invoices"
+  add_foreign_key "prescriptions", "clinics"
   add_foreign_key "prescriptions", "document_templates"
   add_foreign_key "prescriptions", "patients"
   add_foreign_key "prescriptions", "users", column: "drafted_by_user_id"
   add_foreign_key "prescriptions", "users", column: "signed_by_user_id"
   add_foreign_key "queue_entries", "appointments"
+  add_foreign_key "queue_entries", "clinics"
   add_foreign_key "queue_entries", "patients"
+  add_foreign_key "role_permissions", "clinics"
   add_foreign_key "treatment_records", "appointments"
+  add_foreign_key "treatment_records", "clinics"
   add_foreign_key "treatment_records", "patients"
   add_foreign_key "treatment_records", "users"
+  add_foreign_key "users", "clinics"
 end

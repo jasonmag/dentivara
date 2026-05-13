@@ -1,6 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  clinic: one
   patient: one
   treatment_record: one
   status: approved
@@ -11,6 +12,7 @@ one:
   approved_by_admin_at: 2026-05-02 23:58:03
 
 two:
+  clinic: one
   patient: two
   treatment_record: two
   status: partially_paid

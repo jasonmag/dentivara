@@ -25,11 +25,11 @@ module Api
 
       def patients_payload
         per_page = dashboard_limit(:patients_per_page, 5)
-        patients = Patient.order(:last_name, :first_name)
+        patients = tenant_scope(Patient).order(:last_name, :first_name)
 
         collection_payload(
           records: patients.limit(per_page),
-          total_count: Patient.count,
+          total_count: patients.count,
           per_page: per_page
         ) do |patient|
           {
@@ -45,7 +45,7 @@ module Api
 
       def appointments_payload
         per_page = dashboard_limit(:appointments_per_page, 6)
-        appointments = Appointment
+        appointments = tenant_scope(Appointment)
           .includes(:patient, :user)
           .where("starts_at >= ?", starts_from)
           .order(starts_at: :asc)
@@ -70,7 +70,7 @@ module Api
 
       def invoices_payload
         per_page = dashboard_limit(:invoices_per_page, 5)
-        invoices = Invoice
+        invoices = tenant_scope(Invoice)
           .includes(:patient)
           .where("issued_on >= ?", issued_from)
           .order(updated_at: :desc)

@@ -40,15 +40,17 @@ class AppointmentsControllerTest < ActionDispatch::IntegrationTest
 
   test "completing an appointment generates an invoice and refreshes the weekly schedule" do
     service = ClinicService.create!(
+      clinic: users(:one).clinic,
       name: "Completion Procedure",
       base_price: 1750,
       duration_minutes: 45,
       preparation_minutes: 10,
       active: true
     )
-    starts_at = Time.zone.local(2026, 5, 12, 10, 0)
+    starts_at = 1.week.from_now.change(hour: 10, min: 0, sec: 0)
     appointment = Appointment.create!(
       booking_type: "scheduled",
+      clinic: users(:one).clinic,
       clinic_service_id: service.id,
       ends_at: starts_at + 45.minutes,
       notes: "Completed after treatment.",
