@@ -4,6 +4,9 @@ module Api
       def self.call(patient)
         {
           id: patient.id,
+          clinic_id: patient.clinic_id,
+          claim_code: patient.claim_code,
+          claimed_at: patient.claimed_at,
           first_name: patient.first_name,
           last_name: patient.last_name,
           full_name: patient.full_name,

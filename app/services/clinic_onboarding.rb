@@ -5,18 +5,31 @@ class ClinicOnboarding
     [ "Tooth Extraction", "Simple tooth extraction", 3000, 45, "#64748b" ]
   ].freeze
 
-  def self.create!(clinic_params:, owner_params:)
-    new(clinic_params: clinic_params, owner_params: owner_params).create!
+  def self.create!(clinic_params:, owner_params:, account_params: {})
+    new(clinic_params: clinic_params, owner_params: owner_params, account_params: account_params).create!
   end
 
-  def initialize(clinic_params:, owner_params:)
+  def initialize(clinic_params:, owner_params:, account_params: {})
     @clinic_params = clinic_params
     @owner_params = owner_params
+    @account_params = account_params
   end
 
   def create!
     Clinic.transaction do
+      account = Account.create!(
+        name: account_params[:name].presence || "#{clinic_params.fetch(:name)} Account",
+        slug: account_params[:slug].presence || "#{clinic_params[:slug].presence || clinic_params.fetch(:name).parameterize}-account",
+        billing_email: account_params[:billing_email].presence || clinic_params[:contact_email].presence || owner_params.fetch(:email),
+        subscription_plan: account_params[:subscription_plan].presence || clinic_params[:subscription_plan].presence || "starter",
+        subscription_status: account_params[:subscription_status].presence || "trialing",
+        subscription_starts_on: account_params[:subscription_starts_on],
+        subscription_ends_on: account_params[:subscription_ends_on],
+        trial_ends_on: account_params[:trial_ends_on]
+      )
+
       clinic = Clinic.create!(
+        account: account,
         name: clinic_params.fetch(:name),
         slug: clinic_params[:slug],
         contact_email: clinic_params[:contact_email].presence || owner_params.fetch(:email),
@@ -55,11 +68,15 @@ class ClinicOnboarding
         password_confirmation: owner_params.fetch(:password),
         role: :clinic_owner
       )
+      owner.account_memberships.find_or_create_by!(account: account) do |membership|
+        membership.role = "owner"
+        membership.accepted_at = Time.current
+      end
       [ clinic, owner ]
     end
   end
 
   private
 
-  attr_reader :clinic_params, :owner_params
+  attr_reader :clinic_params, :owner_params, :account_params
 end

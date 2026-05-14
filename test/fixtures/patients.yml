@@ -7,6 +7,7 @@ one:
   birth_date: 1993-05-02
   phone: "09171234567"
   email: juan@example.com
+  claim_code: PT-JUAN000001
   consented_at: 2026-05-02 23:57:35
 
 two:
@@ -16,5 +17,7 @@ two:
   birth_date: 1988-09-11
   phone: "09181112222"
   email: liza@example.com
+  claim_code: PT-LIZA000002
+  claimed_at: 2026-05-02 23:57:35
   consented_at: 2026-05-02 23:57:35
   user: four

@@ -1,0 +1,17 @@
+one:
+  account: one
+  user: one
+  role: member
+  accepted_at: 2026-05-02 23:57:35
+
+two:
+  account: one
+  user: two
+  role: member
+  accepted_at: 2026-05-02 23:57:35
+
+three:
+  account: one
+  user: three
+  role: member
+  accepted_at: 2026-05-02 23:57:35

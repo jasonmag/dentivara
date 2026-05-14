@@ -23,6 +23,7 @@ module Api
           @current_user = @current_api_token.user
           Current.user = @current_user
           Current.clinic = clinic_for_request(@current_user)
+          return render_error("forbidden", "You are not authorized to access this clinic.", status: :forbidden) if Current.clinic.blank?
           return render_error("clinic_suspended", "This clinic account is suspended.", status: :payment_required) if Current.clinic&.suspended?
           return
         end
@@ -54,7 +55,7 @@ module Api
 
         Current.user = @current_user
         Current.clinic = clinic_for_request(@current_user)
-        true
+        Current.clinic.present?
       end
 
       def legacy_api_token
@@ -75,6 +76,10 @@ module Api
         @current_user
       end
 
+      def current_api_token
+        @current_api_token
+      end
+
       def current_clinic
         Current.clinic || current_user&.clinic
       end
@@ -87,7 +92,7 @@ module Api
         requested_id = request.headers["X-Clinic-ID"].presence || params[:clinic_id].presence
         return user.clinic if requested_id.blank?
 
-        user.accessible_clinics.find_by(id: requested_id) || user.clinic
+        user.accessible_clinics.find_by(id: requested_id)
       end
 
       def authorize_api!(feature, action = action_name)

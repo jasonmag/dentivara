@@ -26,6 +26,10 @@ class User < ApplicationRecord
 
   has_many :clinic_memberships, dependent: :destroy
   has_many :clinics, through: :clinic_memberships
+  has_many :account_memberships, dependent: :destroy
+  has_many :accounts, through: :account_memberships
+  has_many :patient_links, dependent: :destroy
+  has_many :linked_patients, through: :patient_links, source: :patient
   has_many :access_logs, dependent: :nullify
   has_many :audit_logs, dependent: :nullify
   has_many :appointments, dependent: :destroy
@@ -75,7 +79,14 @@ class User < ApplicationRecord
   end
 
   def accessible_clinics
-    system_admin? ? Clinic.all : clinics
+    return Clinic.all if system_admin?
+    return Clinic.where(id: patient_links.select(:clinic_id)) if patient?
+
+    Clinic.where(id: clinics.select(:id)).or(Clinic.where(account_id: accounts.select(:id)))
+  end
+
+  def accessible_accounts
+    system_admin? ? Account.all : accounts
   end
 
   def can_access_clinic?(clinic)
@@ -97,6 +108,13 @@ class User < ApplicationRecord
   def ensure_primary_clinic_membership
     clinic_memberships.find_or_create_by!(clinic: clinic) do |membership|
       membership.role = role
+      membership.accepted_at = Time.current
+    end
+
+    return if patient?
+
+    account_memberships.find_or_create_by!(account: clinic.account) do |membership|
+      membership.role = clinic_owner? ? "owner" : "member"
       membership.accepted_at = Time.current
     end
   end

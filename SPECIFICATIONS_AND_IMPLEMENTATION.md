@@ -35,6 +35,24 @@
 - Maintain audit/compliance-compatible structure through explicit workflow state fields.
 - Add session-based login and role-aware access controls for web workflows.
 - Added field-level encryption for sensitive patient data at rest (medical and emergency contact data).
+- Support full multi-tenant SaaS ownership:
+  - purchaser/subscriber account can own one or more clinics
+  - clinic owners can administer multiple clinics under the same account
+  - staff access remains scoped per clinic
+  - system admins retain global application access
+  - system admins use a platform map view focused on accounts, owners, clinics, users, and subscriptions instead of the normal clinic operations dashboard
+  - system admins can add new platform clients, update subscription windows, and impersonate clinic owners for support/review
+  - clinic feature navigation is hidden from normal system-admin mode and becomes available only while impersonating a clinic owner
+  - sidebar menus are role-specific:
+    - system admin sees platform administration only
+    - clinic owner/client admin sees client administration and clinic configuration menus
+    - clinic personnel see clinic operations menus based on role
+    - patient users see patient portal menus only
+- Support free patient self-service:
+  - patients can register/login without purchasing a subscription
+  - clinics can create patient records with claim codes
+  - patients can claim clinic-created records using their unique code
+  - claimed patient records are exposed through the patient portal only to linked patient users
 
 ### UX and Design System
 - Mobile-ready responsive pages.
@@ -53,9 +71,14 @@
 - CI/CD workflow in `.github/workflows/ci.yml` (security scans, lint, tests).
 
 ### Domain Models Implemented
+- `Account` for SaaS purchaser/subscriber ownership.
+- `AccountMembership` for account-level ownership/admin access.
+- `Clinic` as a tenant workspace owned by an account.
+- `ClinicMembership` for per-clinic staff access.
 - `User` with role enum:
   - `clinic_owner`, `dentist`, `receptionist`, `billing_staff`, `patient`, `system_admin`
 - `Patient`
+- `PatientLink` for connecting free patient portal users to clinic patient records.
 - `Appointment`
 - `TreatmentRecord`
 - `Invoice`
@@ -123,8 +146,54 @@
   - notifications
 - Token-based API guard in `Api::V1::BaseController` using bearer auth.
 - API base controller now enforces JSON request format for consistent client behavior.
+- API tenant context supports `X-Clinic-ID` and rejects inaccessible clinic IDs with `403` instead of silently falling back.
+- System admins can access all accounts and clinics.
+- Clinic/account users are constrained to their accessible clinics.
+- Patient users are constrained to linked patient records and do not require a paid subscription.
 - CORS policy configured in `config/initializers/cors.rb` with `API_CORS_ORIGINS`.
 - JSON CRUD patterns ready for external client integration.
+
+### Multi-Tenant SaaS Ownership Implemented
+- Added account-level SaaS ownership above clinics:
+  - `accounts` stores purchaser/subscriber identity and subscription metadata.
+  - `accounts.subscription_starts_on` and `accounts.subscription_ends_on` store subscription windows for system-admin review.
+  - `clinics.account_id` links every clinic to its owning account.
+  - `account_memberships` links users to purchaser accounts.
+  - `clinic_memberships` remains the operational access control layer for individual clinics.
+- Subscription readiness:
+  - account-level `subscription_plan`, `subscription_status`, `trial_ends_on`, `suspended_at`, `plan_limits`, and `feature_flags` are available.
+  - existing clinic-level subscription fields are retained for backward compatibility during transition.
+- Access model:
+  - `system_admin` can access all accounts and all clinics.
+  - `system_admin` has a dedicated platform overview API and frontend page for whole-application mapping.
+  - `clinic_owner` can administer clinics under their accessible account/clinic memberships.
+  - staff users remain scoped to their assigned clinic memberships.
+  - invalid clinic context selection is rejected by API authorization.
+- Frontend integration:
+  - Next.js clinic context proxy validates clinic access through Rails before setting the clinic context cookie.
+  - API requests continue to pass the selected clinic through `X-Clinic-ID`.
+  - System-admin login lands on `/platform`, showing account owners, clinics, assigned users, and subscription start/end dates.
+  - System-admin sidebar shows only platform administration in normal mode.
+  - Impersonation swaps the active API token into a short-lived clinic-owner token and stores the original system-admin token for a one-click return to `/platform`.
+  - Clinic menus and clinic features are displayed only in impersonated clinic-owner mode, not under the raw system-admin identity.
+  - Role-specific sidebar behavior separates system admin, client admin, dentist, receptionist, billing staff, and patient portal navigation.
+  - Platform actions support:
+    - creating a new client account with owner and first physical clinic
+    - updating account subscription status/start/end
+    - impersonating a clinic owner to inspect clinic functionality
+
+### Patient Self-Service Implemented
+- Added patient claim infrastructure:
+  - `patients.claim_code` is unique and generated automatically.
+  - `patients.claimed_at` records first successful claim.
+  - `patient_links` connects one patient portal user to one or more clinic patient records.
+- Added API endpoints:
+  - `POST /api/v1/patient_registration` creates a free patient portal login and returns an API token.
+  - `POST /api/v1/patient_claim` lets a patient user claim a clinic record by claim code.
+  - `GET /api/v1/patient_portal` returns linked patient records, appointments, invoices, and notifications.
+  - `PATCH /api/v1/clinic_context` validates and switches clinic context for authenticated users.
+- Clinic-created patient records can be claimed later by code.
+- Existing `patients.user_id` is retained as a legacy primary link, while `patient_links` supports a patient login linked to multiple clinic records.
 
 ### Hotwire + Tailwind + API Multiplatform Compatibility (Updated)
 - Browser frontend:
@@ -147,10 +216,14 @@
 ### Functional Data and Demo Readiness
 - Expanded `db/seeds.rb` with functional sample data:
   - role-based users with credentials
+  - account-level SaaS ownership with one demo account owning multiple clinics
+  - multi-clinic memberships for the demo owner and staff
+  - patient claim codes and a linked patient portal user
   - services catalog
   - document templates for prescription and dental certificate
   - realistic patients, appointments, treatment records, invoices, payments, and notifications
 - Seed data now respects dentist availability constraints to avoid booking conflicts.
+- Seed output prints a sample patient claim code for testing patient self-service.
 
 ### Phase 2 Extensions Implemented
 - Patient portal baseline:
@@ -235,9 +308,10 @@
   - Encrypted sensitive patient fields at rest
 
 ### Remaining Planned Extensions (Post-MVP)
-- Full authentication + tenant scoping.
-- Advanced audit log trail.
-- File attachments and imaging modules.
+- Payment-provider integration for account-level subscription billing.
+- Clinic/staff invitation emails and acceptance lifecycle.
+- Patient claim-code delivery workflow via email/SMS.
+- Patient portal frontend screens for registration, claim-code entry, and multi-clinic record selection.
 - Full patient portal and advanced charting.
 - Automated messaging integrations (email/SMS provider adapters).
 

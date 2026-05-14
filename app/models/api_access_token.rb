@@ -2,6 +2,7 @@ class ApiAccessToken < ApplicationRecord
   TOKEN_LENGTH = 32
 
   belongs_to :user
+  belongs_to :impersonated_by_user, class_name: "User", optional: true
 
   validates :name, :token_digest, presence: true
   validates :token_digest, uniqueness: true
@@ -10,13 +11,15 @@ class ApiAccessToken < ApplicationRecord
     where(revoked_at: nil).where("expires_at IS NULL OR expires_at > ?", Time.current)
   }
 
-  def self.generate!(user:, name:, scopes: [], expires_at: nil)
+  def self.generate!(user:, name:, scopes: [], expires_at: nil, impersonated_by_user: nil, impersonation_reason: nil)
     raw_token = SecureRandom.urlsafe_base64(TOKEN_LENGTH)
     access_token = create!(
       user: user,
       name: name,
       scopes: Array(scopes).map(&:to_s),
       expires_at: expires_at,
+      impersonated_by_user: impersonated_by_user,
+      impersonation_reason: impersonation_reason,
       token_digest: digest(raw_token)
     )
 

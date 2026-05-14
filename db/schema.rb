@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_13_150000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_14_143000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -25,6 +25,40 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_150000) do
     t.index ["clinic_id"], name: "index_access_logs_on_clinic_id"
     t.index ["resource_type", "resource_id", "created_at"], name: "idx_access_logs_resource"
     t.index ["user_id"], name: "index_access_logs_on_user_id"
+  end
+
+  create_table "account_memberships", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.integer "user_id", null: false
+    t.string "role", null: false
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "user_id"], name: "index_account_memberships_on_account_id_and_user_id", unique: true
+    t.index ["account_id"], name: "index_account_memberships_on_account_id"
+    t.index ["role"], name: "index_account_memberships_on_role"
+    t.index ["user_id"], name: "index_account_memberships_on_user_id"
+  end
+
+  create_table "accounts", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.string "billing_email"
+    t.string "subscription_plan", default: "starter", null: false
+    t.string "subscription_status", default: "trialing", null: false
+    t.date "trial_ends_on"
+    t.datetime "suspended_at"
+    t.json "plan_limits", default: {}, null: false
+    t.json "feature_flags", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "subscription_starts_on"
+    t.date "subscription_ends_on"
+    t.index ["slug"], name: "index_accounts_on_slug", unique: true
+    t.index ["subscription_ends_on"], name: "index_accounts_on_subscription_ends_on"
+    t.index ["subscription_plan"], name: "index_accounts_on_subscription_plan"
+    t.index ["subscription_starts_on"], name: "index_accounts_on_subscription_starts_on"
+    t.index ["subscription_status"], name: "index_accounts_on_subscription_status"
   end
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -67,7 +101,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_150000) do
     t.string "last_used_user_agent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "impersonated_by_user_id"
+    t.string "impersonation_reason"
     t.index ["expires_at"], name: "index_api_access_tokens_on_expires_at"
+    t.index ["impersonated_by_user_id"], name: "index_api_access_tokens_on_impersonated_by_user_id"
     t.index ["token_digest"], name: "index_api_access_tokens_on_token_digest", unique: true
     t.index ["user_id", "revoked_at"], name: "index_api_access_tokens_on_user_id_and_revoked_at"
     t.index ["user_id"], name: "index_api_access_tokens_on_user_id"
@@ -220,6 +257,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_150000) do
     t.json "feature_flags", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "account_id", null: false
+    t.index ["account_id"], name: "index_clinics_on_account_id"
     t.index ["slug"], name: "index_clinics_on_slug", unique: true
     t.index ["subscription_plan"], name: "index_clinics_on_subscription_plan"
     t.index ["subscription_status"], name: "index_clinics_on_subscription_status"
@@ -381,6 +420,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_150000) do
     t.index ["user_id"], name: "index_patient_consents_on_user_id"
   end
 
+  create_table "patient_links", force: :cascade do |t|
+    t.integer "patient_id", null: false
+    t.integer "user_id", null: false
+    t.integer "clinic_id", null: false
+    t.datetime "claimed_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["clinic_id", "user_id"], name: "index_patient_links_on_clinic_id_and_user_id"
+    t.index ["clinic_id"], name: "index_patient_links_on_clinic_id"
+    t.index ["patient_id", "user_id"], name: "index_patient_links_on_patient_id_and_user_id", unique: true
+    t.index ["patient_id"], name: "index_patient_links_on_patient_id"
+    t.index ["user_id"], name: "index_patient_links_on_user_id"
+  end
+
   create_table "patients", force: :cascade do |t|
     t.string "first_name"
     t.string "last_name"
@@ -410,6 +463,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_150000) do
     t.string "insurance_policy_number"
     t.string "country"
     t.integer "clinic_id", null: false
+    t.string "claim_code", null: false
+    t.datetime "claimed_at"
+    t.index ["claim_code"], name: "index_patients_on_claim_code", unique: true
     t.index ["clinic_id"], name: "index_patients_on_clinic_id"
     t.index ["last_name", "first_name"], name: "index_patients_on_last_name_and_first_name"
     t.index ["user_id"], name: "index_patients_on_user_id", unique: true
@@ -517,9 +573,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_150000) do
 
   add_foreign_key "access_logs", "clinics"
   add_foreign_key "access_logs", "users"
+  add_foreign_key "account_memberships", "accounts"
+  add_foreign_key "account_memberships", "users"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_access_tokens", "users"
+  add_foreign_key "api_access_tokens", "users", column: "impersonated_by_user_id"
   add_foreign_key "appointments", "appointments", column: "rescheduled_from_appointment_id"
   add_foreign_key "appointments", "clinic_services"
   add_foreign_key "appointments", "clinics"
@@ -534,6 +593,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_150000) do
   add_foreign_key "clinic_schedules", "clinics"
   add_foreign_key "clinic_services", "clinics"
   add_foreign_key "clinic_settings", "clinics"
+  add_foreign_key "clinics", "accounts"
   add_foreign_key "dental_chart_entries", "clinics"
   add_foreign_key "dental_chart_entries", "patients"
   add_foreign_key "dental_chart_entries", "users"
@@ -556,6 +616,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_13_150000) do
   add_foreign_key "patient_consents", "clinics"
   add_foreign_key "patient_consents", "patients"
   add_foreign_key "patient_consents", "users"
+  add_foreign_key "patient_links", "clinics"
+  add_foreign_key "patient_links", "patients"
+  add_foreign_key "patient_links", "users"
   add_foreign_key "patients", "clinics"
   add_foreign_key "patients", "users"
   add_foreign_key "payments", "clinics"

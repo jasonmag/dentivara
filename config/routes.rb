@@ -80,6 +80,13 @@ Rails.application.routes.draw do
     namespace :v1 do
       resource :session, only: %i[create destroy]
       resource :clinic_onboarding, only: :create, controller: "clinic_onboarding"
+      resource :clinic_context, only: :update, controller: "clinic_context"
+      resource :patient_registration, only: :create, controller: "patient_registrations"
+      resource :patient_claim, only: :create, controller: "patient_claims"
+      resource :patient_portal, only: :show, controller: "patient_portal"
+      resource :platform_overview, only: :show, controller: "platform_overview"
+      resources :platform_accounts, only: %i[create update], controller: "platform_accounts"
+      resource :impersonation, only: :create, controller: "impersonations"
       resource :dashboard, only: :show, controller: "dashboard"
       resources :clinics, only: %i[index show create update destroy]
       resources :patients

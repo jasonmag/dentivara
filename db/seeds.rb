@@ -20,6 +20,15 @@ puts "Seeding Dentivara comprehensive workflow data..."
 SEED_PASSWORD = "dentivara123"
 
 demo_clinic = Clinic.default
+demo_account = demo_clinic.account
+demo_account.update!(
+  name: "Dentivara Demo Group",
+  billing_email: "owner@dentivara.local",
+  subscription_plan: "clinic",
+  subscription_status: "active",
+  subscription_starts_on: Date.current.beginning_of_month,
+  subscription_ends_on: 1.year.from_now.to_date
+)
 Current.clinic = demo_clinic
 
 ClinicSetting.current.update!(time_zone: "Asia/Manila")
@@ -61,6 +70,16 @@ def attach_sample_png!(record, attachment_name, filename_prefix)
   )
 end
 
+def seeded_appointment_start(index, visit_number)
+  date = Date.current
+  remaining_days = index
+  while remaining_days.positive?
+    date += 1.day
+    remaining_days -= 1 unless date.saturday? || date.sunday?
+  end
+  Time.zone.local(date.year, date.month, date.day, visit_number.zero? ? 9 : 14, 0, 0)
+end
+
 users = {
   clinic_owner: create_or_update_user!(name: "Clinic Owner", email: "owner@dentivara.local", role: :clinic_owner),
   dentist_1: create_or_update_user!(name: "Dr. Maria Reyes", email: "dentist1@dentivara.local", role: :dentist),
@@ -70,6 +89,39 @@ users = {
   system_admin: create_or_update_user!(name: "System Admin", email: "sysadmin@dentivara.local", role: :system_admin),
   patient_portal: create_or_update_user!(name: "Patient Portal User", email: "patientportal@dentivara.local", role: :patient)
 }
+
+users.each_value do |user|
+  ClinicMembership.find_or_create_by!(clinic: demo_clinic, user: user) do |membership|
+    membership.role = user.role
+    membership.accepted_at = Time.current
+  end
+
+  next if user.patient?
+
+  AccountMembership.find_or_create_by!(account: demo_account, user: user) do |membership|
+    membership.role = user.clinic_owner? || user.system_admin? ? "owner" : "member"
+    membership.accepted_at = Time.current
+  end
+end
+
+satellite_clinic = Clinic.find_or_initialize_by(slug: "dentivara-satellite")
+satellite_clinic.assign_attributes(
+  account: demo_account,
+  name: "Dentivara Satellite Clinic",
+  contact_email: "satellite@dentivara.local",
+  phone: "+639171234568",
+  subscription_plan: "clinic",
+  subscription_status: "active",
+  trial_ends_on: 30.days.from_now.to_date
+)
+satellite_clinic.save!
+
+[ users[:clinic_owner], users[:dentist_1], users[:receptionist] ].each do |user|
+  ClinicMembership.find_or_create_by!(clinic: satellite_clinic, user: user) do |membership|
+    membership.role = user.role
+    membership.accepted_at = Time.current
+  end
+end
 
 if (bootstrap_admin = SystemAdminBootstrap.from_env!)
   users[:system_admin] = bootstrap_admin
@@ -178,13 +230,22 @@ patients = 30.times.map do |i|
   patient
 end
 
-# Link one patient to the seeded portal user.
+# Link one patient to the seeded portal user. Other patients remain claimable by code.
 patients.first.update!(user: users[:patient_portal]) if patients.first.user != users[:patient_portal]
+PatientLink.find_or_create_by!(patient: patients.first, user: users[:patient_portal]) do |link|
+  link.clinic = patients.first.clinic
+  link.claimed_at = Time.current
+end
 
 # Appointment, treatment, invoice, payment, and notifications data.
+seeded_patient_ids = patients.map(&:id)
+seeded_appointments = Appointment.where(patient_id: seeded_patient_ids)
+Notification.where(patient_id: seeded_patient_ids).delete_all
+seeded_appointments.destroy_all
+
 patients.each_with_index do |patient, i|
   2.times do |j|
-    start_at = Time.current.beginning_of_day + (i + j + 1).days + (8 + ((i + j) % 8)).hours
+    start_at = seeded_appointment_start(i + j + 1, j)
     duration = [30, 45, 60, 90].sample.minutes
     dentist = dentists[(i + j) % dentists.size]
 
@@ -241,7 +302,7 @@ patients.each_with_index do |patient, i|
       payment.assign_attributes(
         amount: paid,
         paid_on: appointment.starts_at.to_date,
-        method: %w[cash card transfer][(i + j) % 3]
+        method: %w[cash credit_card bank_transfer][(i + j) % 3]
       )
       payment.save!
     end
@@ -377,4 +438,6 @@ end
 
 puts "Seed complete."
 puts "Login accounts use password: #{SEED_PASSWORD}"
-puts "Includes seeded data for: RBAC users, patient profiles, appointments, treatments, billing, notifications, intake forms, consents, dental chart entries (with surface marks + images), and prescription lifecycle states."
+puts "Demo owner administers clinics: #{demo_account.clinics.order(:name).pluck(:name).join(', ')}"
+puts "Patient portal claim code example: #{patients.second.claim_code} (#{patients.second.full_name})"
+puts "Includes seeded data for: SaaS account ownership, multi-clinic memberships, RBAC users, patient profiles, patient claim codes, appointments, treatments, billing, notifications, intake forms, consents, dental chart entries (with surface marks + images), and prescription lifecycle states."

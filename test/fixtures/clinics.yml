@@ -1,4 +1,5 @@
 one:
+  account: one
   name: Fixture Dental Clinic
   slug: fixture-dental-clinic
   contact_email: clinic@example.com
@@ -9,6 +10,7 @@ one:
   feature_flags: {}
 
 two:
+  account: two
   name: Other Dental Clinic
   slug: other-dental-clinic
   contact_email: other@example.com

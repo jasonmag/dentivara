@@ -5,13 +5,13 @@ module Portal
     private
 
     def require_patient_role
-      return if current_user&.patient? && current_user.patient.present?
+      return if current_user&.patient? && current_user.patient_links.exists?
 
       redirect_to root_path, alert: "Patient portal requires a linked patient account."
     end
 
     def current_patient
-      @current_patient ||= current_user&.patient
+      @current_patient ||= current_user&.patient_links&.includes(:patient)&.first&.patient
     end
     helper_method :current_patient
   end

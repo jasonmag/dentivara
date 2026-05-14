@@ -23,8 +23,10 @@ class ActionDispatch::IntegrationTest
     Current.clinic = user.clinic
   end
 
-  def api_headers_for(user, token_name: "Test client")
+  def api_headers_for(user, token_name: "Test client", clinic: nil)
     _access_token, raw_token = ApiAccessToken.generate!(user: user, name: token_name)
-    { "Authorization" => "Bearer #{raw_token}" }
+    headers = { "Authorization" => "Bearer #{raw_token}" }
+    headers["X-Clinic-ID"] = clinic.id.to_s if clinic.present?
+    headers
   end
 end

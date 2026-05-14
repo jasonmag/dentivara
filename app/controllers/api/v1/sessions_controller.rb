@@ -10,7 +10,9 @@ module Api
         unless user&.authenticate(session_params[:password])
           return render_error("invalid_credentials", "Email or password is incorrect.", status: :unauthorized)
         end
-        return render_error("clinic_suspended", "This clinic account is suspended.", status: :payment_required) if user.clinic&.suspended?
+        if !user.patient? && user.clinic&.suspended?
+          return render_error("clinic_suspended", "This clinic account is suspended.", status: :payment_required)
+        end
 
         access_token, raw_token = ApiAccessToken.generate!(
           user: user,
