@@ -2,7 +2,7 @@ require "securerandom"
 
 class Account < ApplicationRecord
   PLANS = Clinic::PLANS
-  SUBSCRIPTION_STATUSES = %w[trialing active past_due cancelled suspended].freeze
+  SUBSCRIPTION_STATUSES = %w[inactive trialing active past_due cancelled suspended].freeze
 
   has_many :clinics, dependent: :restrict_with_exception
   has_many :account_memberships, dependent: :destroy
@@ -37,6 +37,16 @@ class Account < ApplicationRecord
 
   def reactivate!
     update!(subscription_status: "active", suspended_at: nil)
+  end
+
+  def subscription_allows_clinic_addition?
+    return false unless subscription_status.in?(%w[active trialing])
+    return false if subscription_ends_on.present? && subscription_ends_on < Date.current
+
+    included_clinics = SubscriptionPlan.find_by(code: subscription_plan)&.clinics_included
+    return true if included_clinics.blank?
+
+    clinics.count < included_clinics
   end
 
   private

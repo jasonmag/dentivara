@@ -87,6 +87,8 @@ Rails.application.routes.draw do
       resource :platform_overview, only: :show, controller: "platform_overview"
       resource :platform_settings, only: %i[show update], controller: "platform_settings"
       resources :platform_accounts, only: %i[create update], controller: "platform_accounts"
+      resource :account_subscription, only: %i[show create], controller: "account_subscriptions"
+      resources :account_subscriptions, only: :update, controller: "account_subscriptions"
       resources :subscription_plans
       resource :impersonation, only: :create, controller: "impersonations"
       resource :dashboard, only: :show, controller: "dashboard"

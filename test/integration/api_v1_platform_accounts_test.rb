@@ -14,7 +14,7 @@ class ApiV1PlatformAccountsTest < ActionDispatch::IntegrationTest
 
   test "system admin creates a new client account with organization owner only" do
     assert_difference("Account.count", 1) do
-      assert_difference("AccountSubscription.count", 1) do
+      assert_no_difference("AccountSubscription.count") do
         assert_difference("User.clinic_owner.count", 1) do
           assert_no_difference([ "Clinic.count", "ClinicMembership.count" ]) do
             assert_difference("AccountMembership.count", 1) do
@@ -43,6 +43,8 @@ class ApiV1PlatformAccountsTest < ActionDispatch::IntegrationTest
     assert_equal "owner@north.example", body.dig("data", "owner", "email")
     assert_equal "clinic_owner", body.dig("data", "owner", "role")
     assert_nil body.dig("data", "owner", "clinic_id")
+    assert_empty body.dig("data", "account", "subscriptions")
+    assert_equal "inactive", body.dig("data", "account", "subscription_status")
     assert_equal "owner", Account.find(body.dig("data", "account", "id")).account_memberships.last.role
   end
 

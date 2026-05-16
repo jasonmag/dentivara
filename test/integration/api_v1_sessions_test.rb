@@ -3,7 +3,14 @@ require "test_helper"
 class ApiV1SessionsTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
-    @user.update!(password: "password123", password_confirmation: "password123")
+    @user.update!(role: :clinic_owner, password: "password123", password_confirmation: "password123")
+    SubscriptionPlan.find_or_create_by!(code: "starter") do |plan|
+      plan.name = "Starter"
+      plan.price_per_month = 1490
+      plan.clinics_included = 1
+      plan.extra_clinic_price = 700
+      plan.position = 1
+    end
   end
 
   test "creates api token with valid credentials" do
@@ -22,6 +29,25 @@ class ApiV1SessionsTest < ActionDispatch::IntegrationTest
     assert body.dig("data", "token").present?
     assert_equal "Bearer", body.dig("data", "token_type")
     assert_equal @user.id, body.dig("data", "user", "id")
+    assert_equal "2027-05-01", body.dig("data", "user", "account_subscription_ends_on")
+    assert_equal false, body.dig("data", "user", "account_subscription_expired")
+    assert_equal false, body.dig("data", "user", "account_can_add_clinic")
+  end
+
+  test "marks expired clinic owner subscription on login" do
+    accounts(:one).update!(subscription_starts_on: "2025-01-01", subscription_ends_on: "2025-12-31")
+
+    post api_v1_session_url, params: {
+      session: {
+        email: @user.email,
+        password: "password123"
+      }
+    }, as: :json
+
+    assert_response :created
+    body = JSON.parse(response.body)
+    assert_equal "2025-12-31", body.dig("data", "user", "account_subscription_ends_on")
+    assert_equal true, body.dig("data", "user", "account_subscription_expired")
   end
 
   test "rejects invalid credentials" do

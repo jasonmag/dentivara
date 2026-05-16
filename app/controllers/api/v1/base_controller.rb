@@ -88,7 +88,8 @@ module Api
         return false unless current_user&.clinic_owner?
 
         (controller_name == "clinics" && action_name.in?(%w[index create])) ||
-          (controller_name == "users" && action_name == "index")
+          (controller_name == "users" && action_name == "index") ||
+          (controller_name == "account_subscriptions" && action_name.in?(%w[show create]))
       end
 
       def tenant_scope(model_class)

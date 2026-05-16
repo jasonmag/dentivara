@@ -17,7 +17,16 @@ module Api
       end
 
       def create
+        if current_user&.clinic_owner? && !owner_account&.subscription_allows_clinic_addition?
+          return render_error(
+            "clinic_limit_reached",
+            "Your current subscription does not allow another clinic.",
+            status: :unprocessable_entity
+          )
+        end
+
         clinic = Clinic.new(clinic_params)
+        clinic.account ||= owner_account if current_user&.clinic_owner?
 
         if clinic.save
           render_resource(clinic, serializer: ClinicSerializer, status: :created)
@@ -61,6 +70,10 @@ module Api
         permitted = [ :name, :slug, :contact_email, :phone, :subscription_status, :trial_ends_on ]
         permitted << :account_id if current_user&.system_admin?
         params.require(:clinic).permit(permitted)
+      end
+
+      def owner_account
+        @owner_account ||= current_user.accessible_accounts.order(:id).first || current_user.clinic&.account
       end
     end
   end

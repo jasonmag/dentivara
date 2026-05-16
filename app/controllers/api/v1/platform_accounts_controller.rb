@@ -75,7 +75,7 @@ module Api
             name: client_name,
             billing_email: client_email,
             subscription_plan: "starter",
-            subscription_status: "active",
+            subscription_status: "inactive",
             subscription_starts_on: Date.current,
             subscription_ends_on: 1.year.from_now.to_date
           },
@@ -90,7 +90,6 @@ module Api
       def create_account_owner!(attributes)
         Account.transaction do
           account = Account.create!(attributes.fetch(:account))
-          record_subscription!(account)
           owner_attributes = attributes.fetch(:owner)
           owner = User.create!(
             account_only: true,

@@ -3,6 +3,8 @@
 require "securerandom"
 require "stringio"
 
+load Rails.root.join("db/seeds/subscription_plans.rb")
+
 if Rails.env.in?(%w[production staging])
   user = SystemAdminBootstrap.from_env!
 
