@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_14_143000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_16_102000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -54,6 +54,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_14_143000) do
     t.datetime "updated_at", null: false
     t.date "subscription_starts_on"
     t.date "subscription_ends_on"
+    t.string "client_number", null: false
+    t.index ["client_number"], name: "index_accounts_on_client_number", unique: true
     t.index ["slug"], name: "index_accounts_on_slug", unique: true
     t.index ["subscription_ends_on"], name: "index_accounts_on_subscription_ends_on"
     t.index ["subscription_plan"], name: "index_accounts_on_subscription_plan"
@@ -250,7 +252,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_14_143000) do
     t.string "contact_email"
     t.string "phone"
     t.string "subscription_plan", default: "starter", null: false
-    t.string "subscription_status", default: "trialing", null: false
+    t.string "subscription_status", default: "active", null: false
     t.date "trial_ends_on"
     t.datetime "suspended_at"
     t.json "plan_limits", default: {}, null: false
@@ -566,7 +568,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_14_143000) do
     t.datetime "updated_at", null: false
     t.string "password_digest"
     t.json "permissions", default: {}, null: false
-    t.integer "clinic_id", null: false
+    t.integer "clinic_id"
     t.index ["clinic_id"], name: "index_users_on_clinic_id"
     t.index ["email"], name: "index_users_on_email", unique: true
   end

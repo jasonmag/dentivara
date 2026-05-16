@@ -4,6 +4,7 @@ module Api
       def self.call(account)
         {
           id: account.id,
+          client_number: account.client_number,
           name: account.name,
           slug: account.slug,
           billing_email: account.billing_email,

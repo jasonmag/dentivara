@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include Auditable
+  attr_accessor :account_only
 
   PERMISSION_ACTIONS = %w[view create update destroy].freeze
   PERMISSION_FEATURES = {
@@ -19,7 +20,7 @@ class User < ApplicationRecord
     reports: "Reports"
   }.freeze
 
-  belongs_to :clinic
+  belongs_to :clinic, optional: true
   before_validation :assign_default_clinic
   after_create :ensure_primary_clinic_membership
   before_destroy :release_foreign_key_references
@@ -98,6 +99,8 @@ class User < ApplicationRecord
   private
 
   def assign_default_clinic
+    return if ActiveModel::Type::Boolean.new.cast(account_only)
+
     self.clinic ||= Current.clinic || Clinic.default
   end
 
@@ -106,6 +109,8 @@ class User < ApplicationRecord
   end
 
   def ensure_primary_clinic_membership
+    return if clinic.blank?
+
     clinic_memberships.find_or_create_by!(clinic: clinic) do |membership|
       membership.role = role
       membership.accepted_at = Time.current

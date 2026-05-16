@@ -30,7 +30,7 @@ class ApiV1ClinicOnboardingTest < ActionDispatch::IntegrationTest
     assert_equal clinic, owner.clinic
     assert_equal "clinic_owner", owner.role
     assert_equal 3, clinic.clinic_services.count
-    assert_equal "trialing", clinic.subscription_status
+    assert_equal "active", clinic.subscription_status
     assert body.dig("data", "token").present?
   end
 end

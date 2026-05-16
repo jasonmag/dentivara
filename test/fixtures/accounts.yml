@@ -1,4 +1,5 @@
 one:
+  client_number: CL-FIXTURE1
   name: Fixture Dental Group
   slug: fixture-dental-group
   billing_email: owner@example.com
@@ -11,6 +12,7 @@ one:
   feature_flags: {}
 
 two:
+  client_number: CL-FIXTURE2
   name: Other Dental Group
   slug: other-dental-group
   billing_email: other-owner@example.com

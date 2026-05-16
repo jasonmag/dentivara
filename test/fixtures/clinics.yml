@@ -15,7 +15,7 @@ two:
   slug: other-dental-clinic
   contact_email: other@example.com
   subscription_plan: starter
-  subscription_status: trialing
+  subscription_status: active
   trial_ends_on: 2026-06-01
   plan_limits: {}
   feature_flags: {}

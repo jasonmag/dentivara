@@ -1,11 +1,13 @@
 module Api
   module V1
     class ClinicsController < BaseController
-      before_action :require_platform_admin!
+      before_action :require_platform_admin!, only: %i[show update destroy]
+      before_action :require_clinic_owner_or_platform_admin!, only: %i[create]
       before_action :set_clinic, only: %i[show update destroy]
 
       def index
-        clinics = Clinic.order(created_at: :desc)
+        clinics = current_user.system_admin? ? Clinic.all : current_user.accessible_clinics
+        clinics = clinics.order(created_at: :desc)
         clinics = clinics.where("name LIKE :q OR slug LIKE :q OR contact_email LIKE :q", q: "%#{params[:search]}%") if params[:search].present?
         render_collection(clinics, serializer: ClinicSerializer)
       end
@@ -45,12 +47,20 @@ module Api
         render_error("forbidden", "Only system admins can manage platform clinics.", status: :forbidden)
       end
 
+      def require_clinic_owner_or_platform_admin!
+        return if current_user&.system_admin? || current_user&.clinic_owner?
+
+        render_error("forbidden", "Only client owners can add clinics.", status: :forbidden)
+      end
+
       def set_clinic
         @clinic = Clinic.find(params[:id])
       end
 
       def clinic_params
-        params.require(:clinic).permit(:name, :slug, :contact_email, :phone, :subscription_plan, :subscription_status, :trial_ends_on)
+        permitted = [ :name, :slug, :contact_email, :phone, :subscription_status, :trial_ends_on ]
+        permitted << :account_id if current_user&.system_admin?
+        params.require(:clinic).permit(permitted)
       end
     end
   end

@@ -35,7 +35,7 @@ class ClinicOnboarding
         contact_email: clinic_params[:contact_email].presence || owner_params.fetch(:email),
         phone: clinic_params[:phone],
         subscription_plan: clinic_params[:subscription_plan].presence || "starter",
-        subscription_status: "trialing"
+        subscription_status: "active"
       )
 
       Current.set(clinic: clinic) do

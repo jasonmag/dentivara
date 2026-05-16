@@ -1,6 +1,6 @@
 class Clinic < ApplicationRecord
   PLANS = %w[starter clinic pro enterprise].freeze
-  SUBSCRIPTION_STATUSES = %w[trialing active past_due cancelled suspended].freeze
+  SUBSCRIPTION_STATUSES = %w[active inactive].freeze
 
   belongs_to :account
   has_many :users, dependent: :restrict_with_exception
@@ -21,9 +21,11 @@ class Clinic < ApplicationRecord
 
   before_validation :assign_default_account
   before_validation :assign_slug
+  before_validation :normalize_subscription_status
+  before_validation :assign_account_subscription
   before_validation :assign_trial_ends_on
 
-  scope :active_for_access, -> { where(subscription_status: %w[trialing active past_due]) }
+  scope :active_for_access, -> { where(subscription_status: "active") }
 
   def self.default
     first_or_create!(
@@ -37,11 +39,11 @@ class Clinic < ApplicationRecord
   end
 
   def suspended?
-    account&.suspended? || subscription_status == "suspended" || suspended_at.present?
+    account&.suspended? || subscription_status == "inactive" || suspended_at.present?
   end
 
   def suspend!
-    update!(subscription_status: "suspended", suspended_at: Time.current)
+    update!(subscription_status: "inactive", suspended_at: Time.current)
   end
 
   def reactivate!
@@ -62,12 +64,30 @@ class Clinic < ApplicationRecord
     account.trial_ends_on ||= trial_ends_on
   end
 
+  def assign_account_subscription
+    return if account.blank?
+
+    self.subscription_plan = account.subscription_plan if new_record? || subscription_plan.blank?
+    self.subscription_status ||= "active"
+  end
+
+  def normalize_subscription_status
+    self.subscription_status = case subscription_status
+                               when "trialing", "past_due"
+                                 "active"
+                               when "cancelled", "suspended"
+                                 "inactive"
+                               else
+                                 subscription_status.presence || "active"
+                               end
+  end
+
   def assign_slug
     self.slug = slug.to_s.squish.tr(" ", "-").downcase if slug.present?
     self.slug = name.to_s.parameterize if slug.blank? && name.present?
   end
 
   def assign_trial_ends_on
-    self.trial_ends_on ||= 14.days.from_now.to_date if subscription_status == "trialing"
+    self.trial_ends_on ||= account.trial_ends_on if account&.trial_ends_on.present?
   end
 end

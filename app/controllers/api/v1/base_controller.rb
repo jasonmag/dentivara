@@ -23,7 +23,7 @@ module Api
           @current_user = @current_api_token.user
           Current.user = @current_user
           Current.clinic = clinic_for_request(@current_user)
-          return render_error("forbidden", "You are not authorized to access this clinic.", status: :forbidden) if Current.clinic.blank?
+          return render_error("forbidden", "You are not authorized to access this clinic.", status: :forbidden) if Current.clinic.blank? && !account_only_api_access?
           return render_error("clinic_suspended", "This clinic account is suspended.", status: :payment_required) if Current.clinic&.suspended?
           return
         end
@@ -55,7 +55,7 @@ module Api
 
         Current.user = @current_user
         Current.clinic = clinic_for_request(@current_user)
-        Current.clinic.present?
+        Current.clinic.present? || account_only_api_access?
       end
 
       def legacy_api_token
@@ -82,6 +82,10 @@ module Api
 
       def current_clinic
         Current.clinic || current_user&.clinic
+      end
+
+      def account_only_api_access?
+        current_user&.clinic_owner? && controller_name == "clinics" && action_name.in?(%w[index create])
       end
 
       def tenant_scope(model_class)

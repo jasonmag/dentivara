@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "dotenv/load" if Rails.env.local?
+
 user = SystemAdminBootstrap.from_env!
 
 if user.present?

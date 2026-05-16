@@ -1,12 +1,15 @@
+require "securerandom"
+
 class Account < ApplicationRecord
   PLANS = Clinic::PLANS
-  SUBSCRIPTION_STATUSES = Clinic::SUBSCRIPTION_STATUSES
+  SUBSCRIPTION_STATUSES = %w[trialing active past_due cancelled suspended].freeze
 
   has_many :clinics, dependent: :restrict_with_exception
   has_many :account_memberships, dependent: :destroy
   has_many :members, through: :account_memberships, source: :user
 
   validates :name, :slug, :subscription_plan, :subscription_status, presence: true
+  validates :client_number, presence: true, uniqueness: true
   validates :slug, uniqueness: true, format: {
     with: /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/,
     message: "can only contain letters, numbers, spaces, or dashes"
@@ -15,6 +18,7 @@ class Account < ApplicationRecord
   validates :subscription_status, inclusion: { in: SUBSCRIPTION_STATUSES }
 
   before_validation :assign_slug
+  before_validation :assign_client_number
   before_validation :assign_trial_ends_on
   before_validation :assign_subscription_window
 
@@ -37,6 +41,15 @@ class Account < ApplicationRecord
   def assign_slug
     self.slug = slug.to_s.squish.tr(" ", "-").downcase if slug.present?
     self.slug = name.to_s.parameterize if slug.blank? && name.present?
+  end
+
+  def assign_client_number
+    return if client_number.present?
+
+    self.client_number = loop do
+      value = "CL-#{SecureRandom.alphanumeric(8).upcase}"
+      break value unless self.class.exists?(client_number: value)
+    end
   end
 
   def assign_trial_ends_on

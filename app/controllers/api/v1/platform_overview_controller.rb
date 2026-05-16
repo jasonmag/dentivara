@@ -37,6 +37,7 @@ module Api
       def account_payload(account)
         {
           id: account.id,
+          client_number: account.client_number,
           name: account.name,
           billing_email: account.billing_email,
           subscription_plan: account.subscription_plan,
