@@ -14,17 +14,19 @@ class ApiV1ClinicsTest < ActionDispatch::IntegrationTest
 
   test "system admin creates clinic under an account with active inactive status" do
     assert_difference("Clinic.count", 1) do
-      post api_v1_clinics_url,
-        headers: api_headers_for(@system_admin),
-        params: {
-          clinic: {
-            account_id: accounts(:one).id,
-            name: "Branch Dental",
-            contact_email: "branch@example.com",
-            subscription_status: "inactive"
-          }
-        },
-        as: :json
+      assert_no_difference("ClinicMembership.count") do
+        post api_v1_clinics_url,
+          headers: api_headers_for(@system_admin),
+          params: {
+            clinic: {
+              account_id: accounts(:one).id,
+              name: "Branch Dental",
+              contact_email: "branch@example.com",
+              subscription_status: "inactive"
+            }
+          },
+          as: :json
+      end
     end
 
     assert_response :created

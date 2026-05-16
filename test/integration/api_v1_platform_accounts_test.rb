@@ -14,20 +14,22 @@ class ApiV1PlatformAccountsTest < ActionDispatch::IntegrationTest
 
   test "system admin creates a new client account with organization owner only" do
     assert_difference("Account.count", 1) do
-      assert_difference("User.clinic_owner.count", 1) do
-        assert_no_difference([ "Clinic.count", "ClinicMembership.count" ]) do
-          assert_difference("AccountMembership.count", 1) do
-            post api_v1_platform_accounts_url,
-              headers: api_headers_for(@system_admin),
-              params: {
-                platform_account: {
-                  client_name: "North Dental Group",
-                  client_email: "owner@north.example",
-                  client_password: "password123",
-                  client_password_confirmation: "password123"
-                }
-              },
-              as: :json
+      assert_difference("AccountSubscription.count", 1) do
+        assert_difference("User.clinic_owner.count", 1) do
+          assert_no_difference([ "Clinic.count", "ClinicMembership.count" ]) do
+            assert_difference("AccountMembership.count", 1) do
+              post api_v1_platform_accounts_url,
+                headers: api_headers_for(@system_admin),
+                params: {
+                  platform_account: {
+                    client_name: "North Dental Group",
+                    client_email: "owner@north.example",
+                    client_password: "password123",
+                    client_password_confirmation: "password123"
+                  }
+                },
+                as: :json
+            end
           end
         end
       end
@@ -64,18 +66,64 @@ class ApiV1PlatformAccountsTest < ActionDispatch::IntegrationTest
   end
 
   test "system admin updates account subscription window" do
-    patch api_v1_platform_account_url(accounts(:one)),
-      headers: api_headers_for(@system_admin),
-      params: {
-        account: {
-          subscription_status: "active",
-          subscription_starts_on: "2026-06-01",
-          subscription_ends_on: "2027-06-01"
-        }
-      },
-      as: :json
+    assert_difference("AccountSubscription.count", 1) do
+      patch api_v1_platform_account_url(accounts(:one)),
+        headers: api_headers_for(@system_admin),
+        params: {
+          account: {
+            subscription_plan: "growing",
+            subscription_status: "active",
+            subscription_starts_on: "2026-06-01",
+            subscription_ends_on: "2027-06-01"
+          }
+        },
+        as: :json
+    end
 
     assert_response :success
-    assert_equal "2027-06-01", JSON.parse(response.body).dig("data", "subscription_ends_on")
+    body = JSON.parse(response.body)
+    assert_equal "growing", body.dig("data", "subscription_plan")
+    assert_equal "2027-06-01", body.dig("data", "subscription_ends_on")
+    assert_equal "growing", body.dig("data", "subscriptions", 0, "subscription_plan")
+    assert_equal "2027-06-01", body.dig("data", "subscriptions", 0, "subscription_ends_on")
+  end
+
+  test "system admin cannot record incomplete account subscription window" do
+    assert_no_difference("AccountSubscription.count") do
+      patch api_v1_platform_account_url(accounts(:one)),
+        headers: api_headers_for(@system_admin),
+        params: {
+          account: {
+            subscription_plan: "starter",
+            subscription_status: "active",
+            subscription_starts_on: "",
+            subscription_ends_on: ""
+          }
+        },
+        as: :json
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes response.parsed_body.dig("error", "details", "subscription_starts_on").join, "can't be blank"
+    assert_includes response.parsed_body.dig("error", "details", "subscription_ends_on").join, "can't be blank"
+  end
+
+  test "system admin cannot record subscription ending before it starts" do
+    assert_no_difference("AccountSubscription.count") do
+      patch api_v1_platform_account_url(accounts(:one)),
+        headers: api_headers_for(@system_admin),
+        params: {
+          account: {
+            subscription_plan: "starter",
+            subscription_status: "active",
+            subscription_starts_on: "2026-06-01",
+            subscription_ends_on: "2026-05-31"
+          }
+        },
+        as: :json
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes response.parsed_body.dig("error", "details", "subscription_ends_on").join, "must be on or after the subscription start date"
   end
 end

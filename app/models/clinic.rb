@@ -1,5 +1,5 @@
 class Clinic < ApplicationRecord
-  PLANS = %w[starter clinic pro enterprise].freeze
+  PLANS = %w[founding_clinic starter growing enterprise].freeze
   SUBSCRIPTION_STATUSES = %w[active inactive].freeze
 
   belongs_to :account
@@ -21,6 +21,7 @@ class Clinic < ApplicationRecord
 
   before_validation :assign_default_account
   before_validation :assign_slug
+  before_validation :normalize_subscription_plan
   before_validation :normalize_subscription_status
   before_validation :assign_account_subscription
   before_validation :assign_trial_ends_on
@@ -32,7 +33,7 @@ class Clinic < ApplicationRecord
       name: "Dentivara Demo Clinic",
       slug: "dentivara-demo",
       contact_email: "owner@dentivara.local",
-      subscription_plan: "clinic",
+      subscription_plan: "starter",
       subscription_status: "active",
       trial_ends_on: 30.days.from_now.to_date
     )
@@ -69,6 +70,17 @@ class Clinic < ApplicationRecord
 
     self.subscription_plan = account.subscription_plan if new_record? || subscription_plan.blank?
     self.subscription_status ||= "active"
+  end
+
+  def normalize_subscription_plan
+    self.subscription_plan = case subscription_plan
+                             when "clinic"
+                               "starter"
+                             when "pro"
+                               "growing"
+                             else
+                               subscription_plan.presence || "starter"
+                             end
   end
 
   def normalize_subscription_status

@@ -47,7 +47,19 @@ module Api
           trial_ends_on: account.trial_ends_on,
           owners: account.members.select(&:clinic_owner?).map { |owner| user_payload(owner) },
           users_count: account.members.distinct.count,
+          subscriptions: account.account_subscriptions.recent_first.map { |subscription| subscription_payload(subscription) },
           clinics: account.clinics.order(:name).map { |clinic| clinic_payload(clinic) }
+        }
+      end
+
+      def subscription_payload(subscription)
+        {
+          id: subscription.id,
+          subscription_plan: subscription.subscription_plan,
+          subscription_status: subscription.subscription_status,
+          subscription_starts_on: subscription.subscription_starts_on,
+          subscription_ends_on: subscription.subscription_ends_on,
+          created_at: subscription.created_at
         }
       end
 

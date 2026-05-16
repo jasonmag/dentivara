@@ -85,7 +85,9 @@ Rails.application.routes.draw do
       resource :patient_claim, only: :create, controller: "patient_claims"
       resource :patient_portal, only: :show, controller: "patient_portal"
       resource :platform_overview, only: :show, controller: "platform_overview"
+      resource :platform_settings, only: %i[show update], controller: "platform_settings"
       resources :platform_accounts, only: %i[create update], controller: "platform_accounts"
+      resources :subscription_plans
       resource :impersonation, only: :create, controller: "impersonations"
       resource :dashboard, only: :show, controller: "dashboard"
       resources :clinics, only: %i[index show create update destroy]
@@ -96,6 +98,7 @@ Rails.application.routes.draw do
       resources :payments
       resources :notifications
       resources :clinic_services
+      resources :users, only: :index
     end
   end
 end

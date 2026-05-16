@@ -24,7 +24,7 @@ demo_account = demo_clinic.account
 demo_account.update!(
   name: "Dentivara Demo Group",
   billing_email: "owner@dentivara.local",
-  subscription_plan: "clinic",
+  subscription_plan: "starter",
   subscription_status: "active",
   subscription_starts_on: Date.current.beginning_of_month,
   subscription_ends_on: 1.year.from_now.to_date
@@ -110,7 +110,7 @@ satellite_clinic.assign_attributes(
   name: "Dentivara Satellite Clinic",
   contact_email: "satellite@dentivara.local",
   phone: "+639171234568",
-  subscription_plan: "clinic",
+  subscription_plan: "starter",
   subscription_status: "active",
   trial_ends_on: 30.days.from_now.to_date
 )

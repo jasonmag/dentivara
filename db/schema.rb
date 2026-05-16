@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_16_102000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_16_110000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -38,6 +38,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_16_102000) do
     t.index ["account_id"], name: "index_account_memberships_on_account_id"
     t.index ["role"], name: "index_account_memberships_on_role"
     t.index ["user_id"], name: "index_account_memberships_on_user_id"
+  end
+
+  create_table "account_subscriptions", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.string "subscription_plan", null: false
+    t.string "subscription_status", null: false
+    t.date "subscription_starts_on"
+    t.date "subscription_ends_on"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_account_subscriptions_on_account_id"
+    t.index ["subscription_ends_on"], name: "index_account_subscriptions_on_subscription_ends_on"
+    t.index ["subscription_plan"], name: "index_account_subscriptions_on_subscription_plan"
+    t.index ["subscription_starts_on"], name: "index_account_subscriptions_on_subscription_starts_on"
+    t.index ["subscription_status"], name: "index_account_subscriptions_on_subscription_status"
   end
 
   create_table "accounts", force: :cascade do |t|
@@ -543,6 +558,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_16_102000) do
     t.index ["clinic_id"], name: "index_role_permissions_on_clinic_id"
   end
 
+  create_table "subscription_plans", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "code", null: false
+    t.boolean "active", default: true, null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "price_per_month"
+    t.integer "clinics_included"
+    t.integer "extra_clinic_price"
+    t.index ["active"], name: "index_subscription_plans_on_active"
+    t.index ["code"], name: "index_subscription_plans_on_code", unique: true
+    t.index ["position"], name: "index_subscription_plans_on_position"
+  end
+
   create_table "treatment_records", force: :cascade do |t|
     t.integer "patient_id", null: false
     t.integer "user_id", null: false
@@ -577,6 +607,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_16_102000) do
   add_foreign_key "access_logs", "users"
   add_foreign_key "account_memberships", "accounts"
   add_foreign_key "account_memberships", "users"
+  add_foreign_key "account_subscriptions", "accounts"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_access_tokens", "users"

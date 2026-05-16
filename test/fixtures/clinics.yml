@@ -3,7 +3,7 @@ one:
   name: Fixture Dental Clinic
   slug: fixture-dental-clinic
   contact_email: clinic@example.com
-  subscription_plan: clinic
+  subscription_plan: starter
   subscription_status: active
   trial_ends_on: 2026-06-01
   plan_limits: {}

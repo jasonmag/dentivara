@@ -22,10 +22,24 @@ module Api
       end
 
       def update
-        if @account.update(account_update_params)
-          render_resource(@account, serializer: AccountSerializer)
-        else
-          render_validation_errors(@account)
+        permitted = account_update_params
+        if subscription_update?(permitted) && subscription_window_missing?(permitted)
+          return render_error(
+            "validation_failed",
+            "Validation failed.",
+            status: :unprocessable_entity,
+            details: subscription_window_errors(permitted)
+          )
+        end
+
+        Account.transaction do
+          if @account.update(permitted)
+            record_subscription!(@account) if subscription_update?(permitted)
+            render_resource(@account, serializer: AccountSerializer)
+          else
+            render_validation_errors(@account)
+            raise ActiveRecord::Rollback
+          end
         end
       end
 
@@ -60,8 +74,10 @@ module Api
           account: {
             name: client_name,
             billing_email: client_email,
-            subscription_plan: "clinic",
-            subscription_status: "active"
+            subscription_plan: "starter",
+            subscription_status: "active",
+            subscription_starts_on: Date.current,
+            subscription_ends_on: 1.year.from_now.to_date
           },
           owner: {
             name: client_name,
@@ -74,6 +90,7 @@ module Api
       def create_account_owner!(attributes)
         Account.transaction do
           account = Account.create!(attributes.fetch(:account))
+          record_subscription!(account)
           owner_attributes = attributes.fetch(:owner)
           owner = User.create!(
             account_only: true,
@@ -102,6 +119,30 @@ module Api
           :subscription_starts_on,
           :subscription_ends_on,
           :trial_ends_on
+        )
+      end
+
+      def subscription_update?(permitted)
+        permitted.keys.any? { |key| key.to_s.start_with?("subscription_") }
+      end
+
+      def subscription_window_missing?(permitted)
+        permitted[:subscription_starts_on].blank? || permitted[:subscription_ends_on].blank?
+      end
+
+      def subscription_window_errors(permitted)
+        {}.tap do |errors|
+          errors[:subscription_starts_on] = [ "can't be blank" ] if permitted[:subscription_starts_on].blank?
+          errors[:subscription_ends_on] = [ "can't be blank" ] if permitted[:subscription_ends_on].blank?
+        end
+      end
+
+      def record_subscription!(account)
+        account.account_subscriptions.create!(
+          subscription_plan: account.subscription_plan,
+          subscription_status: account.subscription_status,
+          subscription_starts_on: account.subscription_starts_on,
+          subscription_ends_on: account.subscription_ends_on
         )
       end
     end

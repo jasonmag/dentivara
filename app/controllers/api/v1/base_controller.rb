@@ -85,7 +85,10 @@ module Api
       end
 
       def account_only_api_access?
-        current_user&.clinic_owner? && controller_name == "clinics" && action_name.in?(%w[index create])
+        return false unless current_user&.clinic_owner?
+
+        (controller_name == "clinics" && action_name.in?(%w[index create])) ||
+          (controller_name == "users" && action_name == "index")
       end
 
       def tenant_scope(model_class)

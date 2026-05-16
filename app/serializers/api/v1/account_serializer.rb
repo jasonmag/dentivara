@@ -16,6 +16,7 @@ module Api
           suspended_at: account.suspended_at,
           plan_limits: account.plan_limits,
           feature_flags: account.feature_flags,
+          subscriptions: account.account_subscriptions.recent_first.map { |subscription| AccountSubscriptionSerializer.call(subscription) },
           created_at: account.created_at,
           updated_at: account.updated_at
         }
