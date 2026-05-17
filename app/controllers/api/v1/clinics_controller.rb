@@ -1,9 +1,12 @@
 module Api
   module V1
     class ClinicsController < BaseController
-      before_action :require_platform_admin!, only: %i[show update destroy]
+      before_action :require_platform_admin!, only: %i[show update]
+      before_action :require_clinic_owner_or_platform_admin!, only: %i[activate destroy]
       before_action :require_clinic_owner_or_platform_admin!, only: %i[create]
-      before_action :set_clinic, only: %i[show update destroy]
+      before_action :set_clinic, only: %i[activate show update destroy]
+      before_action :require_activate_access!, only: %i[activate]
+      before_action :require_destroy_access!, only: %i[destroy]
 
       def index
         clinics = current_user.system_admin? ? Clinic.all : current_user.accessible_clinics
@@ -17,11 +20,13 @@ module Api
       end
 
       def create
-        if current_user&.clinic_owner? && !owner_account&.subscription_allows_clinic_addition?
+        clinic_allowance = owner_account&.clinic_allowance
+        if current_user&.clinic_owner? && !clinic_allowance&.fetch(:can_add_clinic, false)
           return render_error(
             "clinic_limit_reached",
             "Your current subscription does not allow another clinic.",
-            status: :unprocessable_entity
+            status: :unprocessable_entity,
+            details: clinic_allowance
           )
         end
 
@@ -44,8 +49,23 @@ module Api
       end
 
       def destroy
-        @clinic.suspend!
+        @clinic.archive!
         head :no_content
+      end
+
+      def activate
+        clinic_allowance = @clinic.account.clinic_allowance
+        unless clinic_allowance.fetch(:can_add_clinic, false)
+          return render_error(
+            "clinic_limit_reached",
+            "This subscription only allows #{clinic_allowance[:clinics_included]} active clinics.",
+            status: :unprocessable_entity,
+            details: clinic_allowance
+          )
+        end
+
+        @clinic.reactivate!
+        render_resource(@clinic, serializer: ClinicSerializer)
       end
 
       private
@@ -59,7 +79,21 @@ module Api
       def require_clinic_owner_or_platform_admin!
         return if current_user&.system_admin? || current_user&.clinic_owner?
 
-        render_error("forbidden", "Only client owners can add clinics.", status: :forbidden)
+        render_error("forbidden", "Only client owners can manage clinics.", status: :forbidden)
+      end
+
+      def require_destroy_access!
+        return if current_user&.system_admin?
+        return if current_user&.clinic_owner? && current_user.accessible_clinics.exists?(id: @clinic.id)
+
+        render_error("forbidden", "You are not authorized to delete this clinic.", status: :forbidden)
+      end
+
+      def require_activate_access!
+        return if current_user&.system_admin?
+        return if current_user&.clinic_owner? && current_user.accessible_clinics.exists?(id: @clinic.id)
+
+        render_error("forbidden", "You are not authorized to activate this clinic.", status: :forbidden)
       end
 
       def set_clinic

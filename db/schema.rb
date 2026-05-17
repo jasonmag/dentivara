@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_16_110000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_17_120000) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -275,7 +275,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_16_110000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "account_id", null: false
+    t.datetime "archived_at"
     t.index ["account_id"], name: "index_clinics_on_account_id"
+    t.index ["archived_at"], name: "index_clinics_on_archived_at"
     t.index ["slug"], name: "index_clinics_on_slug", unique: true
     t.index ["subscription_plan"], name: "index_clinics_on_subscription_plan"
     t.index ["subscription_status"], name: "index_clinics_on_subscription_status"

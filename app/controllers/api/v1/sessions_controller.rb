@@ -35,6 +35,15 @@ module Api
         head :no_content
       end
 
+      def show
+        render json: {
+          data: {
+            user: UserSerializer.call(current_user),
+            expires_at: current_api_token&.expires_at
+          }
+        }
+      end
+
       private
 
       def session_params

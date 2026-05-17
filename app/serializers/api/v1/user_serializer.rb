@@ -3,6 +3,7 @@ module Api
     class UserSerializer
       def self.call(user)
         subscription_account = subscription_account_for(user)
+        clinic_allowance = subscription_account&.clinic_allowance
 
         {
           id: user.id,
@@ -15,9 +16,10 @@ module Api
           account_subscription_starts_on: subscription_account&.subscription_starts_on,
           account_subscription_ends_on: subscription_account&.subscription_ends_on,
           account_subscription_expired: subscription_expired?(subscription_account),
-          account_clinics_count: subscription_account&.clinics&.count,
-          account_clinics_included: subscription_clinics_included(subscription_account),
-          account_can_add_clinic: subscription_account&.subscription_allows_clinic_addition? || false,
+          account_clinics_count: clinic_allowance&.fetch(:clinics_count, nil),
+          account_clinics_included: clinic_allowance&.fetch(:clinics_included, nil),
+          account_clinics_remaining: clinic_allowance&.fetch(:clinics_remaining, nil),
+          account_can_add_clinic: clinic_allowance&.fetch(:can_add_clinic, false) || false,
           clinic: user.clinic.present? ? ClinicSerializer.call(user.clinic) : nil,
           accounts: user.accessible_accounts.map { |account| AccountSerializer.call(account) },
           clinics: user.accessible_clinics.map { |clinic| ClinicSerializer.call(clinic) },
@@ -37,11 +39,6 @@ module Api
         account&.subscription_ends_on.present? && account.subscription_ends_on < Date.current
       end
 
-      def self.subscription_clinics_included(account)
-        return nil if account.blank?
-
-        SubscriptionPlan.find_by(code: account.subscription_plan)&.clinics_included
-      end
     end
   end
 end

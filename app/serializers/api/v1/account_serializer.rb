@@ -12,6 +12,7 @@ module Api
           subscription_status: account.subscription_status,
           subscription_starts_on: account.subscription_starts_on,
           subscription_ends_on: account.subscription_ends_on,
+          clinic_allowance: account.clinic_allowance,
           trial_ends_on: account.trial_ends_on,
           suspended_at: account.suspended_at,
           plan_limits: account.plan_limits,

@@ -27,6 +27,8 @@ class Clinic < ApplicationRecord
   before_validation :assign_trial_ends_on
 
   scope :active_for_access, -> { where(subscription_status: "active") }
+  scope :archived, -> { where.not(archived_at: nil) }
+  scope :not_archived, -> { where(archived_at: nil) }
 
   def self.default
     first_or_create!(
@@ -40,15 +42,23 @@ class Clinic < ApplicationRecord
   end
 
   def suspended?
-    account&.suspended? || subscription_status == "inactive" || suspended_at.present?
+    archived? || account&.suspended? || subscription_status == "inactive" || suspended_at.present?
   end
 
   def suspend!
     update!(subscription_status: "inactive", suspended_at: Time.current)
   end
 
+  def archive!
+    update!(subscription_status: "inactive", suspended_at: Time.current, archived_at: Time.current)
+  end
+
+  def archived?
+    archived_at.present?
+  end
+
   def reactivate!
-    update!(subscription_status: "active", suspended_at: nil)
+    update!(subscription_status: "active", suspended_at: nil, archived_at: nil)
   end
 
   private

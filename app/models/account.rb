@@ -40,16 +40,43 @@ class Account < ApplicationRecord
   end
 
   def subscription_allows_clinic_addition?
-    return false unless subscription_status.in?(%w[active trialing])
-    return false if subscription_ends_on.present? && subscription_ends_on < Date.current
+    clinic_allowance.fetch(:can_add_clinic)
+  end
 
-    included_clinics = SubscriptionPlan.find_by(code: subscription_plan)&.clinics_included
-    return true if included_clinics.blank?
+  def active_subscription
+    account_subscriptions.currently_active.recent_first.first || active_subscription_snapshot
+  end
 
-    clinics.count < included_clinics
+  def clinic_allowance
+    subscription = active_subscription
+    plan_code = subscription&.subscription_plan
+    plan = SubscriptionPlan.find_by(code: plan_code)
+    included_clinics = plan&.clinics_included
+    clinics_count = clinics.not_archived.count
+    clinics_remaining = included_clinics.nil? ? nil : [ included_clinics - clinics_count, 0 ].max
+
+    {
+      active_subscription_id: subscription.is_a?(AccountSubscription) ? subscription.id : nil,
+      subscription_plan: plan_code,
+      subscription_status: subscription&.subscription_status,
+      subscription_starts_on: subscription&.subscription_starts_on,
+      subscription_ends_on: subscription&.subscription_ends_on,
+      clinics_count: clinics_count,
+      clinics_included: included_clinics,
+      clinics_remaining: clinics_remaining,
+      can_add_clinic: subscription.present? && plan.present? && (included_clinics.nil? || clinics_count < included_clinics)
+    }
   end
 
   private
+
+  def active_subscription_snapshot
+    return unless subscription_status.in?(%w[active trialing])
+    return if subscription_starts_on.present? && subscription_starts_on > Date.current
+    return if subscription_ends_on.present? && subscription_ends_on < Date.current
+
+    self
+  end
 
   def assign_slug
     self.slug = slug.to_s.squish.tr(" ", "-").downcase if slug.present?

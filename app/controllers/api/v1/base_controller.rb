@@ -24,7 +24,7 @@ module Api
           Current.user = @current_user
           Current.clinic = clinic_for_request(@current_user)
           return render_error("forbidden", "You are not authorized to access this clinic.", status: :forbidden) if Current.clinic.blank? && !account_only_api_access?
-          return render_error("clinic_suspended", "This clinic account is suspended.", status: :payment_required) if Current.clinic&.suspended?
+          return render_error("clinic_suspended", "This clinic account is suspended.", status: :payment_required) if Current.clinic&.suspended? && !account_only_api_access?
           return
         end
 
@@ -88,6 +88,8 @@ module Api
         return false unless current_user&.clinic_owner?
 
         (controller_name == "clinics" && action_name.in?(%w[index create])) ||
+          (controller_name == "clinics" && action_name.in?(%w[activate destroy])) ||
+          (controller_name == "sessions" && action_name == "show") ||
           (controller_name == "users" && action_name == "index") ||
           (controller_name == "account_subscriptions" && action_name.in?(%w[show create]))
       end

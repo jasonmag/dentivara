@@ -78,7 +78,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resource :session, only: %i[create destroy]
+      resource :session, only: %i[show create destroy]
       resource :clinic_onboarding, only: :create, controller: "clinic_onboarding"
       resource :clinic_context, only: :update, controller: "clinic_context"
       resource :patient_registration, only: :create, controller: "patient_registrations"
@@ -92,7 +92,9 @@ Rails.application.routes.draw do
       resources :subscription_plans
       resource :impersonation, only: :create, controller: "impersonations"
       resource :dashboard, only: :show, controller: "dashboard"
-      resources :clinics, only: %i[index show create update destroy]
+      resources :clinics, only: %i[index show create update destroy] do
+        patch :activate, on: :member
+      end
       resources :patients
       resources :appointments
       resources :treatment_records

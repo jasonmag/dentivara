@@ -50,6 +50,17 @@ class ApiV1SessionsTest < ActionDispatch::IntegrationTest
     assert_equal true, body.dig("data", "user", "account_subscription_expired")
   end
 
+  test "clinic owner can refresh current session without selected clinic context" do
+    @user.update!(clinic: nil)
+
+    get api_v1_session_url,
+      headers: api_headers_for(@user),
+      as: :json
+
+    assert_response :success
+    assert_equal "clinic_owner", response.parsed_body.dig("data", "user", "role")
+  end
+
   test "rejects invalid credentials" do
     post api_v1_session_url, params: {
       session: {

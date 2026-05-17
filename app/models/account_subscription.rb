@@ -6,6 +6,11 @@ class AccountSubscription < ApplicationRecord
   validates :subscription_status, inclusion: { in: Account::SUBSCRIPTION_STATUSES }
   validate :subscription_end_not_before_start
 
+  scope :currently_active, -> do
+    where(subscription_status: %w[active trialing])
+      .where("subscription_starts_on <= ?", Date.current)
+      .where("subscription_ends_on IS NULL OR subscription_ends_on >= ?", Date.current)
+  end
   scope :recent_first, -> { order(subscription_starts_on: :desc, created_at: :desc) }
 
   private

@@ -5,7 +5,7 @@ module Api
 
       def show
         accounts = Account
-          .includes(:account_memberships, :members, clinics: [ :clinic_memberships, :members ])
+          .includes(:account_memberships, :account_subscriptions, :members, clinics: [ :clinic_memberships, :members ])
           .order(created_at: :desc)
 
         render json: {
@@ -44,6 +44,7 @@ module Api
           subscription_status: account.subscription_status,
           subscription_starts_on: account.subscription_starts_on,
           subscription_ends_on: account.subscription_ends_on,
+          clinic_allowance: account.clinic_allowance,
           trial_ends_on: account.trial_ends_on,
           owners: account.members.select(&:clinic_owner?).map { |owner| user_payload(owner) },
           users_count: account.members.distinct.count,
@@ -71,6 +72,7 @@ module Api
           contact_email: clinic.contact_email,
           subscription_plan: clinic.subscription_plan,
           subscription_status: clinic.subscription_status,
+          archived_at: clinic.archived_at,
           users_count: clinic.members.distinct.count,
           owners: clinic.members.select(&:clinic_owner?).map { |owner| user_payload(owner) },
           staff: clinic.members.reject { |member| member.clinic_owner? || member.system_admin? }.map { |member| user_payload(member) }

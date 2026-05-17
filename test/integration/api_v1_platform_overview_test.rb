@@ -22,6 +22,8 @@ class ApiV1PlatformOverviewTest < ActionDispatch::IntegrationTest
     assert_equal "active", account["subscription_status"]
     assert_equal "2026-05-01", account["subscription_starts_on"]
     assert_equal "2027-05-01", account["subscription_ends_on"]
+    assert_equal accounts(:one).clinics.count, account.dig("clinic_allowance", "clinics_count")
+    assert_includes [ true, false ], account.dig("clinic_allowance", "can_add_clinic")
     assert account["clinics"].any? { |clinic| clinic["id"] == clinics(:one).id }
   end
 
