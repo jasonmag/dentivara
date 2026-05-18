@@ -83,6 +83,8 @@ Rails.application.routes.draw do
       resource :clinic_context, only: :update, controller: "clinic_context"
       resource :patient_registration, only: :create, controller: "patient_registrations"
       resource :patient_claim, only: :create, controller: "patient_claims"
+      resources :patient_claim_invites, only: :create
+      resource :patient_claim_invite_claim, only: :create, controller: "patient_claim_invite_claims"
       resource :patient_portal, only: :show, controller: "patient_portal"
       resource :platform_overview, only: :show, controller: "platform_overview"
       resource :platform_settings, only: %i[show update], controller: "platform_settings"

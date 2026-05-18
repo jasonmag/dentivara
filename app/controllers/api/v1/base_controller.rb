@@ -99,7 +99,9 @@ module Api
       end
 
       def clinic_for_request(user)
-        requested_id = request.headers["X-Clinic-ID"].presence || params[:clinic_id].presence
+        requested_id = request.headers["X-Clinic-ID"].presence ||
+          params[:clinic_id].presence ||
+          params.dig(:clinic_context, :clinic_id).presence
         return user.clinic if requested_id.blank?
 
         user.accessible_clinics.find_by(id: requested_id)

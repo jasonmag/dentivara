@@ -18,6 +18,7 @@ module Api
       def create
         patient = tenant_scope(Patient).new(patient_params)
         if patient.save
+          send_claim_invite(patient) if patient.email.present?
           render_resource(patient, serializer: PatientSerializer, status: :created)
         else
           render_validation_errors(patient)
@@ -69,6 +70,13 @@ module Api
           :insurance_provider,
           :insurance_policy_number
         )
+      end
+
+      def send_claim_invite(patient)
+        invite, raw_token = PatientClaimInvite.issue!(patient)
+        PatientMailer.with(patient: patient, token: raw_token).claim_invite.deliver_later
+      rescue StandardError => error
+        Rails.logger.warn("Unable to send patient claim invite for patient #{patient.id}: #{error.class}: #{error.message}")
       end
     end
   end

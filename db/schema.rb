@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_17_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_18_160620) do
   create_table "access_logs", force: :cascade do |t|
     t.integer "user_id"
     t.string "resource_type", null: false
@@ -423,6 +423,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_17_120000) do
     t.index ["source_record_type", "source_record_id"], name: "index_notifications_on_source_record_type_and_source_record_id"
   end
 
+  create_table "patient_claim_invites", force: :cascade do |t|
+    t.integer "patient_id", null: false
+    t.string "token_digest", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "claimed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_patient_claim_invites_on_expires_at"
+    t.index ["patient_id"], name: "index_patient_claim_invites_on_patient_id"
+    t.index ["token_digest"], name: "index_patient_claim_invites_on_token_digest", unique: true
+  end
+
   create_table "patient_consents", force: :cascade do |t|
     t.integer "patient_id", null: false
     t.integer "user_id", null: false
@@ -648,6 +660,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_17_120000) do
   add_foreign_key "invoices", "treatment_records"
   add_foreign_key "notifications", "clinics"
   add_foreign_key "notifications", "patients"
+  add_foreign_key "patient_claim_invites", "patients"
   add_foreign_key "patient_consents", "clinics"
   add_foreign_key "patient_consents", "patients"
   add_foreign_key "patient_consents", "users"

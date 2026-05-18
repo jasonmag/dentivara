@@ -58,4 +58,24 @@ class ApiV1PatientsTest < ActionDispatch::IntegrationTest
     assert_equal "validation_failed", body.dig("error", "code")
     assert body.dig("error", "details").key?("first_name")
   end
+
+  test "creates claim invite when patient is created with email" do
+    assert_difference("PatientClaimInvite.count", 1) do
+      post api_v1_patients_url,
+        headers: @headers,
+        params: {
+          patient: {
+            first_name: "Invite",
+            last_name: "Patient",
+            birth_date: "1990-01-02",
+            phone: "09170000001",
+            email: "invite-patient@example.com"
+          }
+        },
+        as: :json
+    end
+
+    assert_response :created
+    assert_equal response.parsed_body.dig("data", "id"), PatientClaimInvite.last.patient_id
+  end
 end

@@ -47,4 +47,64 @@ class ApiV1PatientSelfServiceTest < ActionDispatch::IntegrationTest
     body = JSON.parse(response.body)
     assert_equal [ patients(:two).id ], body.dig("data", "linked_patients").map { |item| item.dig("patient", "id") }
   end
+
+  test "patient can claim record from email invite without sms otp" do
+    patient = patients(:one)
+    invite, raw_token = PatientClaimInvite.issue!(patient)
+
+    assert_difference([ "User.patient.count", "PatientLink.count" ], 1) do
+      post api_v1_patient_claim_invite_claim_url,
+        params: {
+          patient_claim_invite_claim: {
+            token: raw_token,
+            last_name: patient.last_name.downcase,
+            birth_date: patient.birth_date.iso8601,
+            phone_last4: patient.phone.last(4),
+            password: "password123",
+            password_confirmation: "password123"
+          }
+        },
+        as: :json
+    end
+
+    assert_response :created
+    assert_equal patient.email, response.parsed_body.dig("data", "user", "email")
+    assert_equal patient.id, response.parsed_body.dig("data", "patient", "id")
+    assert invite.reload.claimed_at.present?
+    assert patient.reload.claimed_at.present?
+  end
+
+  test "patient invite claim rejects mismatched identity details" do
+    _invite, raw_token = PatientClaimInvite.issue!(patients(:one))
+
+    assert_no_difference([ "User.patient.count", "PatientLink.count" ]) do
+      post api_v1_patient_claim_invite_claim_url,
+        params: {
+          patient_claim_invite_claim: {
+            token: raw_token,
+            last_name: "Wrong",
+            birth_date: patients(:one).birth_date.iso8601,
+            phone_last4: patients(:one).phone.last(4),
+            password: "password123",
+            password_confirmation: "password123"
+          }
+        },
+        as: :json
+    end
+
+    assert_response :unprocessable_entity
+    assert_equal "identity_verification_failed", response.parsed_body.dig("error", "code")
+  end
+
+  test "clinic staff can send patient portal invite by email" do
+    assert_difference("PatientClaimInvite.count", 1) do
+      post api_v1_patient_claim_invites_url,
+        headers: api_headers_for(users(:one)),
+        params: { patient_claim_invite: { patient_id: patients(:one).id } },
+        as: :json
+    end
+
+    assert_response :created
+    assert_equal patients(:one).id, response.parsed_body.dig("data", "patient_id")
+  end
 end

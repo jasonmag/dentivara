@@ -4,6 +4,7 @@ class Patient < ApplicationRecord
 
   belongs_to :user, optional: true
   has_many :patient_links, dependent: :destroy
+  has_many :patient_claim_invites, dependent: :destroy
   has_many :portal_users, through: :patient_links, source: :user
   has_many :appointments, dependent: :destroy
   has_many :treatment_records, dependent: :destroy

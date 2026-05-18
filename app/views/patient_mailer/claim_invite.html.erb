@@ -1,0 +1,9 @@
+<p>Hello <%= @patient.first_name %>,</p>
+
+<p><%= @clinic.name %> has created a Dentivara patient portal invitation for you.</p>
+
+<p>
+  <a href="<%= @claim_url %>">Claim your patient portal</a>
+</p>
+
+<p>This link expires in 72 hours and can only be used once.</p>
